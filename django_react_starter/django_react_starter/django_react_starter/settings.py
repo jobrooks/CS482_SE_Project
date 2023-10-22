@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "rest_framework",
     "fivecarddraw",
-    "user_api.apps.UserApiConfig",
+    "user_api",
 ]
 
 MIDDLEWARE = [
@@ -92,7 +92,6 @@ DATABASES = {
     }
 }
 
-AUTH_USER_MODEL = "user_api.AppUser"
 
 
 # Password validation
