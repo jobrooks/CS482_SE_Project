@@ -25,4 +25,5 @@ router.register(r'fivecarddraw', views.fivecarddrawView, 'fivecarddraw')
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/", include(router.urls)),
+    path('users/', include('user_api.urls'))
 ]
