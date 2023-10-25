@@ -45,9 +45,15 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "corsheaders",
     "rest_framework",
+    "rest_framework.authtoken",
     "user_api",
-
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENCATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+    )
+}
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
