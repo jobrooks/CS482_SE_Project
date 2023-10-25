@@ -71,7 +71,7 @@ ROOT_URLCONF = "backend.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": ['C:/Users/jobri/CS482_SE_Project/django_react_starter/backend/backend/templates'],
+        "DIRS": [BASE_DIR / "backend/templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
