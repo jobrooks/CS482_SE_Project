@@ -5,12 +5,14 @@ import random
 
 from django.db import models
 
+from django.db import models
+
 SUIT_CHOICES = (
-    ('H', 'Hearts'),
-    ('D', 'Diamonds'),
-    ('C', 'Clubs'),
-    ('S', 'Spades'),
-)
+        ('H', 'Hearts'),
+        ('D', 'Diamonds'),
+        ('C', 'Clubs'),
+        ('S', 'Spades'),
+    )
 
 RANK_CHOICES = (
     ('2', '2'),
@@ -29,7 +31,7 @@ RANK_CHOICES = (
 )
 
 class Card(models.Model):
-
+    
     suit = models.CharField(max_length=1, choices=SUIT_CHOICES)
     rank = models.CharField(max_length=2, choices=RANK_CHOICES)
 
@@ -37,7 +39,90 @@ class Card(models.Model):
         return f'{self.get_rank_display()} of {self.get_suit_display()}'
 
 class Deck(models.Model):
+    name = models.CharField(max_length=100, default="Test_Deck")
     cards = models.ManyToManyField(Card)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+        if not self.cards.exists():
+            for suit, _ in SUIT_CHOICES:
+                for rank, _ in RANK_CHOICES:
+                    card, created = Card.objects.get_or_create(suit=suit, rank=rank)
+                    self.cards.add(card)
+
+    # method to remove card from top of Deck and add to Hand
+
+    # method to remove card from Hand and add to end of Deck
+
+class Hand(models.Model):
+    name = models.CharField(max_length=100, default="Test_Hand")
+    cards = models.ManyToManyField(Card)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+    def draw_card_from_deck(self, Deck):
+        # Get the first card from the deck
+        card = Deck.cards.first()
+
+        if card:
+            # Remove the card from the deck
+            Deck.cards.remove(card)
+            # Add the card to the hand
+            self.cards.add(card)
+
+    def return_card_to_deck(self, Deck, card):
+        # Remove the card from the hand
+        self.cards.remove(card)
+        # Add the card to the end of the deck
+        Deck.cards.add(card)
+
+    def __str__(self):
+        return self.name
+    
+
+
+# SUIT_CHOICES = (
+#     ('H'),
+#     ('D'),
+#     ('C'),
+#     ('S'),
+# )
+
+# RANK_CHOICES = (
+#     ('2'),
+#     ('3'),
+#     ('4'),
+#     ('5'),
+#     ('6'),
+#     ('7'),
+#     ('8'),
+#     ('9'),
+#     ('10'),
+#     ('J'),
+#     ('Q'),
+#     ('K'),
+#     ('A'),
+# )
+
+# class Card(models.Model):
+
+#     suit = models.CharField(max_length=1, choices=SUIT_CHOICES)
+#     rank = models.CharField(max_length=2, choices=RANK_CHOICES)
+
+#     def __str__(self):
+#         return f'{self.get_rank_display()} of {self.get_suit_display()}'
+
+# class Deck(self, models.Model):
+#     name = models.CharField(max_length=100)
+#     cards = models.ForeignKey(Card, on_delete=models.CASCADE)
+
+#     for suit in SUIT_CHOICES:
+#         for rank in RANK_CHOICES:
+#             self.cards.add(Card.objects.create(suit=suit, rank=rank))
+
+
 
 """
 
