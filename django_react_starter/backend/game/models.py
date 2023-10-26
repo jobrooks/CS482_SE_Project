@@ -5,29 +5,30 @@ import random
 
 from django.db import models
 
-class Card(models.Model):
-    SUIT_CHOICES = (
-        ('H', 'Hearts'),
-        ('D', 'Diamonds'),
-        ('C', 'Clubs'),
-        ('S', 'Spades'),
-    )
+SUIT_CHOICES = (
+    ('H', 'Hearts'),
+    ('D', 'Diamonds'),
+    ('C', 'Clubs'),
+    ('S', 'Spades'),
+)
 
-    RANK_CHOICES = (
-        ('2', '2'),
-        ('3', '3'),
-        ('4', '4'),
-        ('5', '5'),
-        ('6', '6'),
-        ('7', '7'),
-        ('8', '8'),
-        ('9', '9'),
-        ('10', '10'),
-        ('J', 'Jack'),
-        ('Q', 'Queen'),
-        ('K', 'King'),
-        ('A', 'Ace'),
-    )
+RANK_CHOICES = (
+    ('2', '2'),
+    ('3', '3'),
+    ('4', '4'),
+    ('5', '5'),
+    ('6', '6'),
+    ('7', '7'),
+    ('8', '8'),
+    ('9', '9'),
+    ('10', '10'),
+    ('J', 'Jack'),
+    ('Q', 'Queen'),
+    ('K', 'King'),
+    ('A', 'Ace'),
+)
+
+class Card(models.Model):
 
     suit = models.CharField(max_length=1, choices=SUIT_CHOICES)
     rank = models.CharField(max_length=2, choices=RANK_CHOICES)
