@@ -28,7 +28,7 @@ class NavBar extends React.Component {
             <div className='NavBar'>
                 <div className='AppBar'>
                     <AppBar>
-                        <Toolbar>
+                        <Toolbar sx={{square: true}}>
                             <IconButton
                             size="large"
                             edge="start"
