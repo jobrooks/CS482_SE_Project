@@ -27,6 +27,12 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+]
+CORS_ALLOWED_CREDENTIALS = True
+
 
 # Application definition
 
@@ -37,9 +43,20 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "corsheaders",
+    "rest_framework",
+    "rest_framework.authtoken",
+    "user_api",
 ]
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENCATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+    )
+}
+
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -54,7 +71,7 @@ ROOT_URLCONF = "backend.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": ["C:/Users/Kobe Middleton/dev/CS482_SE_Project/django_react_starter/backend/backend/templates"],
+        "DIRS": [BASE_DIR / "backend/templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -79,6 +96,7 @@ DATABASES = {
         "NAME": BASE_DIR / "db.sqlite3",
     }
 }
+
 
 
 # Password validation
