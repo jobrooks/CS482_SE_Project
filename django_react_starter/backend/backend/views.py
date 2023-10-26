@@ -4,18 +4,10 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 import random
 
+
+
 def home(request):
     return render(request, 'home.html')
-
-@api_view(['GET'])
-def getPlayer1Hand(request):
-    test = {'name': 'Dennis', 'age': 28}
-    return Response(test)
-
-@api_view(['GET'])
-def getPlayer2Hand(request):
-    test = {'name': 'Dennis', 'age': 28}
-    return Response(test)
 
 class Deck:
     cards = []  # should be limited to 52 cards
@@ -46,9 +38,10 @@ class Player:
     money = 0
     player_hand = Hand()
 
-    def __init__(self, money : int = 1000, player_hand : Hand() = Hand()):
+    def __init__(self, player_id : id, money : int = 1000, player_hand : Hand() = Hand()):
         self.money = money
         self.player_hand = player_hand
+        self.player_id = player_id
     
     def choose(self, choice, amount : int = 10):
         if choice == "raise":
@@ -72,34 +65,50 @@ class Player:
                 raise ValueError("Must be a valid index")
 
 class Game:
-    player1 = Player()
-    player2 = Player()
     deck1 = Deck()
     pot = 0
 
-    def __init__(self, player1 : Player() = Player(), player2 : Player() = Player(), deck1 : Deck() = Deck()):
-        self.player1 = player1
-        self.player2 = player2
+    def __init__(self, game_id : int, host : Player, deck1 : Deck() = Deck()):
         self.deck1 = deck1
+        self.host = host
+        self.game_id = game_id
 
-    def play_game(player1, player2, deck1):
-        deck1.shuffle_deck()
-        for x in range(0, 5):
-            player1.player_hand.cards.append(deck1.draw_card())
-            player2.player_hand.cards.apepnd(deck1.draw_card())
-        pot += player1.choose(input("What choice would you like to make? You can raise, call, or fold."), input("What amount would you like to bet? If folding, leave empty."))
-        pot += player2.choose(input("What choice would you like to make? You can raise, call, or fold."), input("What amount would you like to bet? If folding, leave empty."))
-        player1.discard_choice(input("What cards would you like to discard? Leave empty for none, otherwise specify index separated by a space.").split(" "))
-        player2.discard_choice(input("What cards would you like to discard? Leave empty for none, otherwise specify index separated by a space.").split(" "))
-        pot += player1.choose(input("What choice would you like to make? You can raise, call, or fold."), input("What amount would you like to bet? If folding, leave empty."))
-        pot += player2.choose(input("What choice would you like to make? You can raise, call, or fold."), input("What amount would you like to bet? If folding, leave empty."))
+    # def play_game(player1, player2, deck1):
+    #     deck1.shuffle_deck()
+    #     for x in range(0, 5):
+    #         player1.player_hand.cards.append(deck1.draw_card())
+    #         player2.player_hand.cards.apepnd(deck1.draw_card())
+    #     pot += player1.choose(input("What choice would you like to make? You can raise, call, or fold."), input("What amount would you like to bet? If folding, leave empty."))
+    #     pot += player2.choose(input("What choice would you like to make? You can raise, call, or fold."), input("What amount would you like to bet? If folding, leave empty."))
+    #     player1.discard_choice(input("What cards would you like to discard? Leave empty for none, otherwise specify index separated by a space.").split(" "))
+    #     player2.discard_choice(input("What cards would you like to discard? Leave empty for none, otherwise specify index separated by a space.").split(" "))
+    #     pot += player1.choose(input("What choice would you like to make? You can raise, call, or fold."), input("What amount would you like to bet? If folding, leave empty."))
+    #     pot += player2.choose(input("What choice would you like to make? You can raise, call, or fold."), input("What amount would you like to bet? If folding, leave empty."))
 
-kobe = Player()
-deck1 = Deck()
-deck1.shuffle_deck()
-for x in range (0, 5):
-    kobe.player_hand.cards.append(deck1.draw_card())
-print(kobe.player_hand.cards)
+game_ids = 1
+games = {}
+players = {}
+
+@api_view(['GET'])
+def getPlayerHand(request, game_id, player_id):
+    
+    return Response(test)
+
+@api_view(['GET'])
+def getPlayer2Hand(request):
+    test = {'name': 'Dennis', 'age': 28}
+    return Response(test)
+
+@api_view(['POST'])
+def start_game(request):
+    print(request.read())
+    # game = Game(game_ids, player_id)
+    # game_ids = game_ids + 1
+    # games[game.game_id] = game
+    # return Response(game.game_id)
+
+
+
 
 def store(request):
     return HttpResponse("Welcome to the store!")

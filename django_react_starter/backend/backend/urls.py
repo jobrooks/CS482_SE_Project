@@ -23,5 +23,5 @@ urlpatterns = [
     path("", include('user_api.urls')),
     path("", views.home),
     path("store/", views.store),
-    path("test/", views.getData),
+    path("test/", views.start_game),
 ]
