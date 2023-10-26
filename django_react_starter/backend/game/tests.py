@@ -3,10 +3,14 @@ from game.models import Card, Deck, Hand
 
 
 class GameModelTestCase(TestCase):
+
+    # see if Card made correctly
     def test_card_creation(self):
         card = Card.objects.create(suit='H', rank='A')
         self.assertEqual(str(card), 'Ace of Hearts')
 
+    # see if card is 52 long
+    # see if it contains Ace of Hearts and 2 of Hearts
     def test_create_standard_deck(self):
         deck = Deck.objects.create(name="Test Deck")
 
@@ -17,6 +21,8 @@ class GameModelTestCase(TestCase):
         self.assertTrue(deck.cards.filter(suit='H', rank='A').exists())
         self.assertTrue(deck.cards.filter(suit='H', rank='2').exists())
     
+
+    # see if pulling from deck into hand works
     def test_pulling_from_Deck(self):
 
         deck = Deck.objects.create(name="Test Deck")
@@ -34,6 +40,34 @@ class GameModelTestCase(TestCase):
         
         #card in hand should be 2 of hearts
         self.assertEqual(str(hand.cards.first()), '2 of Hearts')
+
+    # see if code will allow you to draw more than 5
+    def test_hand_bigger_than_five(self):
+
+        deck = Deck.objects.create(name="test_deck")
+        hand = Hand.objects.create(name="test_hand")
+
+        for i in range(10):
+            hand.draw_card_from_deck(deck)
+
+        self.assertEqual(hand.cards.count(), 5)
+
+    # see if code will allow you to add duplicates to deck
+    def test_add_duplicate_card_to_deck(self):
+
+        deck = Deck.objects.create(name="test_deck")
+        hand = Hand.objects.create(name="test_hand")
+
+        # create duplicate card and add to hand
+        # no functionality for hand to get cards from anywhere other than deck, but just to test
+        extra_card = Card.objects.create(suit='H', rank='2')
+        hand.cards.add(extra_card)
+
+        hand.return_card_to_deck(deck, extra_card)
+        self.assertEqual(deck.cards.count(), 52)
+
+    
+
 
 """
 class PokerModelTestCase(TestCase):

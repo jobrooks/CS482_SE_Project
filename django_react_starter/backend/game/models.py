@@ -7,6 +7,9 @@ from django.db import models
 
 from django.db import models
 
+DECK_SIZE = 52
+MAX_HAND_SIZE = 5
+
 SUIT_CHOICES = (
         ('H', 'Hearts'),
         ('D', 'Diamonds'),
@@ -51,38 +54,48 @@ class Deck(models.Model):
                     card, created = Card.objects.get_or_create(suit=suit, rank=rank)
                     self.cards.add(card)
 
-    # method to remove card from top of Deck and add to Hand
+    # write method to shuffle deck
 
-    # method to remove card from Hand and add to end of Deck
+    # write method to check for duplicate cards
 
 class Hand(models.Model):
     name = models.CharField(max_length=100, default="Test_Hand")
-    cards = models.ManyToManyField(Card)
+    cards = models.ManyToManyField(Card, max_length=5)
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
 
     def draw_card_from_deck(self, Deck):
-        # Get the first card from the deck
-        card = Deck.cards.first()
 
-        if card:
-            # Remove the card from the deck
-            Deck.cards.remove(card)
-            # Add the card to the hand
-            self.cards.add(card)
+        # don't draw if already have 5 cards
+        if self.cards.count() < MAX_HAND_SIZE and Deck.cards.count() > 0:
+            # Get the first card from the deck
+            card = Deck.cards.first()
+
+            if card:
+                # Remove the card from the deck
+                Deck.cards.remove(card)
+                # Add the card to the hand
+                self.cards.add(card)
 
     def return_card_to_deck(self, Deck, card):
-        # Remove the card from the hand
-        self.cards.remove(card)
-        # Add the card to the end of the deck
-        Deck.cards.add(card)
+
+        #make sure there are cards in hand to return
+        if self.cards.count() > 0 and Deck.cards.count() < DECK_SIZE:
+            # Remove the card from the hand
+            self.cards.remove(card)
+            # Add the card to the end of the deck
+            Deck.cards.add(card)
 
     def __str__(self):
         return self.name
     
+class Player(models.Model):
+    name = models.CharField(max_length=50, default="player")
 
 
+
+"""
 # SUIT_CHOICES = (
 #     ('H'),
 #     ('D'),
@@ -123,9 +136,6 @@ class Hand(models.Model):
 #             self.cards.add(Card.objects.create(suit=suit, rank=rank))
 
 
-
-"""
-
 class Player(models.Model):
     name = models.CharField(max_length=100)
     hand = models.ManyToManyField(Card, related_name='hands')
@@ -155,9 +165,8 @@ class PokerGame(models.Model):
     name = models.CharField(max_length=100)
     games = models.ManyToManyField(Game, related_name='poker_games')
 
-"""
 
-"""
+
 class Deck:
     cards = []  # should be limited to 52 cards
     
