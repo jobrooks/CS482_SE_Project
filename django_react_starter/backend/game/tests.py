@@ -66,9 +66,75 @@ class GameModelTestCase(TestCase):
         hand.return_card_to_deck(deck, extra_card)
         self.assertEqual(deck.cards.count(), 52)
 
-    
+    #if i pull 5 times from the top of the ordered deck, it should be hearts 2-6 in my hand
+    def test_pulling_from_top(self):
+        deck = Deck.objects.create(name="test_deck")
+        hand = Hand.objects.create(name="test_hand")
+
+        for i in range(6):
+            hand.draw_card_from_deck(deck)
+
+        self.assertEqual(str(hand.cards.all()[0]), '2 of Hearts')
+        self.assertEqual(str(hand.cards.all()[1]), '3 of Hearts')
+        self.assertEqual(str(hand.cards.all()[2]), '4 of Hearts')
+        self.assertEqual(str(hand.cards.all()[3]), '5 of Hearts')
+        self.assertEqual(str(hand.cards.all()[4]), '6 of Hearts')
+
+    # test adding back to deck
+    def test_add_to_deck(self):
+        deck = Deck.objects.create(name="test_deck")
+        hand = Hand.objects.create(name="test_hand")
+
+        hand.draw_card_from_deck(deck)
+
+        #check if card drawn is 2 of hearts
+        self.assertEqual(str(hand.cards.all()[0]), '2 of Hearts')
+        self.assertEqual(deck.cards.count(), 51)
+        # put it back in the deck
+        hand.return_card_to_deck(deck, hand.cards.first())
+
+        #see if it made it
+        self.assertTrue(deck.cards.filter(suit='2', rank='H').exists())
 
 
+"""
+    # pull 5, adding to the end of the deck, the top should now be 7 of hearts
+    # the last 5 should be 2-6 of hearts
+    def test_adding_to_bottom(self):
+        deck = Deck.objects.create(name="test_deck")
+        hand = Hand.objects.create(name="test_hand")
+
+        # pull 5 cards
+        for i in range(5):
+            hand.draw_card_from_deck(deck)
+
+        self.assertEqual(hand.cards.count(), 5)
+        # make sure deck is less now
+        self.assertEqual(deck.cards.count(), 47)
+
+        # check if i got the right cards
+        self.assertEqual(str(hand.cards.all()[0]), '2 of Hearts')
+        self.assertEqual(str(hand.cards.all()[1]), '3 of Hearts')
+        self.assertEqual(str(hand.cards.all()[2]), '4 of Hearts')
+        self.assertEqual(str(hand.cards.all()[3]), '5 of Hearts')
+        self.assertEqual(str(hand.cards.all()[4]), '6 of Hearts')
+
+        # put cards back in deck
+        for i in range(4):
+            hand.return_card_to_deck(deck, hand.cards.first())
+
+        # check if card made it to deck
+        self.assertTrue(deck.cards.filter(suit='2', rank='H').exists())
+
+        #verify the last 5 in deck
+        self.assertEqual(str(deck.cards.all()[deck.cards.count()-1]), '6 of Hearts')
+        self.assertEqual(str(deck.cards.all()[deck.cards.count()-2]), '5 of Hearts')
+        self.assertEqual(str(deck.cards.all()[deck.cards.count()-3]), '4 of Hearts')
+        self.assertEqual(str(deck.cards.all()[deck.cards.count()-4]), '3 of Hearts')
+        self.assertEqual(str(deck.cards.all()[deck.cards.count()-5]), '2 of Hearts')
+        
+"""
+        
 """
 class PokerModelTestCase(TestCase):
     def test_create_card(self):

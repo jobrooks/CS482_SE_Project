@@ -86,6 +86,7 @@ class Hand(models.Model):
             self.cards.remove(card)
             # Add the card to the end of the deck
             Deck.cards.add(card)
+            Deck.save()
 
     def __str__(self):
         return self.name
