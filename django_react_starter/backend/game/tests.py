@@ -1,5 +1,5 @@
 from django.test import TestCase
-from .models import Card, Deck, Hand
+from game.models import Card, Deck, Hand
 
 
 class GameModelTestCase(TestCase):
@@ -22,11 +22,18 @@ class GameModelTestCase(TestCase):
         deck = Deck.objects.create(name="Test Deck")
         hand = Hand.objects.create(name="test hand")
 
+        self.assertEqual(deck.cards.count(), 52)
+        self.assertEqual(hand.cards.count(), 0)
+
         # draw first card from Deck and put in hand
         hand.draw_card_from_deck(deck)
 
         #check if length reduces
         self.assertEqual(deck.cards.count(), 51)
+        self.assertEqual(hand.cards.count(), 1)
+        
+        #card in hand should be 2 of hearts
+        self.assertEqual(str(hand.cards.first()), '2 of Hearts')
 
 """
 class PokerModelTestCase(TestCase):
