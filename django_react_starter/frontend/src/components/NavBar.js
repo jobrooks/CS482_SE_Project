@@ -17,14 +17,9 @@ class NavBar extends React.Component {
         drawerOpen: false
     };
 
-    // constructor(props) {
-    //     super(props);
-
-    // }
-
     toggleDrawer = () => {
         this.setState({ drawerOpen: !this.state.drawerOpen});
-        console.log("Toggling");
+        console.log("Toggling Drawer");
     }
 
     render() {
