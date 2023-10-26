@@ -23,6 +23,7 @@ urlpatterns = [
     path("", include('user_api.urls')),
     path("", include('user_profile.urls')),
     path("", views.home),
-    path("store/", views.store)
+    path("store/", views.store),
+    path("", include('user_login.urls')),
 
 ]
