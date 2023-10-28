@@ -19,15 +19,15 @@ function App() {
         main: "#548114",
       },
       background: {
-        default: "#e0e0e0",
-        paper: "#e0e0e0",
+        default: "#e8e8f3",//"#e0e0e0",
+        paper: "#e8e8f3",//#e0e0e0",
       },
     },
     components: {
       MuiCard: {
         styleOverrides: { // Must override default style
           root: {
-            borderRadius: '35px',
+            borderRadius: '20px',
           },
         },
       },
