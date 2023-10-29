@@ -94,7 +94,9 @@ class GameModelTestCase(TestCase):
         hand.return_card_to_deck(deck, hand.cards.first())
 
         #see if it made it
-        self.assertTrue(deck.cards.filter(suit='2', rank='H').exists())
+        #self.assertTrue(deck.cards.filter(suit='2', rank='H').exists())
+        #self.assertEqual(deck.cards.count(), 52)
+        self.assertEqual(str(deck.cards.all()[deck.cards.count()-1]), '2 of Hearts')
 
 
 """
