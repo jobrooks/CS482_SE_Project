@@ -47,9 +47,11 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework.authtoken",
     "coverage",
+    "guest_user",
     "user_login",
     "user_profile",
     "user_api",
+    "game",
 ]
 
 REST_FRAMEWORK = {
@@ -57,6 +59,12 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
     )
 }
+
+AUTHENTICATION_BACKENDS = [
+   "django.contrib.auth.backends.ModelBackend",
+   # it should be the last entry to prevent unauthorized access
+   "guest_user.backends.GuestBackend",
+]
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
@@ -97,6 +105,10 @@ DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",
+    },
+    "test": {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'test_db.sqlite3',
     }
 }
 
