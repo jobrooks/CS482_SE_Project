@@ -2,27 +2,27 @@ import React from 'react';
 import { Dialog, Avatar, Button, DialogActions, DialogContent, DialogTitle, Box } from '@mui/material';
 import { red, orange, yellow, green, blue, purple } from '@mui/material/colors';
 
-class ColorPicker extends React.Component {
+class AvatarColorPicker extends React.Component {
 
     constructor(props) {
         super(props);
         this.handleClose = this.handleClose.bind(this);
         this.handleSave = this.handleSave.bind(this);
         this.state = {
-            open: this.props.colorPickerOpen,
+            open: this.props.avatarColorPickerOpen,
         };
     }
 
     handleClose() {
-        this.props.toggleColorPickerFunction();
+        this.props.toggleColorPicker();
     }
     
     handleSave() {
-        this.props.toggleColorPickerFunction();
+        this.props.toggleColorPicker();
     }
 
     handleColorChange(color) {
-        this.props.changeColorFunction(color);
+        this.props.changeColor(color);
         console.log(color);
     }
 
@@ -69,4 +69,4 @@ class ColorPicker extends React.Component {
     };
 };
 
-export default ColorPicker;
+export default AvatarColorPicker;
