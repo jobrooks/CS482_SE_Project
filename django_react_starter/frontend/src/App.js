@@ -31,27 +31,40 @@ function App() {
           },
         },
       },
+      MuiList: {
+        styleOverrides: {
+          root: {
+            borderRadius: '20px',
+          },
+        },
+      },
     },
     spacing: 8, // Global spacing multiplier
     padding: 4,
     shadows: [
       'none', // elevation 0
-      '0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12)', // elevation 1
-      "11px 11px 22px #a4a4a4, -11px -11px 22px #ffffff"
-      // ... define more elevations as needed
-      // You can define up to 25 elevations (0-24)
+      // elevation 1 (Low Elevation mui)
+      '0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12)',
+      // elevation 2 (Low neumorphic)
+      "6px 6px 10px #bdbdbd, -6px -6px 10px #ffffff",//11px 11px 20px #bdbdbd, -11px -11px 20px #ffffff
+      // elevation 3 (High neumorphic)
+      "11px 11px 20px #bdbdbd, -11px -11px 20px #ffffff",
+      // elevation 4 (Shallow Inset neumorphic)
+      "inset 5px 5px 22px #bdbdbd, inset -5px -5px 22px #ffffff",
+      // elevation 5 (Deep Inset neumorphic)
+      "inset 11px 11px 22px #bdbdbd, inset -11px -11px 22px #ffffff",
     ],
   });
 
   return (
     <div className="App">
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
+        {/* <ThemeProvider theme={theme}>
+          <CssBaseline /> */}
           <Routes>
             <Route path='/' element={<HomePage />} />
             <Route path="/account" element={<AccountSettings />} />
           </Routes>
-        </ThemeProvider>
+        {/* </ThemeProvider> */}
     </div>
   );
 }

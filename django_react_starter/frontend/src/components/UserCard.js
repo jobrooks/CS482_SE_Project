@@ -2,7 +2,7 @@ import React from "react";
 import { Avatar, Box, Card, CardActionArea, CardContent, Divider, Grid, List, ListItem, Typography } from "@mui/material";
 import { red, orange, yellow, green, blue, purple } from '@mui/material/colors';
 import { Button } from "@mui/base";
-import ColorPicker from "./ColorPicker"
+import AvatarColorPicker from "./AvatarColorPicker"
 
 var globalAvatarColor = red[500]
 
@@ -10,16 +10,16 @@ class UserCard extends React.Component {
 
     constructor(props) {
         super(props)
-        this.toggleColorPicker = this.toggleColorPicker.bind(this);
+        this.toggleAvatarColorPicker = this.toggleAvatarColorPicker.bind(this);
         this.changeColor = this.changeColor.bind(this);
         this.state = {
-            colorPickerOpen: false,
+            avatarColorPickerOpen: false,
             avatarColor: globalAvatarColor,
         }
     }
 
-    toggleColorPicker() {
-        this.setState({ colorPickerOpen: !this.state.colorPickerOpen });
+    toggleAvatarColorPicker() {
+        this.setState({ avatarColorPickerOpen: !this.state.avatarColorPickerOpen });
     }
 
     changeColor(color) {
@@ -31,18 +31,18 @@ class UserCard extends React.Component {
     render() {
         return (
             <div className="UserCard">
-                <div className="ColorPicker">
-                    <ColorPicker
-                        colorPickerOpen={this.state.colorPickerOpen}
-                        toggleColorPickerFunction={() => this.toggleColorPicker()}
-                        changeColorFunction={(color) => this.changeColor(color)}
+                <div className="AvatarColorPicker">
+                    <AvatarColorPicker
+                        colorPickerOpen={this.state.avatarColorPickerOpen}
+                        toggleColorPicker={() => this.toggleAvatarColorPicker()}
+                        changeColor={(color) => this.changeColor(color)}
                     />
                 </div>
-                <Card elevation={2}
+                <Card elevation={3}
                     sx={{
                         width: 430,
-                        height: 220,
-                        m: 12
+                        height: "auto",
+                        m: 2
                     }}
 
                 >
@@ -53,6 +53,7 @@ class UserCard extends React.Component {
                         display="flex"
                         justifyContent="space-around"
                         alignItems="center"
+                        spacing={2}
                         sx={{
                             height: "inherit"
                         }}
@@ -81,44 +82,57 @@ class UserCard extends React.Component {
                         >
                             <List
                                 sx={{
-                                    width: '100%',
-                                    maxWidth: 360, 
+                                    // boxShadow: 4,
+                                    width: "100%",
+                                    height: "auto",
                                     bgcolor: 'background.paper'
                                 }}
                                 aria-label="mailbox folders"
                             >
                                 <ListItem divider alignItems="center">
-                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-                                        <Typography color="textSecondary" noWrap={false} textAlign="left">
-                                            Username
-                                        </Typography>
-                                        <Typography color="textPrimary" noWrap={false} textAlign="left">
-                                            Guest Account
-                                        </Typography>
-                                    </Box>
+                                    <Grid container spacing={0}>
+                                        <Grid item xs={12}>
+                                            <Typography variant="caption" noWrap={false} textAlign="left">
+                                                Username
+                                            </Typography>
+                                        </Grid>
+                                        <Grid item xs={12}>
+                                            <Typography variant="h6" noWrap={false} textAlign="left">
+                                                Guest Account
+                                            </Typography>
+                                        </Grid>
+                                    </Grid>
                                 </ListItem>
                                 <ListItem divider alignItems="center">
-                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-                                        <Typography color="textSecondary" noWrap={false} textAlign="left">
-                                            Balance
-                                        </Typography>
-                                        <Typography color="textPrimary" noWrap={false} textAlign="left">
-                                            $500
-                                        </Typography>
-                                    </Box>
+                                    <Grid container spacing={0}>
+                                        <Grid item xs={12}>
+                                            <Typography variant="caption" noWrap={false} textAlign="left">
+                                                Balance
+                                            </Typography>
+                                        </Grid>
+                                        <Grid item xs={12}>
+                                            <Typography variant="h6" noWrap={false} textAlign="left">
+                                                $500
+                                            </Typography>
+                                        </Grid>
+                                    </Grid>
                                 </ListItem>
                                 <ListItem divider alignItems="center">
-                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-                                        <Typography color="textSecondary" noWrap={false} textAlign="left">
-                                            Wins
-                                        </Typography>
-                                        <Typography color="textPrimary" noWrap={false} textAlign="left">
-                                            56
-                                        </Typography>
-                                    </Box>
+                                    <Grid container spacing={0}>
+                                        <Grid item xs={12}>
+                                            <Typography variant="caption" noWrap={false} textAlign="left">
+                                                Wins
+                                            </Typography>
+                                        </Grid>
+                                        <Grid item xs={12}>
+                                            <Typography variant="h6" noWrap={false} textAlign="left">
+                                                56
+                                            </Typography>
+                                        </Grid>
+                                    </Grid>
                                 </ListItem>
                                 <CardActionArea>
-                                    <ListItem button onClick={this.toggleColorPicker}>
+                                    <ListItem button onClick={this.toggleAvatarColorPicker}>
                                         <Typography color="textSecondary" noWrap={false} textAlign="left">
                                             Customize Avatar
                                         </Typography>
