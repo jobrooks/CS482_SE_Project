@@ -5,7 +5,7 @@ import { Button } from "@mui/base";
 import ColorPicker from "./AvatarColorPicker";
 import TableThemePicker from "./TableThemePicker";
 
-var globalTableTheme = "Blue"
+var globalTableTheme = "blue"
 
 class TableCard extends React.Component {
 
@@ -16,6 +16,7 @@ class TableCard extends React.Component {
         this.state = {
             themePickerOpen: false,
             tableTheme: globalTableTheme,
+            tableImage: "/images/Table Blue.png",
         }
     }
 
@@ -24,9 +25,15 @@ class TableCard extends React.Component {
     }
 
     changeTheme(theme) {
-        this.setState({ tableTheme: theme});
+        var themeImage = "";
         globalTableTheme = theme;
         console.log(globalTableTheme);
+        if (theme === "blue") {
+            themeImage = "/images/Table Blue.png";
+        } else if (theme === "green") {
+            themeImage = "/images/Table Green.png";
+        }
+        this.setState({ tableTheme: theme, tableImage: themeImage });
     }
 
     render() {
@@ -65,7 +72,7 @@ class TableCard extends React.Component {
                         >
                             <Box
                                 component="img"
-                                src="/images/Table Blue.png"
+                                src={this.state.tableImage}
                                 sx={{
                                     width: "100%",
                                     height: "auto",
