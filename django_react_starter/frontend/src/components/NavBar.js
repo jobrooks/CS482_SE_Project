@@ -27,15 +27,21 @@ class NavBar extends React.Component {
         return (
             <div className='NavBar'>
                 <div className='AppBar'>
-                    <AppBar>
+                    <AppBar
+                        elevation={0}
+                        sx={{
+                            mb: 2,
+                            position: "sticky"
+                        }}
+                    >
                         <Toolbar sx={{square: true}}>
                             <IconButton
-                            size="large"
-                            edge="start"
-                            color="inherit"
-                            aria-label="menu"
-                            sx={{ mr: 2 }}
-                            onClick={this.toggleDrawer}
+                                size="large"
+                                edge="start"
+                                color="inherit"
+                                aria-label="menu"
+                                sx={{ mr: 2 }}
+                                onClick={this.toggleDrawer}
                             >
                                 <MenuIcon />
                             </IconButton>
@@ -51,12 +57,22 @@ class NavBar extends React.Component {
                         open={this.state.drawerOpen}
                         ModalProps={{
                             keepMounted: true, // Better open performance on mobile.
-                            onBackdropClick: this.toggleDrawer
+                            onBackdropClick: this.toggleDrawer,
+                        }}
+                        PaperProps={{
+                            width: "50px"
                         }}
                     >
                         <MenuItem
+                        
                         >
                             Play
+                        </MenuItem>
+                        <MenuItem
+                            component={"a"}
+                            href={"/"}
+                        >
+                            Home
                         </MenuItem>
                         <MenuItem
                             // This is how you put a link in a menuitem
