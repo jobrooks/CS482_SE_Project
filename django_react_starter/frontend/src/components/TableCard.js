@@ -2,40 +2,41 @@ import React from "react";
 import { Avatar, Box, Card, CardActionArea, CardContent, Divider, Grid, List, ListItem, Typography } from "@mui/material";
 import { red, orange, yellow, green, blue, purple } from '@mui/material/colors';
 import { Button } from "@mui/base";
-import ColorPicker from "./ColorPicker";
+import ColorPicker from "./AvatarColorPicker";
+import TableThemePicker from "./TableThemePicker";
 
-var globalAvatarColor = red[500]
+var globalTableTheme = "Blue"
 
 class TableCard extends React.Component {
 
     constructor(props) {
         super(props)
-        this.toggleColorPicker = this.toggleColorPicker.bind(this);
-        this.changeColor = this.changeColor.bind(this);
+        this.toggleTableThemePicker = this.toggleTableThemePicker.bind(this);
+        this.changeTheme = this.changeTheme.bind(this);
         this.state = {
-            colorPickerOpen: false,
-            avatarColor: globalAvatarColor,
+            themePickerOpen: false,
+            tableTheme: globalTableTheme,
         }
     }
 
-    toggleColorPicker() {
-        this.setState({ colorPickerOpen: !this.state.colorPickerOpen });
+    toggleTableThemePicker() {
+        this.setState({ themePickerOpen: !this.state.themePickerOpen });
     }
 
-    changeColor(color) {
-        this.setState({ avatarColor: color});
-        globalAvatarColor = color;
-        console.log(globalAvatarColor);
+    changeTheme(theme) {
+        this.setState({ tableTheme: theme});
+        globalTableTheme = theme;
+        console.log(globalTableTheme);
     }
 
     render() {
         return (
             <div className="TableCard">
-                <div className="ColorPicker">
-                    <ColorPicker
-                        colorPickerOpen={this.state.colorPickerOpen}
-                        toggleColorPickerFunction={() => this.toggleColorPicker()}
-                        changeColorFunction={(color) => this.changeColor(color)}
+                <div className="TableThemePicker">
+                    <TableThemePicker
+                        themePickerOpen={this.state.themePickerOpen}
+                        toggleThemePicker={() => this.toggleTableThemePicker()}
+                        changeTheme={(theme) => this.changeTheme(theme)}
                     />
                 </div>
                 <Card elevation={3}
@@ -66,7 +67,6 @@ class TableCard extends React.Component {
                                 component="img"
                                 src="/images/Table Blue.png"
                                 sx={{
-                                    bgcolor: globalAvatarColor,
                                     width: "100%",
                                     height: "auto",
                                 }}
@@ -105,7 +105,7 @@ class TableCard extends React.Component {
                                     </Grid>
                                 </ListItem>
                                 <CardActionArea>
-                                    <ListItem button onClick={this.toggleColorPicker}>
+                                    <ListItem button onClick={this.toggleTableThemePicker}>
                                         <Typography color="textSecondary" noWrap={false} textAlign="left">
                                             Change Table Theme
                                         </Typography>
