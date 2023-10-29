@@ -7,7 +7,8 @@ import {
     Typography,
     Drawer,
     ClickAwayListener,
-    MenuItem
+    MenuItem,
+    Link
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 
@@ -24,24 +25,27 @@ class NavBar extends React.Component {
 
     render() {
         return (
-            <>
-                <AppBar>
-                    <Toolbar>
-                        <IconButton
-                        size="large"
-                        edge="start"
-                        color="inherit"
-                        aria-label="menu"
-                        sx={{ mr: 2 }}
-                        onClick={this.toggleDrawer}
-                        >
-                            <MenuIcon />
-                        </IconButton>
-                        <Typography variant="h6">
-                            Five Card Draw
-                        </Typography>
-                    </Toolbar>
-                </AppBar>
+            <div className='NavBar'>
+                <div className='AppBar'>
+                    <AppBar>
+                        <Toolbar sx={{square: true}}>
+                            <IconButton
+                            size="large"
+                            edge="start"
+                            color="inherit"
+                            aria-label="menu"
+                            sx={{ mr: 2 }}
+                            onClick={this.toggleDrawer}
+                            >
+                                <MenuIcon />
+                            </IconButton>
+                            <Typography variant="h6">
+                                Five Card Draw
+                            </Typography>
+                        </Toolbar>
+                    </AppBar>
+                </div>
+                <div className='Drawer'>
                     <Drawer
                         variant='temporary'
                         open={this.state.drawerOpen}
@@ -50,10 +54,20 @@ class NavBar extends React.Component {
                             onBackdropClick: this.toggleDrawer
                         }}
                     >
-                        <Button>Help lol</Button>
-                        <MenuItem>drawer item 1</MenuItem>
+                        <MenuItem
+                        >
+                            Play
+                        </MenuItem>
+                        <MenuItem
+                            // This is how you put a link in a menuitem
+                            component={"a"}
+                            href={"/account"}
+                        >
+                            Account
+                        </MenuItem>
                     </Drawer>
-            </>
+                </div>
+            </div>
         )
     }
 }

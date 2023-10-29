@@ -46,6 +46,10 @@ INSTALLED_APPS = [
     "corsheaders",
     "rest_framework",
     "rest_framework.authtoken",
+    "coverage",
+    "guest_user",
+    "user_login",
+    "user_profile",
     "user_api",
     "game",
 ]
@@ -55,6 +59,12 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
     )
 }
+
+AUTHENTICATION_BACKENDS = [
+   "django.contrib.auth.backends.ModelBackend",
+   # it should be the last entry to prevent unauthorized access
+   "guest_user.backends.GuestBackend",
+]
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
