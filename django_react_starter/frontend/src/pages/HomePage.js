@@ -1,6 +1,8 @@
 import React from "react";
 import NavBar from "../components/NavBar";
 import UserCard from "../components/UserCard";
+import TableCard from "../components/TableCard";
+import { Grid } from "@mui/material";
 
 class HomePage extends React.Component {
 
@@ -8,7 +10,20 @@ class HomePage extends React.Component {
         return (
             <div className="HomePage">
                 <NavBar />
-                <UserCard />
+                <Grid container spacing={0}>
+                    <Grid item xs={6}>
+                        <UserCard />
+                    </Grid>
+                    <Grid item xs={6}>
+
+                    </Grid>
+                    <Grid item xs={6}>
+                        <TableCard />
+                    </Grid>
+                    <Grid item xs={6}>
+                        
+                    </Grid>
+                </Grid>
             </div>
         )
     }
