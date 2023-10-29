@@ -38,11 +38,11 @@ class UserCard extends React.Component {
                         changeColorFunction={(color) => this.changeColor(color)}
                     />
                 </div>
-                <Card elevation={2}
+                <Card elevation={3}
                     sx={{
                         width: 430,
-                        height: 220,
-                        m: 12
+                        height: "auto",
+                        m: 2
                     }}
 
                 >
@@ -53,6 +53,7 @@ class UserCard extends React.Component {
                         display="flex"
                         justifyContent="space-around"
                         alignItems="center"
+                        spacing={2}
                         sx={{
                             height: "inherit"
                         }}
@@ -81,41 +82,54 @@ class UserCard extends React.Component {
                         >
                             <List
                                 sx={{
-                                    width: '100%',
-                                    maxWidth: 360, 
+                                    // boxShadow: 4,
+                                    width: "100%",
+                                    height: "auto",
                                     bgcolor: 'background.paper'
                                 }}
                                 aria-label="mailbox folders"
                             >
                                 <ListItem divider alignItems="center">
-                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-                                        <Typography color="textSecondary" noWrap={false} textAlign="left">
-                                            Username
-                                        </Typography>
-                                        <Typography color="textPrimary" noWrap={false} textAlign="left">
-                                            Guest Account
-                                        </Typography>
-                                    </Box>
+                                    <Grid container spacing={0}>
+                                        <Grid item xs={12}>
+                                            <Typography variant="caption" noWrap={false} textAlign="left">
+                                                Username
+                                            </Typography>
+                                        </Grid>
+                                        <Grid item xs={12}>
+                                            <Typography variant="h6" noWrap={false} textAlign="left">
+                                                Guest Account
+                                            </Typography>
+                                        </Grid>
+                                    </Grid>
                                 </ListItem>
                                 <ListItem divider alignItems="center">
-                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-                                        <Typography color="textSecondary" noWrap={false} textAlign="left">
-                                            Balance
-                                        </Typography>
-                                        <Typography color="textPrimary" noWrap={false} textAlign="left">
-                                            $500
-                                        </Typography>
-                                    </Box>
+                                    <Grid container spacing={0}>
+                                        <Grid item xs={12}>
+                                            <Typography variant="caption" noWrap={false} textAlign="left">
+                                                Balance
+                                            </Typography>
+                                        </Grid>
+                                        <Grid item xs={12}>
+                                            <Typography variant="h6" noWrap={false} textAlign="left">
+                                                $500
+                                            </Typography>
+                                        </Grid>
+                                    </Grid>
                                 </ListItem>
                                 <ListItem divider alignItems="center">
-                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-                                        <Typography color="textSecondary" noWrap={false} textAlign="left">
-                                            Wins
-                                        </Typography>
-                                        <Typography color="textPrimary" noWrap={false} textAlign="left">
-                                            56
-                                        </Typography>
-                                    </Box>
+                                    <Grid container spacing={0}>
+                                        <Grid item xs={12}>
+                                            <Typography variant="caption" noWrap={false} textAlign="left">
+                                                Wins
+                                            </Typography>
+                                        </Grid>
+                                        <Grid item xs={12}>
+                                            <Typography variant="h6" noWrap={false} textAlign="left">
+                                                56
+                                            </Typography>
+                                        </Grid>
+                                    </Grid>
                                 </ListItem>
                                 <CardActionArea>
                                     <ListItem button onClick={this.toggleColorPicker}>
