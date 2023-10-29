@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, DialogTitle } from "@mui/material";
+import { Dialog, DialogContent, DialogTitle, Grid, Box, Button } from "@mui/material";
 import React from "react";
 
 class TableThemePicker extends React.Component {
@@ -22,7 +22,6 @@ class TableThemePicker extends React.Component {
 
     handleThemeChange(theme) {
         this.props.changeTheme(theme);
-        console.log(theme);
     }
 
     render() {
@@ -30,7 +29,36 @@ class TableThemePicker extends React.Component {
             <Dialog open={this.props.themePickerOpen} onClose={this.handleClose}>
                 <DialogTitle>Change Table Theme</DialogTitle>
                 <DialogContent>
-                    
+                    <Grid container spacing={2}>
+                        <Grid item xs={6}>
+                            <Button
+                                onClick={() => {this.handleThemeChange("blue")}}
+                            >
+                                <Box
+                                    component="img"
+                                    src="/images/Table Blue.png"
+                                    sx={{
+                                        width: "100%",
+                                        height: "auto",
+                                    }}
+                                />
+                            </Button>
+                        </Grid>
+                        <Grid item xs={6}>
+                            <Button
+                                onClick={() => {this.handleThemeChange("green")}}
+                            >
+                                <Box
+                                    component="img"
+                                    src="/images/Table Green.png"
+                                    sx={{
+                                        width: "100%",
+                                        height: "auto",
+                                    }}
+                                />
+                            </Button>
+                        </Grid>
+                    </Grid>
                 </DialogContent>
             </Dialog>
         )
