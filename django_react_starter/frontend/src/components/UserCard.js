@@ -2,7 +2,7 @@ import React from "react";
 import { Avatar, Box, Card, CardActionArea, CardContent, Divider, Grid, List, ListItem, Typography } from "@mui/material";
 import { red, orange, yellow, green, blue, purple } from '@mui/material/colors';
 import { Button } from "@mui/base";
-import ColorPicker from "./ColorPicker"
+import AvatarColorPicker from "./AvatarColorPicker"
 
 var globalAvatarColor = red[500]
 
@@ -10,16 +10,16 @@ class UserCard extends React.Component {
 
     constructor(props) {
         super(props)
-        this.toggleColorPicker = this.toggleColorPicker.bind(this);
+        this.toggleAvatarColorPicker = this.toggleAvatarColorPicker.bind(this);
         this.changeColor = this.changeColor.bind(this);
         this.state = {
-            colorPickerOpen: false,
+            avatarColorPickerOpen: false,
             avatarColor: globalAvatarColor,
         }
     }
 
-    toggleColorPicker() {
-        this.setState({ colorPickerOpen: !this.state.colorPickerOpen });
+    toggleAvatarColorPicker() {
+        this.setState({ avatarColorPickerOpen: !this.state.avatarColorPickerOpen });
     }
 
     changeColor(color) {
@@ -31,11 +31,11 @@ class UserCard extends React.Component {
     render() {
         return (
             <div className="UserCard">
-                <div className="ColorPicker">
-                    <ColorPicker
-                        colorPickerOpen={this.state.colorPickerOpen}
-                        toggleColorPickerFunction={() => this.toggleColorPicker()}
-                        changeColorFunction={(color) => this.changeColor(color)}
+                <div className="AvatarColorPicker">
+                    <AvatarColorPicker
+                        colorPickerOpen={this.state.avatarColorPickerOpen}
+                        toggleColorPicker={() => this.toggleAvatarColorPicker()}
+                        changeColor={(color) => this.changeColor(color)}
                     />
                 </div>
                 <Card elevation={3}
@@ -132,7 +132,7 @@ class UserCard extends React.Component {
                                     </Grid>
                                 </ListItem>
                                 <CardActionArea>
-                                    <ListItem button onClick={this.toggleColorPicker}>
+                                    <ListItem button onClick={this.toggleAvatarColorPicker}>
                                         <Typography color="textSecondary" noWrap={false} textAlign="left">
                                             Customize Avatar
                                         </Typography>
