@@ -26,5 +26,5 @@ urlpatterns = [
     path("store/", views.store, name="store"),
     path("user_login", include('user_login.urls')),
     path("convert/", include("guest_user.urls")),
-
+    path("", include('game.urls'))
 ]
