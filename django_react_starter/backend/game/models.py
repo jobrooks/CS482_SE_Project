@@ -3,10 +3,6 @@ import random
 
 # Create your models here.
 
-from django.db import models
-
-from django.db import models
-
 DECK_SIZE = 52
 MAX_HAND_SIZE = 5
 
@@ -33,66 +29,91 @@ RANK_CHOICES = (
     ('A', 'Ace'),
 )
 
-class Card(models.Model):
-    
-    suit = models.CharField(max_length=1, choices=SUIT_CHOICES)
-    rank = models.CharField(max_length=2, choices=RANK_CHOICES)
 
-    def __str__(self):
-        return f'{self.get_rank_display()} of {self.get_suit_display()}'
+# class Deck(models.Model):
+#     name = models.CharField(max_length=100, default="Test_Deck")
+#     cards = models.ManyToManyField(Card)
+
+#     def save(self, *args, **kwargs):
+#         super().save(*args, **kwargs)
+
+#         if not self.cards.exists():
+#             for suit, _ in SUIT_CHOICES:
+#                 for rank, _ in RANK_CHOICES:
+#                     card, created = Card.objects.get_or_create(suit=suit, rank=rank)
+#                     self.cards.add(card)
+
+#     # write method to shuffle deck
+
+#     # write method to check for duplicate cards
+
+# class Hand(models.Model):
+#     name = models.CharField(max_length=100, default="Test_Hand")
+#     cards = models.ManyToManyField(Card, max_length=5)
+
+#     def save(self, *args, **kwargs):
+#         super().save(*args, **kwargs)
+
+#     def draw_card_from_deck(self, Deck):
+
+#         # don't draw if already have 5 cards
+#         if self.cards.count() < MAX_HAND_SIZE and Deck.cards.count() > 0:
+#             # Get the first card from the deck
+#             card = Deck.cards.first()
+
+#             if card:
+#                 # Remove the card from the deck
+#                 Deck.cards.remove(card)
+#                 # Add the card to the hand
+#                 self.cards.add(card)
+
+#     def return_card_to_deck(self, Deck, card):
+
+#         #make sure there are cards in hand to return
+#         if self.cards.count() > 0 and Deck.cards.count() < DECK_SIZE:
+#             # Remove the card from the hand
+#             self.cards.remove(card)
+#             # Add the card to the end of the deck
+#             Deck.cards.add(card)
+#             Deck.save()
+
+#     def __str__(self):
+#         return self.name
+    
+# class Player(models.Model):
+#     name = models.CharField(max_length=50, default="player")
 
 class Deck(models.Model):
-    name = models.CharField(max_length=100, default="Test_Deck")
-    cards = models.ManyToManyField(Card)
-
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-
-        if not self.cards.exists():
-            for suit, _ in SUIT_CHOICES:
-                for rank, _ in RANK_CHOICES:
-                    card, created = Card.objects.get_or_create(suit=suit, rank=rank)
-                    self.cards.add(card)
-
-    # write method to shuffle deck
-
-    # write method to check for duplicate cards
+    name = models.CharField(max_length=10)
 
 class Hand(models.Model):
-    name = models.CharField(max_length=100, default="Test_Hand")
-    cards = models.ManyToManyField(Card, max_length=5)
+    name = models.CharField(max_length=10)
 
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
+class Card(models.Model):
+    suit = models.CharField(max_length=1, choices=SUIT_CHOICES)
+    rank = models.CharField(max_length=2, choices=RANK_CHOICES)
+    deck = models.ForeignKey(Deck(), null=True, on_delete=models.CASCADE)
+    hand = models.ForeignKey(Hand(), null=True, on_delete=models.CASCADE)
 
-    def draw_card_from_deck(self, Deck):
 
-        # don't draw if already have 5 cards
-        if self.cards.count() < MAX_HAND_SIZE and Deck.cards.count() > 0:
-            # Get the first card from the deck
-            card = Deck.cards.first()
+    # def __str__(self):
+    #     return f'{self.get_rank_display()} of {self.get_suit_display()}'
 
-            if card:
-                # Remove the card from the deck
-                Deck.cards.remove(card)
-                # Add the card to the hand
-                self.cards.add(card)
+def create_deck():
+    deck = Deck()
+    deck.save()
+    for x in SUIT_CHOICES:
+        for y in RANK_CHOICES:
+            card = Card(suit=x, rank=y, deck=deck)
+            card.save()
 
-    def return_card_to_deck(self, Deck, card):
-
-        #make sure there are cards in hand to return
-        if self.cards.count() > 0 and Deck.cards.count() < DECK_SIZE:
-            # Remove the card from the hand
-            self.cards.remove(card)
-            # Add the card to the end of the deck
-            Deck.cards.add(card)
-            Deck.save()
-
-    def __str__(self):
-        return self.name
-    
-class Player(models.Model):
-    name = models.CharField(max_length=50, default="player")
+def draw_card(deck: int, name: str):
+    deck_cards = list(Card.objects.filter(deck=deck))
+    chosen_card = random.sample(deck_cards, 1)
+    hand = Hand.objects.get(name=name)
+    chosen_card[0].deck = None
+    chosen_card[0].hand = hand
+    chosen_card[0].save()
 
 
 

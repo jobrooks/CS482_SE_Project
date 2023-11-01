@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
-from game.models import Card, Deck, Hand
+from game.models import Card, Deck, Hand, create_deck, draw_card
 from game.serializers import CardSerializer, DeckSerializer, HandSerializer
 
 # Create your views here.
@@ -48,3 +48,12 @@ def deckView(request):
             serializer.save()
             return JsonResponse(serializer.data, status=201)
         return JsonResponse(serializer.errors, status=400)
+    
+
+# @csrf_exempt
+# def getHand(request, userID):
+#     if request.method == 'GET':
+#         hand = Hand.objects.all() 
+#         serializer = HandSerializer(hand, many=True)
+#         return JsonResponse(serializer.data, safe=False)
+#     else:
