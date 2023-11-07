@@ -66,6 +66,8 @@ AUTHENTICATION_BACKENDS = [
    "guest_user.backends.GuestBackend",
 ]
 
+AUTH_USER_MODEL = 'user_api.User'
+
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
