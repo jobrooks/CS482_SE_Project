@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.contrib.auth.models import User
+from user_api.models import User
 
 # Create your views here.
 def get_user_profile(request, username):
