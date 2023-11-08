@@ -22,9 +22,10 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("user_api/", include('user_api.urls')),
     path("user_profile/", include('user_profile.urls')),
-    path("", views.home, name="home"),
+    path("home/", views.home, name="home"),
     path("store/", views.store, name="store"),
     path("user_login/", include('user_login.urls')),
     path("convert/", include("guest_user.urls")),
-    path("", include('game.urls'))
+    path("", include('game.urls')),
+    path("", views.index, name="index")
 ]

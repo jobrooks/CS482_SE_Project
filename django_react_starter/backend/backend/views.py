@@ -1,6 +1,9 @@
 from django.shortcuts import render, redirect
 from guest_user.decorators import allow_guest_user
 
+def index(request):
+    return render(request, 'index.html')
+
 def home(request):
     return render(request, 'home.html')
 
