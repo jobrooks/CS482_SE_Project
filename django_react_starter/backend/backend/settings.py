@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     "user_profile",
     "user_api",
     "game",
+    "friend",
 ]
 
 REST_FRAMEWORK = {
