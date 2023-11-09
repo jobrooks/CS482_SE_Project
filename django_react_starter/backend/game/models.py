@@ -1,4 +1,5 @@
 from django.db import models
+from user_api.models import User
 import random
 
 DECK_SIZE = 52
@@ -29,9 +30,6 @@ RANK_CHOICES = (
 
 class Deck(models.Model):
     name = models.CharField(max_length=10)
-
-class User(models.Model):
-    money = models.IntegerField()
 
 class Hand(models.Model):
     name = models.CharField(max_length=10)
@@ -90,12 +88,6 @@ def discard_card(cardsToBeDiscarded: [int], deck: int):
         deck_cards.deck = deck
         deck_cards.hand = None
         deck_cards.save()
-
-def place_bet(betAmount: int, potid: int, userid: int):
-    user = User.objects.get(pk=userid)
-    pot = Pot.objects.get(pk=potid)
-    pot.moneyAmount += betAmount
-    user.money -= betAmount
 
 def create_game(name: str, pot: Pot(), deck: Deck()):
     game = Game(name=name, pot=pot, deck=deck)
