@@ -32,8 +32,8 @@ class CreateAccountPage extends Component {
                 "http://localhost:8000/user_api/register/",
                 this.state.credentials
             );
-            const navigate = useNavigate();
-            navigate("/login");
+            
+            this.props.navigate("/login");
         } catch (error) {
             console.error(error);
         }
@@ -109,4 +109,9 @@ class CreateAccountPage extends Component {
     }
 }
 
-export default CreateAccountPage;
+function WithNavigate(props) {
+    const navigate = useNavigate();
+    return <CreateAccountPage {...props} navigate={navigate} />
+  }
+  
+  export default WithNavigate;
