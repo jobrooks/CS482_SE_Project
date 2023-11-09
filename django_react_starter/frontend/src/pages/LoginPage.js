@@ -1,6 +1,7 @@
 import React from "react";
 import axios from "axios";
 import { Container, CssBaseline, Avatar, Typography, TextField, FormControlLabel, Checkbox, Button, Grid, Link, Box } from '@mui/material';
+import { useNavigate } from "react-router-dom";
 
 class LoginPage extends React.Component {
 
@@ -23,12 +24,13 @@ class LoginPage extends React.Component {
 
     submitLogin(event) {
         event.preventDefault();
-        localStorage.setItem("activeUserSession", true);
+        
         console.log('Username:', this.state.username, 'Password:', this.state.password);
         // Handle login from backend
         axios.post("http://localhost:8000/user_login/login/", this.state)
         .then((response) => {
-          console.log(response.data);
+          localStorage.setItem("sessionToken", response.data.token);
+          this.props.navigate("/"); // Redirect to /
         });
     }
 
@@ -94,7 +96,11 @@ class LoginPage extends React.Component {
         );      
     }
     
-
 }
 
-export default LoginPage;
+function WithNavigate(props) {
+  const navigate = useNavigate();
+  return <LoginPage {...props} navigate={navigate} />
+}
+
+export default WithNavigate;
