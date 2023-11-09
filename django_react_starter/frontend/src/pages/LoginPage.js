@@ -26,7 +26,7 @@ class LoginPage extends React.Component {
         localStorage.setItem("activeUserSession", true);
         console.log('Username:', this.state.username, 'Password:', this.state.password);
         // Handle login from backend
-        axios.post("http://localhost:8000/login", this.state)
+        axios.post("http://localhost:8000/user_login/login/", this.state)
         .then((response) => {
           console.log(response.data);
         });
