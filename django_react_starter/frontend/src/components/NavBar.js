@@ -11,16 +11,25 @@ import {
     Link
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
+import { useNavigate } from 'react-router-dom';
 
 class NavBar extends React.Component {
-
-    state = {
-        drawerOpen: false
-    };
+    
+    constructor(props) {
+        super(props);
+        this.state = {
+            drawerOpen: false
+        };
+    }
 
     toggleDrawer = () => {
         this.setState({ drawerOpen: !this.state.drawerOpen});
         console.log("Toggling Drawer");
+    }
+
+    handleLogout = () => {
+        localStorage.setItem("sessionToken", "null");
+        this.props.navigate("/login");
     }
 
     render() {
@@ -76,11 +85,16 @@ class NavBar extends React.Component {
                             Home
                         </MenuItem>
                         <MenuItem
-                            // This is how you put a link in a menuitem
                             component={"a"}
                             href={"/account"}
                         >
                             Account
+                        </MenuItem>
+                        <MenuItem
+                            // component={"a"}
+                            onClick={this.handleLogout}
+                        >
+                            Logout
                         </MenuItem>
                     </Drawer>
                 </div>
@@ -89,4 +103,11 @@ class NavBar extends React.Component {
     }
 }
 
-export default NavBar;
+// Necessary to use the navigate react hook in a class component #goofy
+// Class components cant use hooks idk why
+function WithNavigate(props) {
+    const navigate = useNavigate();
+    return <NavBar {...props} navigate={navigate} />
+}
+
+export default WithNavigate;
