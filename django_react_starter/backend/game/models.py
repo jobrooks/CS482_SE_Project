@@ -115,3 +115,46 @@ def bet(gameID: int, userID: int, isBetting: bool, betAmount: int):
         pot.moneyAmount += betAmount
         user.money -= betAmount
 
+# all game logic
+# def play_game(numPlayers: int, arrUsers: [int]):
+#     # just one deck and pot for the game, game created with ids of those objects
+#     deckid = create_deck()
+#     potid = create_pot()
+#     game = create_game(pot=Pot.objects.get(pk=potid), deck=Deck.objects.get(pk=deckid))
+
+    # import player info from db and create game "users"
+    # need:
+    # number of players
+    # each players id?
+    # money each player has
+
+
+    # start game
+    # round class?
+    # blinds or ante?
+    # small blind , big blind assigned, 
+    # need function to identify dealer, small blind, big blind every round
+    # p0 is dealer, p1 is small blind, p2 is big blind (shift around every round)
+    # small blind - half min bet, big blind - min bet
+    # or
+    # ante - each remaining player pays minimum bet or doesn't play that round
+
+    # deal 5 cards to each player starting with small blind 
+    # hand = []
+
+    # for _ in range(0, numPlayers):
+    #     hand.append(create_hand())
+
+    
+    # for id in hand:
+    #     for _ in range(0, 5):
+    #         draw_card(deckid, id)
+
+    # put 5 cards out face down
+
+    # betting for round
+    # first player to bet is left of big blind
+    # fold, call or raise (can't check)
+    # when someone raises, the min raise goes up
+    # call is matching min raise
+    
