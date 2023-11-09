@@ -10,6 +10,7 @@ import { CssBaseline } from '@mui/material';
 import LoginPage from './pages/LoginPage';
 import CreateAccountPage from './pages/CreateAccountPage';
 import ProfilePage from './pages/ProfilePage';
+import SearchPage from './pages/SearchPage';
 
 function App() {
 
@@ -69,6 +70,7 @@ function App() {
             <Route path='/login' element={<LoginPage />} />
             <Route path='/register' element={<CreateAccountPage />} />
             <Route path='/profile' element={<ProfilePage />} />
+            <Route path='/search' element={<SearchPage />} />
           </Routes>
         {/* </ThemeProvider> */}
     </div>

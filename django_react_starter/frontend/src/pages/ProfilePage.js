@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import NavBar from "../components/NavBar";
+import LoginRedirector from "../components/LoginRedirector";
 
 class ProfilePage extends Component {
   constructor(props) {
@@ -38,6 +40,8 @@ class ProfilePage extends Component {
 
     return (
         <div>
+        <LoginRedirector />
+        <NavBar />
         <h1>User Profile</h1>
         <img src={userData.avatar} alt="User Avatar" />
         <p>
