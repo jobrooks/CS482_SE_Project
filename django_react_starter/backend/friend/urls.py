@@ -4,4 +4,7 @@ from . import views
 urlpatterns = [
     # Other URL patterns...
     path('search_users/', views.search_users, name='search_users'),
+    path('send_requests/<int:receiver_id>', views.send_friend_request, name='send_requests'),
+    path('requests/', views.friend_requests, name='request'),
+    
 ]
