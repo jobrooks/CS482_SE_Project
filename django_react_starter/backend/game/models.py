@@ -107,14 +107,11 @@ def get_player_hand(user: int):
     cards = Card.objects.filter(hand=hand)
     return cards
 
-def bet(gameID: int, userID: int, actionType: str, betAmount: int):
+def bet(gameID: int, userID: int, isBetting: bool, betAmount: int):
     user = User.objects.get(pk=userID)
     game = Game.objects.get(pk=gameID)
     pot = Pot.objects.get(pk=game.pot)
-    if actionType == "betting":
+    if isBetting:
         pot.moneyAmount += betAmount
         user.money -= betAmount
-        return "betted"
-    else:
-        return "no bet made"
 
