@@ -65,8 +65,8 @@ def create_pot():
     pot.save()
     return pot.pk
 
-def create_hand(name: str):
-    hand = Hand(name=name)
+def create_hand(user: int, name: str):
+    hand = Hand(name=name, user=User.objects.get(pk=user))
     hand.save()
     return hand.pk
 
@@ -101,19 +101,20 @@ def create_game(name: str, pot: Pot(), deck: Deck()):
     game = Game(name=name, pot=pot, deck=deck)
     game.save()
     return game.pk
-
-def play_game(numPlayers: int, arrUsers: [int]):
-    deckid = create_deck()
-    potid = create_pot()
-    game = create_game(pot=Pot.objects.get(pk=potid), deck=Deck.objects.get(pk=deckid))
-
-    hand = []
-
-    for _ in range(0, numPlayers):
-        hand.append(create_hand())
-
     
-    for id in hand:
-        for _ in range(0, 5):
-            draw_card(deckid, id)
-    
+def get_player_hand(user: int):
+    hand = Hand.objects.get(user=user)
+    cards = Card.objects.filter(hand=hand)
+    return cards
+
+def bet(gameID: int, userID: int, actionType: str, betAmount: int):
+    user = User.objects.get(pk=userID)
+    game = Game.objects.get(pk=gameID)
+    pot = Pot.objects.get(pk=game.pot)
+    if actionType == "betting":
+        pot.moneyAmount += betAmount
+        user.money -= betAmount
+        return "betted"
+    else:
+        return "no bet made"
+
