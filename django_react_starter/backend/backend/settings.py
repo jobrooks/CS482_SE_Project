@@ -66,6 +66,8 @@ AUTHENTICATION_BACKENDS = [
    "guest_user.backends.GuestBackend",
 ]
 
+AUTH_USER_MODEL = 'user_api.User'
+
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
@@ -148,3 +150,6 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_URL = '/media/'
