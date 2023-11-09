@@ -6,13 +6,13 @@ class LoginRedirector extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            activeUserSession: localStorage.getItem("activeUserSession"),
+            sessionToken: localStorage.getItem("sessionToken"),
         }
     }
 
     render() {
-        console.log(this.state.activeUserSession);
-        if (this.state.activeUserSession == "false") {
+        console.log(this.state.sessionToken);
+        if (this.state.sessionToken == "null" || this.state.sessionToken == null || this.state.sessionToken == "") { // May need to change to something that just checks if is valid session token on backend
             return (
                 <Navigate to="/login" />
             );
