@@ -1,11 +1,48 @@
 from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, Http404
 from django.views.decorators.csrf import csrf_exempt
+from rest_framework.views import APIView
+from rest_framework.response import Response
 from rest_framework.parsers import JSONParser
-from game.models import Card, Deck, Hand, create_deck, draw_card, get_player_hand
+from game.models import Card, Deck, Hand, Game, create_deck, draw_card, get_player_hand
 from game.serializers import CardSerializer, DeckSerializer, HandSerializer, PotSerializer, GameSerializer
 
 # Create your views here.
+
+class GameList(APIView):
+    def get(self, request):
+        game = Game.objects.all()
+        serializer = GameSerializer(game, many=True)
+        return Response(serializer.data)
+   
+    def post(self, request):
+        serializer = GameSerializer(data=request.data) 
+        if serializer.is_valid(): 
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors)
+
+class GameDetail(APIView):
+    def get_game(self, pk):
+            try:
+                return Game.objects.get(pk=pk)
+            except:
+                raise Http404
+
+    def get(self, request, pk, format=None):
+            game = self.get_game(pk)
+            serializer = GameSerializer(game)
+            return Response(serializer.data)
+    
+    def put(self, request, pk, format=None):
+        game = self.get_game(pk)
+        serializer = GameSerializer(game, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors)
+    
+
 
 @csrf_exempt
 def cardView(request):
