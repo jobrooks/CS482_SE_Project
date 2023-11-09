@@ -1,6 +1,9 @@
 from django.shortcuts import render
 from django.contrib.auth import login
+from django.contrib.auth import logout
 from django.contrib.auth import authenticate
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import redirect
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
@@ -23,3 +26,8 @@ class UserLogin(ObtainAuthToken):
     
 def login_user(request):
     return render(request, 'login.html')
+
+@login_required
+def logout_view(request):
+    logout(request)
+    return redirect('home')
