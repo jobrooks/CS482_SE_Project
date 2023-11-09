@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import axios from "axios";
-import { Container, Typography, TextField, Button, Box } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 class ProfilePage extends Component {
@@ -40,7 +39,6 @@ class ProfilePage extends Component {
     return (
         <div>
         <h1>User Profile</h1>
-       
         <img src={userData.avatar} alt="User Avatar" />
         <p>
           <strong>Username:</strong> {userData.username}
