@@ -8,6 +8,8 @@ import HomePage from './pages/HomePage';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { CssBaseline } from '@mui/material';
 import LoginPage from './pages/LoginPage';
+import CreateAccountPage from './pages/CreateAccountPage';
+import ProfilePage from './pages/ProfilePage';
 
 function App() {
 
@@ -65,6 +67,8 @@ function App() {
             <Route path='/' element={<HomePage />} />
             <Route path="/account" element={<AccountSettings />} />
             <Route path='/login' element={<LoginPage />} />
+            <Route path='/register' element={<CreateAccountPage />} />
+            <Route path='/profile' element={<ProfilePage />} />
           </Routes>
         {/* </ThemeProvider> */}
     </div>

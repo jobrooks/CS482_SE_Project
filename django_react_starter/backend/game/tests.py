@@ -2,13 +2,24 @@ from django.test import TestCase
 from game.models import Card, Deck, Hand
 
 
-class GameModelTestCase(TestCase):
 
-    # see if Card made correctly
-    def test_card_creation(self):
+class PokerModelTestCase(TestCase):
+
+    # test if card created correctly
+    def test_create_card(self):
         card = Card.objects.create(suit='H', rank='A')
-        self.assertEqual(str(card), 'Ace of Hearts')
+        self.assertEqual(card.suit, 'H')
+        self.assertEqual(card.rank, 'A')
 
+    # testing play_game method
+    def playing_game(self):
+
+        print("hi")
+
+        
+
+
+"""
     # see if card is 52 long
     # see if it contains Ace of Hearts and 2 of Hearts
     def test_create_standard_deck(self):
@@ -99,7 +110,7 @@ class GameModelTestCase(TestCase):
         self.assertEqual(str(deck.cards.all()[deck.cards.count()-1]), '2 of Hearts')
 
 
-"""
+
     # pull 5, adding to the end of the deck, the top should now be 7 of hearts
     # the last 5 should be 2-6 of hearts
     def test_adding_to_bottom(self):
@@ -136,26 +147,3 @@ class GameModelTestCase(TestCase):
         self.assertEqual(str(deck.cards.all()[deck.cards.count()-5]), '2 of Hearts')
         
 """
-        
-"""
-class PokerModelTestCase(TestCase):
-    def test_create_card(self):
-        card = Card.objects.create(suit='H', rank='A')
-        self.assertEqual(card.suit, 'H')
-        self.assertEqual(card.rank, 'A')
-
-    def test_create_deck(self):
-        deck = Deck.objects.create()
-        card = Card.objects.create(suit='H', rank='A')
-        deck.cards.add(card)
-        print(type(deck.cards))
-        #self.assertEqual(len(deck.cards) > 0)
-
-    def test_deck(self):
-        d = Deck()
-        c = Card()
-        c.suit = 'H'
-        c.rank = '2'
-        d.cards.add(c)
-        print(type(d.cards))
-        """

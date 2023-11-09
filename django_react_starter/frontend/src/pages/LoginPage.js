@@ -1,6 +1,7 @@
 import React from "react";
 import axios from "axios";
 import { Container, CssBaseline, Avatar, Typography, TextField, FormControlLabel, Checkbox, Button, Grid, Link, Box } from '@mui/material';
+import { useNavigate } from "react-router-dom";
 
 class LoginPage extends React.Component {
 
@@ -9,27 +10,44 @@ class LoginPage extends React.Component {
         this.submitLogin = this.submitLogin.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.state = {
+          submitError: false,
+          errorMessage: "",
+          loginInfo: {
             username: "",
             password: ""
+          }
         }
     }
 
     handleChange(event) {
         const { name, value } = event.target;
-        this.setState({
+        this.setState((prevState) => ({
+          loginInfo: {
+            ...prevState.loginInfo,
             [name]: value
-        });
+          }
+        }));
     }
 
-    submitLogin(event) {
+    submitLogin(event, loginType) {
         event.preventDefault();
-        localStorage.setItem("activeUserSession", true);
+        
         console.log('Username:', this.state.username, 'Password:', this.state.password);
-        // Handle login from backend
-        axios.post("http://localhost:8000/user_login/login/", this.state)
-        .then((response) => {
-          console.log(response.data);
-        });
+
+        if (loginType == "guest") {
+          localStorage.setItem("sessionToken", "guest");
+          this.props.navigate("/");
+        } else {
+          // Handle login from backend
+          axios.post("http://localhost:8000/user_login/login/", this.state.loginInfo)
+          .then((response) => {
+            localStorage.setItem("sessionToken", JSON.stringify(response.data.token));
+            this.props.navigate("/"); // Redirect to /
+          })
+          .catch((response) => {
+            this.setState({submitError: true, errorMessage: "Incorrect username or password"})
+          });
+        }
     }
 
     render() {
@@ -51,6 +69,7 @@ class LoginPage extends React.Component {
                 </Typography>
                 <Box component="form" onSubmit={this.submitLogin} noValidate sx={{ mt: 1 }}>
                   <TextField
+                    error={this.state.submitError}
                     margin="normal"
                     required
                     fullWidth
@@ -63,6 +82,8 @@ class LoginPage extends React.Component {
                     onChange={this.handleChange}
                   />
                   <TextField
+                    error={this.state.submitError}
+                    helperText={this.state.errorMessage}
                     margin="normal"
                     required
                     fullWidth
@@ -76,13 +97,14 @@ class LoginPage extends React.Component {
                   />
                   <Button
                     type="submit"
+                    onClick={(event) => {this.submitLogin(event, "user")}}
                     variant="contained"
                     sx={{ mt: 3, mb: 2, mx: 1, width: "45%"}}
                   >
                     Sign In
                   </Button>
                   <Button
-                    type="submit"
+                    onClick={(event) => {this.submitLogin(event, "guest")}}
                     variant="outlined"
                     sx={{ mt: 3, mb: 2, mx: 1, width: "45%"}}
                   >
@@ -94,7 +116,11 @@ class LoginPage extends React.Component {
         );      
     }
     
-
 }
 
-export default LoginPage;
+function WithNavigate(props) {
+  const navigate = useNavigate();
+  return <LoginPage {...props} navigate={navigate} />
+}
+
+export default WithNavigate;
