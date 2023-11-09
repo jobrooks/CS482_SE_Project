@@ -20,14 +20,13 @@ class SearchUser extends Component {
     e.preventDefault();
     try {
       const response = await axios.get(`http://localhost:8000/friend/search_users/?username=${this.state.query}`);
-      this.setState({ users: response.data.users }); // Assuming the response has a 'users' property
+      this.setState({ users: response.data.users });
     } catch (error) {
       console.error(error);
     }
   };
 
   sendFriendRequest = (userId) => {
-    // Implement logic to send a friend request using userId
     console.log(`Sending friend request to user with id ${userId}`);
   };
 
