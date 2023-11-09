@@ -27,13 +27,15 @@ RANK_CHOICES = (
     ('K', 'King'),
     ('A', 'Ace'),
 )
+class Player(models.Model):
+    money = models.PositiveBigIntegerField()
 
 class Deck(models.Model):
     name = models.CharField(max_length=10)
 
 class Hand(models.Model):
     name = models.CharField(max_length=10)
-    user = models.OneToOneField(User(), null=True, on_delete=models.CASCADE)
+    player = models.OneToOneField(Player(), null=True, on_delete=models.CASCADE)
 
 class Card(models.Model):
     suit = models.CharField(max_length=1, choices=SUIT_CHOICES)
@@ -48,6 +50,8 @@ class Game(models.Model):
     name = models.CharField(max_length=10)
     deck = models.OneToOneField(Deck(), null=True, on_delete=models.CASCADE)
     pot = models.OneToOneField(Pot(), null=True, on_delete=models.CASCADE)
+    turn = models.OneToOneField(Player(), null=True, on_delete=models.CASCADE)
+
 
 def create_deck():
     deck = Deck()
@@ -64,14 +68,14 @@ def create_pot():
     return pot.pk
 
 def create_hand(user: int, name: str):
-    hand = Hand(name=name, user=User.objects.get(pk=user))
+    hand = Hand(name=name, player=Player.objects.get(pk=user))
     hand.save()
     return hand.pk
 
-def create_user(money: int):
-    user = User(money=money)
-    user.save()
-    return user.pk
+def create_player(money: int):
+    player = Player(money=money)
+    player.save()
+    return player.pk
 
 def draw_card(deck: int, hand: int):
     deck_cards = list(Card.objects.filter(deck=deck))
@@ -99,6 +103,11 @@ def get_player_hand(user: int):
     cards = Card.objects.filter(hand=hand)
     return cards
 
+
+def get_game(game: int):
+    game = Game.objects.get(game=game)
+    return game
+
 def bet(gameID: int, userID: int, isBetting: bool, betAmount: int):
     user = User.objects.get(pk=userID)
     game = Game.objects.get(pk=gameID)
@@ -106,6 +115,8 @@ def bet(gameID: int, userID: int, isBetting: bool, betAmount: int):
     if isBetting:
         pot.moneyAmount += betAmount
         user.money -= betAmount
+
+def start_game():
 
 # all game logic
 # def play_game(numPlayers: int, arrUsers: [int]):

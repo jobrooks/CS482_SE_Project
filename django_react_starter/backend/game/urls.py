@@ -7,5 +7,7 @@ urlpatterns = [
     path("handview/", views.handView),
     path("deckview/", views.deckView),
     path("displayhand/<int:userID>", views.display_hand),
-    path("displaypot/<int:gameID>", views.display_pot)
+    path("displaypot/<int:gameID>", views.display_pot),
+    path("game/<int:pk>/", views.GameDetail.as_view()),
+    path("game/", views.GameList.as_view()),
 ]
