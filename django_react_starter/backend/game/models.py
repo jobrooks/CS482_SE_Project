@@ -57,8 +57,24 @@ class Player(models.Model):
     hand = models.OneToOneField(Hand(), null=True, on_delete=models.CASCADE)
     name = models.CharField(max_length=25)
 
+
 class TurnOrder():
     order = deque()
+
+def get_game(game: int):
+    game = Game.objects.get(game=game)
+    return game
+
+def bet(gameID: int, userID: int, isBetting: bool, betAmount: int):
+    user = User.objects.get(pk=userID)
+    game = Game.objects.get(pk=gameID)
+    pot = Pot.objects.get(pk=game.pot)
+    if isBetting:
+        pot.moneyAmount += betAmount
+        user.money -= betAmount
+
+#def start_game():
+
 
 # all game logic
 # def play_game(numPlayers: int, arrUsers: [int]):
@@ -102,4 +118,3 @@ class TurnOrder():
     # fold, call or raise (can't check)
     # when someone raises, the min raise goes up
     # call is matching min raise
-    
