@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box, Button, Typography, Avatar, Stack, Card } from '@mui/material';
 import CasinoIcon from '@mui/icons-material/Casino'; // You can choose an icon that suits your theme
+import axios from "axios";
 
 
 
@@ -16,8 +17,6 @@ const handleFold = () => console.log('Fold');
 const handleSetRaise = () => console.log('Set Raise');
 const handleCall = () => console.log('Call');
 
-
-
 class PlayPage extends React.Component {
 
     constructor(props) {
@@ -31,11 +30,10 @@ class PlayPage extends React.Component {
                     "player4": {"id": "4", "pname": "Kobe", "money":"100"}
   
                 }
-
-
             }
         }
         this.handleChange = this.handleChange.bind(this);
+        this.getGame = this.getGame.bind(this);
     }
 
     handleChange(event) {
@@ -45,9 +43,9 @@ class PlayPage extends React.Component {
         });
     }
 
-    pullDBPlayers(event){
-        
-
+    getGame(event){
+        event.preventDefault();
+        const response = axios.get('http://127.0.0.1:8000/game/1')
     }
 
     render() {

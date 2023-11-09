@@ -116,7 +116,7 @@ def bet(gameID: int, userID: int, isBetting: bool, betAmount: int):
         pot.moneyAmount += betAmount
         user.money -= betAmount
 
-def start_game():
+#def start_game():
 
 # all game logic
 # def play_game(numPlayers: int, arrUsers: [int]):
@@ -160,4 +160,3 @@ def start_game():
     # fold, call or raise (can't check)
     # when someone raises, the min raise goes up
     # call is matching min raise
-    
