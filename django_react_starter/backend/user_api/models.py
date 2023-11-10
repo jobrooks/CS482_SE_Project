@@ -8,5 +8,7 @@ class User(AbstractUser):
     bio = models.TextField(max_length=500, null=True, blank=True)
     games_played = models.PositiveIntegerField(default=0)
     money = models.PositiveIntegerField(default=0)
+    avatar_color = models.TextField(max_length=500, null=True, blank=True)
+    table_theme = models.TextField(max_length=500, null=True, blank=True)
     class Meta:
         db_table = 'auth_user'
