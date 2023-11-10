@@ -30,19 +30,27 @@ class SearchUser extends Component {
 
   sendFriendRequest = async (userId) => {
     try {
-      axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
-      axios.defaults.xsrfCookieName = "csrftoken";
-      axios.defaults.withCredentials = true;
+      const token = JSON.parse(localStorage.getItem("sessionToken"))
+      if (!token) {
+        console.error("Token not found");
+        return;
+      }
+
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
       const response = await axios.post(
-        `http://localhost:8000/friend/send_requests/${userId}`
+        `http://localhost:8000/friend/send_requests/${userId}`,
+        {},
+        config
       );
 
-      // Check the response to determine if the friend request was successful
       if (response.data.success) {
-        // Optionally update the UI or provide feedback to the user
         console.log(`Friend request sent to ${userId}`);
       } else {
-        // Handle the case where the friend request was not successful
         console.error("Friend request failed");
       }
     } catch (error) {

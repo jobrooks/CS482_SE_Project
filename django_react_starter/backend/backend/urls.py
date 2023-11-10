@@ -27,5 +27,6 @@ urlpatterns = [
     path("store/", views.store, name="store"),
     path("user_login/", include('user_login.urls')),
     path("convert/", include("guest_user.urls")),
-    path("", include('game.urls'))
+    path("", include('game.urls')),
+    path("get-csrf-token/", views.get_csrf_token, name='get_csrf_token'),
 ]
