@@ -11,6 +11,9 @@ from game.serializers import CardSerializer, DeckSerializer, HandSerializer, Pot
 
 # Create your views here.
 
+def index(request):
+    return render(request, "game/index.html")
+
 class GameList(APIView):
     def get(self, request):
         game = Game.objects.all()

@@ -36,7 +36,16 @@ CORS_ALLOWED_CREDENTIALS = True
 
 # Application definition
 
+ASGI_APPLICATION = "backend.asgi.application"
+
+CHANNEL_LAYERS = { 
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }   
+}
+
 INSTALLED_APPS = [
+    "daphne",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",

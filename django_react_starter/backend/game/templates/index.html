@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="{% static 'channels_demo/css/index.css' %}"/>
+
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+
+    <script src="{% static 'channels_demo/js/main.js' %}"></script>
+
+    <title>Multiplayer Demo</title>
+  </head>
+  <body>
+    <multiplayer-channels-demo></multiplayer-channels-demo>
+  </body>
+</html>
