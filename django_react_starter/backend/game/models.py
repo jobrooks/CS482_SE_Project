@@ -1,6 +1,7 @@
 from django.db import models
 from user_api.models import User
-import random
+from collections import deque
+
 
 DECK_SIZE = 52
 MAX_HAND_SIZE = 5
@@ -33,7 +34,6 @@ class Deck(models.Model):
 
 class Hand(models.Model):
     name = models.CharField(max_length=10)
-    user = models.OneToOneField(User(), null=True, on_delete=models.CASCADE)
 
 class Card(models.Model):
     suit = models.CharField(max_length=1, choices=SUIT_CHOICES)
@@ -48,56 +48,21 @@ class Game(models.Model):
     name = models.CharField(max_length=10)
     deck = models.OneToOneField(Deck(), null=True, on_delete=models.CASCADE)
     pot = models.OneToOneField(Pot(), null=True, on_delete=models.CASCADE)
+    currentTurn = models.IntegerField(null=True)
 
-def create_deck():
-    deck = Deck()
-    deck.save()
-    for x in SUIT_CHOICES:
-        for y in RANK_CHOICES:
-            card = Card(suit=x, rank=y, deck=deck)
-            card.save()
-    return deck.pk
+class Player(models.Model):
+    money = models.PositiveBigIntegerField()
+    game = models.ForeignKey(Game(), null=True, on_delete=models.CASCADE)
+    hand = models.OneToOneField(Hand(), null=True, on_delete=models.CASCADE)
+    name = models.CharField(max_length=25, null=True)
 
-def create_pot():
-    pot = Pot(moneyAmount=0)
-    pot.save()
-    return pot.pk
 
-def create_hand(user: int, name: str):
-    hand = Hand(name=name, user=User.objects.get(pk=user))
-    hand.save()
-    return hand.pk
+class TurnOrder():
+    order = deque()
 
-def create_user(money: int):
-    user = User(money=money)
-    user.save()
-    return user.pk
-
-def draw_card(deck: int, hand: int):
-    deck_cards = list(Card.objects.filter(deck=deck))
-    chosen_card = random.sample(deck_cards, 1)
-    hand = Hand.objects.get(pk=hand)
-    chosen_card[0].deck = None
-    chosen_card[0].hand = hand
-    chosen_card[0].save()
-
-def discard_card(cardsToBeDiscarded: [int], deck: int):
-    for card in cardsToBeDiscarded:
-        deck_cards = Card.objects.get(pk=card)
-        deck = Deck.objects.get(pk=deck)
-        deck_cards.deck = deck
-        deck_cards.hand = None
-        deck_cards.save()
-
-def create_game(name: str, pot: Pot(), deck: Deck()):
-    game = Game(name=name, pot=pot, deck=deck)
-    game.save()
-    return game.pk
-    
-def get_player_hand(user: int):
-    hand = Hand.objects.get(user=user)
-    cards = Card.objects.filter(hand=hand)
-    return cards
+def get_game(game: int):
+    game = Game.objects.get(game=game)
+    return game
 
 def bet(gameID: int, userID: int, isBetting: bool, betAmount: int):
     user = User.objects.get(pk=userID)
@@ -106,6 +71,9 @@ def bet(gameID: int, userID: int, isBetting: bool, betAmount: int):
     if isBetting:
         pot.moneyAmount += betAmount
         user.money -= betAmount
+
+#def start_game():
+
 
 # all game logic
 # def play_game(numPlayers: int, arrUsers: [int]):
@@ -149,4 +117,3 @@ def bet(gameID: int, userID: int, isBetting: bool, betAmount: int):
     # fold, call or raise (can't check)
     # when someone raises, the min raise goes up
     # call is matching min raise
-    
