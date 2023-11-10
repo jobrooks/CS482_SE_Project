@@ -8,6 +8,7 @@ import HomePage from './pages/HomePage';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { CssBaseline } from '@mui/material';
 import LoginPage from './pages/LoginPage';
+
 import CreateAccountPage from './pages/CreateAccountPage';
 import ProfilePage from './pages/ProfilePage';
 
