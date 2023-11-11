@@ -28,12 +28,6 @@ def get_user_profile(request, token):
     except Token.DoesNotExist:
         return JsonResponse({"error": "User not found"}, status=404)
 
-class UserList(APIView): # Not wworking still
-    def get(self, request):
-        users = User.objects.all()
-        serializer = UserSerializer(users, many=True)
-        return Response(serializer.data)
-
 class TableTheme(APIView):
     def get_user(self, token):
         try:
@@ -46,9 +40,16 @@ class TableTheme(APIView):
         serializer = UserSerializer(user)
         return Response(serializer.data["table_theme"])
     
-    def put(self, request, token):
+    def patch(self, request, token):
         user = self.get_user(token)
-        serializer = UserSerializer(user, data=request.data)
+        
+        # Cleaning request very important while using patch since partial=True allows any field to be changed
+        # without requiring the username and password. Here we use a dictionary comprehention to ignore any 
+        # other fields besides "table_theme".
+        cleaned_request = request.data.copy()
+        cleaned_request = {key:value for (key, value) in cleaned_request.items() if key == "table_theme"}
+        
+        serializer = UserSerializer(user, data=cleaned_request, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
