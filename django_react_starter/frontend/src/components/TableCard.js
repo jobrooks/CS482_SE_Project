@@ -4,8 +4,7 @@ import { red, orange, yellow, green, blue, purple } from '@mui/material/colors';
 import { Button } from "@mui/base";
 import ColorPicker from "./AvatarColorPicker";
 import TableThemePicker from "./TableThemePicker";
-
-var globalTableTheme = "blue"
+import axios from "axios";
 
 class TableCard extends React.Component {
 
@@ -15,9 +14,61 @@ class TableCard extends React.Component {
         this.changeTheme = this.changeTheme.bind(this);
         this.state = {
             themePickerOpen: false,
-            tableTheme: globalTableTheme,
-            tableImage: "/images/Table Blue.png",
+            tableTheme: "blue",
+            tableImage: this.mapThemeToImage(this.tableTheme),
         }
+    }
+
+    /*
+        Sets table theme to the theme recieved from the backend
+    */
+    setTableTheme() {
+        let theme = "blue";
+        let themeImage = this.mapThemeToImage(theme);
+        axios.get("http://localhost:8000/user_profile/profile/tabletheme/" + localStorage.getItem("sessionToken") + "/")
+        .then((response) => {
+            theme = response.data;
+            themeImage = this.mapThemeToImage(theme);
+            console.log("real theme is: " + theme)
+            this.setState({ tableTheme: theme, tableImage: themeImage });
+            return theme;
+        })
+        .catch((response) => {
+            console.log("Error getting table theme")
+            console.log(response);
+        });
+        // this.setState({ tableTheme: theme, tableImage: themeImage });
+        // console.log(this.state)
+    }
+
+    putTableTheme(theme) {
+        const data = {
+            "table_theme": theme
+        }
+        axios.patch("http://localhost:8000/user_profile/profile/tabletheme/" + localStorage.getItem("sessionToken") + "/", data)
+        .then((response) => {
+            return response.data;
+        }).catch((response) => {
+            console.log("Error putting table theme")
+            console.log(response);
+        });
+    }
+
+    mapThemeToImage(theme) {
+        const themeDict = {
+            "blue": "/images/Table Blue.png",
+            "green": "/images/Table Green.png",
+        };
+        let themeImage = themeDict[theme];
+        if (themeImage !== undefined) {
+            return themeImage;
+        } else {
+            return themeDict["blue"];
+        }
+    }
+
+    componentDidMount() {
+        this.setTableTheme();
     }
 
     toggleTableThemePicker() {
@@ -25,15 +76,9 @@ class TableCard extends React.Component {
     }
 
     changeTheme(theme) {
-        var themeImage = "";
-        globalTableTheme = theme;
-        console.log(globalTableTheme);
-        if (theme === "blue") {
-            themeImage = "/images/Table Blue.png";
-        } else if (theme === "green") {
-            themeImage = "/images/Table Green.png";
-        }
+        let themeImage = this.mapThemeToImage(theme);
         this.setState({ tableTheme: theme, tableImage: themeImage });
+        this.putTableTheme(theme);
     }
 
     render() {
@@ -105,8 +150,8 @@ class TableCard extends React.Component {
                                             </Typography>
                                         </Grid>
                                         <Grid item xs={12}>
-                                            <Typography variant="h6" noWrap={false} textAlign="left">
-                                                Blue
+                                            <Typography variant="h6" noWrap={false} textAlign="left" >
+                                                {this.state.tableTheme}
                                             </Typography>
                                         </Grid>
                                     </Grid>
