@@ -15,10 +15,17 @@ def search_users(request):
         users = User.objects.filter(username__icontains=query).exclude(id=request.user.id)
         user_list = [{'id': user.id, 'username': user.username} for user in users]
         return JsonResponse({'users': user_list})
+    
+def get_username(request, id):
+    if request.method == 'GET':
+        user = User.objects.get(id=id)
+        username = user.username
+        return JsonResponse({'username': username})
 
 @csrf_exempt
 @permission_classes([IsAuthenticated])
 def send_friend_request(request, receiver_id):
+
     auth_header = request.headers.get('Authorization')
     if auth_header:
         token = auth_header.split(' ')[1]
@@ -36,10 +43,12 @@ def send_friend_request(request, receiver_id):
         friend_request = FriendRequest(sender=request.user, receiver=receiver)
         friend_request.save()
         return JsonResponse({'success': True})
+    
     return JsonResponse({'success':False, 'error':'Invalid request'})
 
 @permission_classes([IsAuthenticated])
 def friend_requests(request):
+
     auth_header = request.headers.get('Authorization')
     if auth_header:
         token = auth_header.split(' ')[1]
