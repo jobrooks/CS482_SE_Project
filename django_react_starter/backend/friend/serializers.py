@@ -9,4 +9,4 @@ class FriendListSerializer(serializers.ModelSerializer):
 class FriendRequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = FriendRequest
-        fields = '__all__'
+        fields = ['sender', 'receiver', 'is_active', 'timestamp']

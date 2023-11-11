@@ -4,21 +4,21 @@ import UserCard from "../components/UserCard";
 import TableCard from "../components/TableCard";
 import { Grid } from "@mui/material";
 import LoginRedirector from "../components/LoginRedirector";
-import SearchUser from "../components/SearchUser";
+import FriendRequest from "../components/FriendRequest";
 
 
-class SearchPage extends React.Component {
+class FriendPage extends React.Component {
 
     render() {
         return (
             <div>
                 <LoginRedirector />
                 <NavBar />
-                <SearchUser />
+                <FriendRequest />
             </div>
         )
     }
 
 }
 
-export default SearchPage;
+export default FriendPage;

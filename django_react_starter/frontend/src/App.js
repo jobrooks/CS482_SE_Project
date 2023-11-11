@@ -12,6 +12,7 @@ import LoginPage from './pages/LoginPage';
 import CreateAccountPage from './pages/CreateAccountPage';
 import ProfilePage from './pages/ProfilePage';
 import SearchPage from './pages/SearchPage';
+import FriendPage from './pages/FriendPage';
 
 function App() {
 
@@ -72,6 +73,7 @@ function App() {
             <Route path='/register' element={<CreateAccountPage />} />
             <Route path='/profile' element={<ProfilePage />} />
             <Route path='/search' element={<SearchPage />} />
+            <Route path='/friends' element={<FriendPage />} />
           </Routes>
         {/* </ThemeProvider> */}
     </div>

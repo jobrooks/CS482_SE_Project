@@ -103,6 +103,12 @@ class NavBar extends React.Component {
                             Search
                         </MenuItem>
                         <MenuItem
+                            component={"a"}
+                            href={"/friends"}
+                        >
+                            Friends
+                        </MenuItem>
+                        <MenuItem
                             // component={"a"}
                             onClick={this.handleLogout}
                         >
