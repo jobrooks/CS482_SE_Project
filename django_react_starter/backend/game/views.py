@@ -24,6 +24,35 @@ class GameList(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class DrawCard(APIView):
+    def draw_card(self, deckID: int, handID: int):
+        deck_cards = list(Card.objects.filter(deck=deckID))
+        chosen_card = random.sample(deck_cards, 1)
+        hand = Hand.objects.get(pk=handID)
+        chosen_card[0].deck = None
+        chosen_card[0].hand = hand
+        chosen_card[0].save()
+        return chosen_card[0]
+    
+    def get(self, request, deckID, handID):
+        card = self.draw_card(deckID=deckID, handID=handID)
+        serializer = CardSerializer(card)
+        return Response(serializer.data)
+
+class DiscardCard(APIView):
+    def discard_card(self, cardID, deckID):
+        card = Card.objects.get(pk=cardID)
+        deck = Deck.objects.get(pk=deckID)
+        card.deck = deck
+        card.hand = None
+        card.save()
+        return card
+    
+    def get(self, request, cardID, deckID):
+        card = self.discard_card(cardID=cardID, deckID=deckID)
+        serializer = CardSerializer(card)
+        return Response(serializer.data)
+    
 class GameDetail(APIView):
     def get_game(self, pk):
             try:
@@ -78,14 +107,22 @@ class HandDetail(APIView):
         return Response(serializer.errors)
 
 class DeckList(APIView):
+    def create_deck(self, deck):
+        for x in SUIT_CHOICES:
+            for y in RANK_CHOICES:
+                card = Card(suit=x, rank=y, deck=Deck.objects.get(pk=deck.data['id']))
+                card.save()
+
     def get(self, request):
         deck = Deck.objects.all()
         serializer = DeckSerializer(deck, many=True)
         return Response(serializer.data)
+    
     def post(self, request):
         serializer = DeckSerializer(data=request.data) 
         if serializer.is_valid(): 
             serializer.save()
+            self.create_deck(deck=serializer)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -120,7 +157,44 @@ class PlayerList(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
+class ViewPlayerActions(APIView):
+    def get_player(self, pk):
+        try:
+            return Player.objects.get(pk=pk)
+        except:
+            raise Http404
+    def get_game(self, pk):
+            try:
+                return Game.objects.get(pk=pk)
+            except:
+                raise Http404
+    def get(self, request, playerID, gameID):
+        player = self.get_player(pk=playerID)
+        game = self.get_game(pk=gameID)
+        if player.money > game.currentBetAmount:
+            player.canRaise = True
+            player.canFold = True
+            player.canCall = True
+            player.canAllIn = True
+        elif player.money == game.currentBetAmount:
+            player.canRaise = False
+            player.canFold = True
+            player.canCall = True
+            player.canAllIn = True
+        elif player.money < game.currentBetAmount:
+            player.canRaise = False
+            player.canFold = True
+            player.canCall = False
+            player.canAllIn = True
+        elif player.money == 0:
+            player.canRaise = False
+            player.canFold = False
+            player.canCall = False
+            player.canAllIn = False
+        serializer = PlayerSerializer(player)
+        return Response(serializer.data)
+
 class PlayerDetail(APIView):
     def get_player(self, pk):
         try:
@@ -140,15 +214,6 @@ class PlayerDetail(APIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors)
-    
-def create_deck():
-    deck = Deck()
-    deck.save()
-    for x in SUIT_CHOICES:
-        for y in RANK_CHOICES:
-            card = Card(suit=x, rank=y, deck=deck)
-            card.save()
-    return deck.pk
 
 def create_pot():
     pot = Pot(moneyAmount=0)
@@ -165,22 +230,6 @@ def create_player(money: int):
     player.save()
     return player.pk
 
-def draw_card(deck: int, hand: int):
-    deck_cards = list(Card.objects.filter(deck=deck))
-    chosen_card = random.sample(deck_cards, 1)
-    hand = Hand.objects.get(pk=hand)
-    chosen_card[0].deck = None
-    chosen_card[0].hand = hand
-    chosen_card[0].save()
-
-def discard_card(cardsToBeDiscarded: [int], deck: int):
-    for card in cardsToBeDiscarded:
-        deck_cards = Card.objects.get(pk=card)
-        deck = Deck.objects.get(pk=deck)
-        deck_cards.deck = deck
-        deck_cards.hand = None
-        deck_cards.save()
-
 def create_game(name: str, pot: Pot(), deck: Deck()):
     game = Game(name=name, pot=pot, deck=deck)
     game.save()
@@ -190,7 +239,6 @@ def get_player_hand(user: int):
     hand = Hand.objects.get(user=user)
     cards = Card.objects.filter(hand=hand)
     return cards
-
 
 def get_game(game: int):
     game = Game.objects.get(game=game)

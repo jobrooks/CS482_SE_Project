@@ -30,10 +30,10 @@ RANK_CHOICES = (
 )
 
 class Deck(models.Model):
-    name = models.CharField(max_length=10)
+    name = models.CharField(max_length=10, null=True)
 
 class Hand(models.Model):
-    name = models.CharField(max_length=10)
+    name = models.CharField(max_length=10, null=True)
 
 class Card(models.Model):
     suit = models.CharField(max_length=1, choices=SUIT_CHOICES)
@@ -45,16 +45,21 @@ class Pot(models.Model):
     moneyAmount = models.IntegerField()
 
 class Game(models.Model):
-    name = models.CharField(max_length=10)
+    name = models.CharField(max_length=10, null=True)
     deck = models.OneToOneField(Deck(), null=True, on_delete=models.CASCADE)
     pot = models.OneToOneField(Pot(), null=True, on_delete=models.CASCADE)
     currentTurn = models.IntegerField(null=True)
+    currentBetAmount = models.IntegerField(null=True)
 
 class Player(models.Model):
-    money = models.PositiveBigIntegerField()
+    money = models.PositiveBigIntegerField(default=0)
     game = models.ForeignKey(Game(), null=True, on_delete=models.CASCADE)
     hand = models.OneToOneField(Hand(), null=True, on_delete=models.CASCADE)
     name = models.CharField(max_length=25, null=True)
+    canRaise = models.BooleanField(null=True)
+    canFold = models.BooleanField(null=True)
+    canCall = models.BooleanField(null=True)
+    canAllIn = models.BooleanField(null=True)
 
 
 class TurnOrder():
