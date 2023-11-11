@@ -25,7 +25,7 @@ class TableCard extends React.Component {
     setTableTheme() {
         let theme = "blue";
         let themeImage = this.mapThemeToImage(theme);
-        axios.get("http://localhost:8000/user_profile/profile/tabletheme/" + localStorage.getItem("sessionToken") + "/")
+        axios.get("http://localhost:8000/user_profile/profile/tabletheme/" + JSON.parse(localStorage.getItem("sessionToken")) + "/")
         .then((response) => {
             theme = response.data;
             themeImage = this.mapThemeToImage(theme);
@@ -37,8 +37,6 @@ class TableCard extends React.Component {
             console.log("Error getting table theme")
             console.log(response);
         });
-        // this.setState({ tableTheme: theme, tableImage: themeImage });
-        // console.log(this.state)
     }
 
     putTableTheme(theme) {
