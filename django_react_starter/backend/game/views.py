@@ -5,8 +5,9 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.parsers import JSONParser
 from rest_framework import status
-from game.models import Card, Deck, Hand, Game, Player, TurnOrder, Pot, create_deck, draw_card, get_player_hand
-from game.serializers import CardSerializer, DeckSerializer, HandSerializer, PotSerializer, GameSerializer
+import random
+from game.models import Card, Deck, Hand, Game, Player, TurnOrder, Pot, SUIT_CHOICES, RANK_CHOICES
+from game.serializers import CardSerializer, DeckSerializer, HandSerializer, PotSerializer, GameSerializer, PlayerSerializer
 
 # Create your views here.
 
@@ -38,6 +39,59 @@ class GameDetail(APIView):
     def put(self, request, pk, format=None):
         game = self.get_game(pk)
         serializer = GameSerializer(game, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors)
+    
+class HandDetail(APIView):
+    def get_hand(self, pk):
+        try:
+            return Card.objects.filter(hand=pk)
+        except:
+            raise Http404
+        
+    def get(self, request, pk):
+        hand = self.get_hand(pk)
+        print(hand)
+        serializer = CardSerializer(hand, many=True)
+        return Response(serializer.data)
+    
+    def put(self, request, pk):
+        hand = self.get_hand(pk)
+        serializer = CardSerializer(hand, many=True, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors)
+    
+class PlayerList(APIView):
+    def get(self, request):
+        players = Player.objects.all()
+        serializer = PlayerSerializer(players, many=True)
+        return Response(serializer.data)
+    def post(self, request):
+        serializer = PlayerSerializer(data=request.data) 
+        if serializer.is_valid(): 
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class PlayerDetail(APIView):
+    def get_player(self, pk):
+        try:
+            return Player.objects.get(pk=pk)
+        except:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        player = self.get_player(pk)
+        serializer = PlayerSerializer(player)
+        return Response(serializer.data)
+    
+    def put(self, request, pk, format=None):
+        player = self.get_player(pk)
+        serializer = PlayerSerializer(player, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)

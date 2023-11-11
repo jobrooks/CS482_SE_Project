@@ -11,6 +11,9 @@ import LoginPage from './pages/LoginPage';
 import PlayPage from './pages/PlayPage';
 import CreateGamePage from './pages/CreateGamePage';
 
+import CreateAccountPage from './pages/CreateAccountPage';
+import ProfilePage from './pages/ProfilePage';
+
 function App() {
 
   const theme = createTheme({
@@ -67,8 +70,9 @@ function App() {
             <Route path='/' element={<HomePage />} />
             <Route path="/account" element={<AccountSettings />} />
             <Route path='/login' element={<LoginPage />} />
+            <Route path='/register' element={<CreateAccountPage />} />
             <Route path='/creategame' element={<CreateGamePage />} />
-            <Route path='/play' element={<PlayPage />} />
+            <Route path='/profile' element={<ProfilePage />} />
           </Routes>
         {/* </ThemeProvider> */}
     </div>

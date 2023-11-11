@@ -1,7 +1,6 @@
 from django.db import models
 from user_api.models import User
 from collections import deque
-import random
 
 
 DECK_SIZE = 52
@@ -49,13 +48,13 @@ class Game(models.Model):
     name = models.CharField(max_length=10)
     deck = models.OneToOneField(Deck(), null=True, on_delete=models.CASCADE)
     pot = models.OneToOneField(Pot(), null=True, on_delete=models.CASCADE)
-    currentTurn = models.IntegerField()
+    currentTurn = models.IntegerField(null=True)
 
 class Player(models.Model):
     money = models.PositiveBigIntegerField()
     game = models.ForeignKey(Game(), null=True, on_delete=models.CASCADE)
     hand = models.OneToOneField(Hand(), null=True, on_delete=models.CASCADE)
-    name = models.CharField(max_length=25)
+    name = models.CharField(max_length=25, null=True)
 
 
 class TurnOrder():
