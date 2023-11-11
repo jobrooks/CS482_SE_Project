@@ -3,7 +3,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from user_profile.serializers import UserSerializer
+from user_api.serializers import UserSerializer
 from rest_framework.views import APIView
 from django.http import Http404
 from django.http import JsonResponse
