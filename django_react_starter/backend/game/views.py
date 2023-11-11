@@ -44,6 +44,19 @@ class GameDetail(APIView):
             return Response(serializer.data)
         return Response(serializer.errors)
     
+class HandList(APIView):
+    def get(self, request):
+        hand = Hand.objects.all()
+        serializer = HandSerializer(hand, many=True)
+        return Response(serializer.data)
+   
+    def post(self, request):
+        serializer = HandSerializer(data=request.data) 
+        if serializer.is_valid(): 
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 class HandDetail(APIView):
     def get_hand(self, pk):
         try:
@@ -53,7 +66,6 @@ class HandDetail(APIView):
         
     def get(self, request, pk):
         hand = self.get_hand(pk)
-        print(hand)
         serializer = CardSerializer(hand, many=True)
         return Response(serializer.data)
     
@@ -64,7 +76,39 @@ class HandDetail(APIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors)
+
+class DeckList(APIView):
+    def get(self, request):
+        deck = Deck.objects.all()
+        serializer = DeckSerializer(deck, many=True)
+        return Response(serializer.data)
+    def post(self, request):
+        serializer = DeckSerializer(data=request.data) 
+        if serializer.is_valid(): 
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class DeckDetail(APIView):
+    def get_deck(self, pk):
+        try:
+            return Card.objects.filter(deck=pk)
+        except:
+            raise Http404
+        
+    def get(self, request, pk):
+        deck = self.get_hand(pk)
+        serializer = CardSerializer(deck, many=True)
+        return Response(serializer.data)
     
+    def put(self, request, pk):
+        deck = self.get_hand(pk)
+        serializer = CardSerializer(deck, many=True, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors)
+
 class PlayerList(APIView):
     def get(self, request):
         players = Player.objects.all()
