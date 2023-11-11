@@ -9,6 +9,7 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { CssBaseline } from '@mui/material';
 import LoginPage from './pages/LoginPage';
 import PlayPage from './pages/PlayPage';
+import CreateGamePage from './pages/CreateGamePage';
 
 function App() {
 
@@ -66,6 +67,7 @@ function App() {
             <Route path='/' element={<HomePage />} />
             <Route path="/account" element={<AccountSettings />} />
             <Route path='/login' element={<LoginPage />} />
+            <Route path='/creategame' element={<CreateGamePage />} />
             <Route path='/play' element={<PlayPage />} />
           </Routes>
         {/* </ThemeProvider> */}
