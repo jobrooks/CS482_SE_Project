@@ -41,7 +41,7 @@ class LoginPage extends React.Component {
           // Handle login from backend
           axios.post("http://localhost:8000/user_login/login/", this.state.loginInfo)
           .then((response) => {
-            localStorage.setItem("sessionToken", JSON.stringify(response.data.token));
+            localStorage.setItem("sessionToken", response.data.token);
             this.props.navigate("/"); // Redirect to /
           })
           .catch((response) => {
