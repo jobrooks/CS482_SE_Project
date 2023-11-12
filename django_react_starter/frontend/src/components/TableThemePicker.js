@@ -8,7 +8,7 @@ class TableThemePicker extends React.Component {
         this.handleClose = this.handleClose.bind(this);
         this.handleSave = this.handleSave.bind(this);
         this.state = {
-            open: this.props.avatarColorPickerOpen,
+            open: this.props.themePickerOpen,
         };
     }
 
@@ -36,7 +36,7 @@ class TableThemePicker extends React.Component {
                             >
                                 <Box
                                     component="img"
-                                    src="/images/Table Blue.png"
+                                    src="/images/Table Themes/Table Blue.png"
                                     sx={{
                                         width: "100%",
                                         height: "auto",
@@ -50,7 +50,7 @@ class TableThemePicker extends React.Component {
                             >
                                 <Box
                                     component="img"
-                                    src="/images/Table Green.png"
+                                    src="/images/Table Themes/Table Green.png"
                                     sx={{
                                         width: "100%",
                                         height: "auto",
