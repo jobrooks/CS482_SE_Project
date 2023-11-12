@@ -1,42 +1,42 @@
 import { Dialog, DialogContent, DialogTitle, Grid, Box, Button } from "@mui/material";
 import React from "react";
 
-class TableThemePicker extends React.Component {
+class CardBackingPicker extends React.Component {
 
     constructor(props) {
         super(props);
         this.handleClose = this.handleClose.bind(this);
         this.handleSave = this.handleSave.bind(this);
         this.state = {
-            open: this.props.themePickerOpen,
+            open: this.props.backingPickerOpen,
         };
     }
 
     handleClose() {
-        this.props.toggleThemePicker();
+        this.props.toggleBackingPicker();
     }
     
     handleSave() {
-        this.props.toggleThemePicker();
+        this.props.toggleBackingPicker();
     }
 
-    handleThemeChange(theme) {
-        this.props.changeTheme(theme);
+    handleBackingChange(backing) {
+        this.props.changeBacking(backing);
     }
 
     render() {
         return (
-            <Dialog open={this.props.themePickerOpen} onClose={this.handleClose}>
-                <DialogTitle>Change Table Theme</DialogTitle>
+            <Dialog open={this.props.backingPickerOpen} onClose={this.handleClose}>
+                <DialogTitle>Change Card Backing</DialogTitle>
                 <DialogContent>
                     <Grid container spacing={2}>
                         <Grid item xs={6}>
                             <Button
-                                onClick={() => {this.handleThemeChange("blue")}}
+                                onClick={() => {this.handleBackingChange("blue")}}
                             >
                                 <Box
                                     component="img"
-                                    src="/images/Table Themes/Table Blue.png"
+                                    src="/images/Card Backings/Back Blue Plaid.png"
                                     sx={{
                                         width: "100%",
                                         height: "auto",
@@ -46,11 +46,25 @@ class TableThemePicker extends React.Component {
                         </Grid>
                         <Grid item xs={6}>
                             <Button
-                                onClick={() => {this.handleThemeChange("green")}}
+                                onClick={() => {this.handleBackingChange("green")}}
                             >
                                 <Box
                                     component="img"
-                                    src="/images/Table Themes/Table Green.png"
+                                    src="/images/Card Backings/Back Green Plaid.png"
+                                    sx={{
+                                        width: "100%",
+                                        height: "auto",
+                                    }}
+                                />
+                            </Button>
+                        </Grid>
+                        <Grid item xs={6}>
+                            <Button
+                                onClick={() => {this.handleBackingChange("red")}}
+                            >
+                                <Box
+                                    component="img"
+                                    src="/images/Card Backings/Back Red Plaid.png"
                                     sx={{
                                         width: "100%",
                                         height: "auto",
@@ -66,4 +80,4 @@ class TableThemePicker extends React.Component {
 
 }
 
-export default TableThemePicker;
+export default CardBackingPicker;
