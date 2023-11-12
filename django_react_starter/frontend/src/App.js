@@ -73,6 +73,7 @@ function App() {
             <Route path='/register' element={<CreateAccountPage />} />
             <Route path='/creategame' element={<CreateGamePage />} />
             <Route path='/profile' element={<ProfilePage />} />
+            <Route path='/play' element={<PlayPage />} />
           </Routes>
         {/* </ThemeProvider> */}
     </div>
