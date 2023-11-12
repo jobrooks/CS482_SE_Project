@@ -20,12 +20,6 @@ class CreateGamePage extends React.Component {
   render() {
     return (
       <div>
-        <h1>Player List</h1>
-        <ul>
-          {players.map((player, index) => (
-            <li key={index}>{player}</li>
-          ))}
-        </ul>
         <button onClick={handleAddPlayer}>Add Player</button>
         <button>Create Game</button>
       </div>
