@@ -41,11 +41,14 @@ def send_friend_request(request, receiver_id):
     user = get_user_from_token(request)
     if user:
         if request.method == 'POST':
-            receiver = User.objects.get(id=receiver_id)
-            print(receiver.username)
-            friend_request = FriendRequest(sender=user, receiver=receiver)
-            friend_request.save()
-            return JsonResponse({'success': True})
+            try:
+                receiver = User.objects.get(id=receiver_id)
+                print(receiver.username)
+                friend_request = FriendRequest(sender=user, receiver=receiver)
+                friend_request.save()
+                return JsonResponse({'success': True})
+            except User.DoesNotExist:
+                return JsonResponse({'error': 'User not found'}, status=404)
         
         return JsonResponse({'success':False, 'error':'Invalid request'})
     else:

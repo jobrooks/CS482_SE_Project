@@ -13,6 +13,8 @@ class FriendTest(APITestCase, TestCase):
         self.token = Token.objects.create(user=self.user)
         self.user1 = User.objects.create(username='user1', email='user1@example.com')
         self.user2 = User.objects.create(username='user2', email='user2@example.com')
+        self.sender = User.objects.create(username='sender', email='sender@example.com')
+        self.receiver = User.objects.create(username='receiver', email='receiver@example.com')
         self.client.credentials(HTTP_AUTHORIZATION=f'Token {self.token.key}')
         
 
@@ -32,6 +34,12 @@ class FriendTest(APITestCase, TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'testuser')
 
+    def test_friend_requests(self):
+        response = self.client.get('http://localhost:8000/friend/requests/')
+        self.assertEqual(response.status_code, 200)
+        response_data = response.json()
+        self.assertEqual(response_data, {'friend_requests': []})
+
     def test_send_friend_request(self):
         another_user = User.objects.create(username='another_user', email='another@example.com')
 
@@ -39,6 +47,34 @@ class FriendTest(APITestCase, TestCase):
         self.assertEqual(response.status_code, 200)
         response_data = response.json()
         self.assertTrue(response_data['success'])
+
+    def test_send_friend_request_user_not_exist(self):
+        response = self.client.post('http://localhost:8000/friend/send_requests/7')
+        self.assertEqual(response.status_code, 404)
+        response_data = response.json()
+        self.assertTrue({'error': 'User not found'})
+
+    def test_accept_friend_request(self):
+        friend_request = FriendRequest.objects.create(sender=self.sender, receiver=self.receiver)
+        response = self.client.post(f'http://localhost:8000/friend/accept_requests/{friend_request.id}')
+        self.assertEqual(response.status_code, 200)
+
+    def test_decline_friend_request(self):
+        friend_request = FriendRequest.objects.create(sender=self.sender, receiver=self.receiver)
+        response = self.client.post(f'http://localhost:8000/friend/decline_requests/{friend_request.id}')
+        self.assertEqual(response.status_code, 200)
+    
+    def test_get_friends_no_friends(self):
+        response = self.client.get('http://localhost:8000/friend/get_friends/')
+        self.assertEqual(response.status_code, 200)
+        response_data = response.json()
+        self.assertEqual(response_data, {'friends': []})
+
+    def test_get_friends_with_friends(self):
+        friend_list_user1 = FriendList.objects.get(user=self.user1)
+        friend_list_user1.friends.add(self.user2)
+        response = self.client.get('http://localhost:8000/friend/get_friends/')
+        self.assertEqual(response.status_code, 200)
 
     def test_add_friend(self):
         friend_list = FriendList.objects.get(user=self.user1)
@@ -61,3 +97,26 @@ class FriendTest(APITestCase, TestCase):
         friend_list1.unfriend(self.user2)
         self.assertFalse(friend_list1.is_mutual_friend(self.user2))
         self.assertFalse(friend_list2.is_mutual_friend(self.user1))
+
+    def test_accept_friend_request(self):
+        friend_request = FriendRequest.objects.create(sender=self.sender, receiver=self.receiver)
+        friend_request.accept()
+
+        sender_friend_list = FriendList.objects.get(user=self.sender)
+        receiver_friend_list = FriendList.objects.get(user=self.receiver)
+
+        self.assertTrue(sender_friend_list.is_mutual_friend(self.receiver))
+        self.assertTrue(receiver_friend_list.is_mutual_friend(self.sender))
+        self.assertFalse(friend_request.is_active)
+
+    def test_decline_friend_request(self):
+        friend_request = FriendRequest.objects.create(sender=self.sender, receiver=self.receiver)
+        friend_request.decline()
+
+        self.assertFalse(friend_request.is_active)
+
+    def test_cancel_friend_request(self):
+        friend_request = FriendRequest.objects.create(sender=self.sender, receiver=self.receiver)
+        friend_request.cancel()
+
+        self.assertFalse(friend_request.is_active)
