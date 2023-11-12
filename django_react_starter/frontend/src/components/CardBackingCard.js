@@ -2,92 +2,93 @@ import React from "react";
 import { Avatar, Box, Card, CardActionArea, CardContent, Divider, Grid, List, ListItem, Typography } from "@mui/material";
 import { red, orange, yellow, green, blue, purple } from '@mui/material/colors';
 import { Button } from "@mui/base";
-import TableThemePicker from "./TableThemePicker";
+import CardBackingPicker from "./CardBackingPicker";
 import axios from "axios";
 
-class TableCard extends React.Component {
+class CardBackingCard extends React.Component {
 
     constructor(props) {
         super(props)
-        this.toggleTableThemePicker = this.toggleTableThemePicker.bind(this);
-        this.changeTheme = this.changeTheme.bind(this);
+        this.toggleBackingPicker = this.toggleBackingPicker.bind(this);
+        this.changeBacking = this.changeBacking.bind(this);
         this.state = {
-            themePickerOpen: false,
-            tableTheme: "blue",
-            tableImage: this.mapThemeToImage(this.tableTheme),
+            backingPickerOpen: false,
+            cardBacking: "red",
+            cardBackingImage: this.mapBackingToImage(this.cardBacking),
         }
     }
 
     /*
-        Sets table theme to the theme recieved from the backend
+        Sets card backing to the backing recieved from the backend
     */
-    setTableTheme() {
-        let theme = "blue";
-        let themeImage = this.mapThemeToImage(theme);
+    setCardBacking() {
+        let backing = "red";
+        let backingImage = this.mapBackingToImage(backing);
         let token = JSON.parse(localStorage.getItem("sessionToken"));
-        axios.get(`http://localhost:8000/user_profile/profile/tabletheme/${token}/`)
+        axios.get(`http://localhost:8000/user_profile/profile/cardbacking/${token}/`)
         .then((response) => {
-            theme = response.data;
-            themeImage = this.mapThemeToImage(theme);
-            console.log("real theme is: " + theme)
-            this.setState({ tableTheme: theme, tableImage: themeImage });
-            return theme;
+            backing = response.data;
+            backingImage = this.mapBackingToImage(backing);
+            console.log("real backing is: " + backing)
+            this.setState({ cardBacking: backing, cardBackingImage: backingImage });
+            return backing;
         })
         .catch((response) => {
-            console.log("Error getting table theme")
+            console.log("Error getting card backing")
             console.log(response);
         });
     }
 
-    patchTableTheme(theme) {
+    patchCardBacking(backing) {
         const data = {
-            "table_theme": theme
+            "card_backing": backing
         }
         let token = JSON.parse(localStorage.getItem("sessionToken"));
-        axios.patch(`http://localhost:8000/user_profile/profile/tabletheme/${token}/`, data)
+        axios.patch(`http://localhost:8000/user_profile/profile/cardbacking/${token}/`, data)
         .then((response) => {
             return response.data;
         }).catch((response) => {
-            console.log("Error patching table theme")
+            console.log("Error patching card backing")
             console.log(response);
         });
     }
 
-    mapThemeToImage(theme) {
-        const themeDict = {
-            "blue": "/images/Table Themes/Table Blue.png",
-            "green": "/images/Table Themes/Table Green.png",
+    mapBackingToImage(backing) {
+        const backingDict = {
+            "red": "/images/Card Backings/Back Red Plaid.png",
+            "blue": "/images/Card Backings/Back Blue Plaid.png",
+            "green": "/images/Card Backings/Back Green Plaid.png",
         };
-        let themeImage = themeDict[theme];
-        if (themeImage !== undefined) {
-            return themeImage;
+        let backingImage = backingDict[backing];
+        if (backingImage !== undefined) {
+            return backingImage;
         } else {
-            return themeDict["blue"];
+            return backingDict["red"];
         }
     }
 
     componentDidMount() {
-        this.setTableTheme();
+        this.setCardBacking();
     }
 
-    toggleTableThemePicker() {
-        this.setState({ themePickerOpen: !this.state.themePickerOpen });
+    toggleBackingPicker() {
+        this.setState({ backingPickerOpen: !this.state.backingPickerOpen });
     }
 
-    changeTheme(theme) {
-        let themeImage = this.mapThemeToImage(theme);
-        this.setState({ tableTheme: theme, tableImage: themeImage });
-        this.patchTableTheme(theme);
+    changeBacking(backing) {
+        let backingImage = this.mapBackingToImage(backing);
+        this.setState({ cardBacking: backing, cardBackingImage: backingImage });
+        this.patchCardBacking(backing);
     }
 
     render() {
         return (
-            <div className="TableCard">
-                <div className="TableThemePicker">
-                    <TableThemePicker
-                        themePickerOpen={this.state.themePickerOpen}
-                        toggleThemePicker={() => this.toggleTableThemePicker()}
-                        changeTheme={(theme) => this.changeTheme(theme)}
+            <div className="CardBackingCard">
+                <div className="CardBackingPicker">
+                    <CardBackingPicker
+                        backingPickerOpen={this.state.backingPickerOpen}
+                        toggleBackingPicker={() => this.toggleBackingPicker()}
+                        changeBacking={(backing) => this.changeBacking(backing)}
                     />
                 </div>
                 <Card elevation={3}
@@ -111,12 +112,12 @@ class TableCard extends React.Component {
                         }}
                     >
                         <Grid item
-                            xs={12}
+                            xs={4}
                         // Top item is avatar
                         >
                             <Box
                                 component="img"
-                                src={this.state.tableImage}
+                                src={this.state.cardBackingImage}
                                 sx={{
                                     width: "100%",
                                     height: "auto",
@@ -128,7 +129,7 @@ class TableCard extends React.Component {
                             container
                             justifyContent="flex-start"
                             alignItems="flex-start"
-                            xs={12}
+                            xs={8}
                             sx={{
                                 height: "inherit"
                             }}
@@ -145,20 +146,20 @@ class TableCard extends React.Component {
                                     <Grid container spacing={0}>
                                         <Grid item xs={12}>
                                             <Typography variant="caption" noWrap={false} textAlign="left">
-                                                Current Theme
+                                                Current Card Backing
                                             </Typography>
                                         </Grid>
                                         <Grid item xs={12}>
                                             <Typography variant="h6" noWrap={false} textAlign="left" >
-                                                {this.state.tableTheme}
+                                                {this.state.cardBacking}
                                             </Typography>
                                         </Grid>
                                     </Grid>
                                 </ListItem>
                                 <CardActionArea>
-                                    <ListItem button onClick={this.toggleTableThemePicker}>
+                                    <ListItem button onClick={this.toggleBackingPicker}>
                                         <Typography color="textSecondary" noWrap={false} textAlign="left">
-                                            Change Table Theme
+                                            Change Card Backing
                                         </Typography>
                                     </ListItem>
                                 </CardActionArea>
@@ -173,4 +174,4 @@ class TableCard extends React.Component {
 
 }
 
-export default TableCard;
+export default CardBackingCard;

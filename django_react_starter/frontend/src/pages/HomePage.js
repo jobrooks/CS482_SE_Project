@@ -4,6 +4,7 @@ import UserCard from "../components/UserCard";
 import TableCard from "../components/TableCard";
 import { Grid } from "@mui/material";
 import LoginRedirector from "../components/LoginRedirector";
+import CardBackingCard from "../components/CardBackingCard";
 
 
 class HomePage extends React.Component {
@@ -24,7 +25,7 @@ class HomePage extends React.Component {
                         <TableCard />
                     </Grid>
                     <Grid item xs={6}>
-                        
+                        <CardBackingCard />
                     </Grid>
                 </Grid>
             </div>
