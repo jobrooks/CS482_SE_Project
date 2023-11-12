@@ -54,3 +54,30 @@ class TableTheme(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class CardBacking(APIView):
+    def get_user(self, token):
+        try:
+            return User.objects.get(auth_token=token)
+        except:
+            raise Http404
+        
+    def get(self, request, token):
+        user = self.get_user(token)
+        serializer = UserSerializer(user)
+        return Response(serializer.data["card_backing"])
+    
+    def patch(self, request, token):
+        user = self.get_user(token)
+        
+        # Cleaning request very important while using patch since partial=True allows any field to be changed
+        # without requiring the username and password. Here we use a dictionary comprehention to ignore any 
+        # other fields besides "table_theme".
+        cleaned_request = request.data.copy()
+        cleaned_request = {key:value for (key, value) in cleaned_request.items() if key == "card_backing"}
+        
+        serializer = UserSerializer(user, data=cleaned_request, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
