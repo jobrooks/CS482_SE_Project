@@ -1,30 +1,65 @@
 import React, { useState } from 'react';
+import Box from '@mui/material/Box';
+import Stack from '@mui/material/Stack';
+import Avatar from '@mui/material/Avatar';
+import Typography from '@mui/material/Typography';
+import { Checkbox } from '@mui/material';
 
-/*
-const PlayerList = () => {
-  const [players, setPlayers] = useState([]);
-}
-*/
-const players = [
-  { name: 'Sleepy', stack: '100c', avatar: 'path/to/sleepy_avatar.png' },
-  { name: 'Loki', stack: '100c', avatar: 'path/to/loki_avatar.png' },
-  // Add other players here...
-];
 
-const user_token = "";
-
-  const handleAddPlayer = () => {
-    //setPlayers(prevPlayers => [...prevPlayers, `Player ${prevPlayers.length + 1}`]);
-  };
 
 class CreateGamePage extends React.Component {
 
+  state = {
+    players: [],
+    selectedPlayers: []
+  };
+
+  componentDidMount() {
+    fetch('http://127.0.0.1:8000/player')
+      .then(response => response.json())
+      .then(data => this.setState({ players: data }))
+      .catch(error => console.error('Error fetching deck:', error));
+  }
+
+  handlePlayerSelection = (playerName) => {
+    this.setState((prevState) => {
+      const isSelected = prevState.selectedPlayers.includes(playerName);
+
+      if (isSelected) {
+        // If player is already selected, remove from selectedPlayers
+        return {
+          selectedPlayers: prevState.selectedPlayers.filter(name => name !== playerName),
+        };
+      } else {
+        // If player is not selected, add to selectedPlayers
+        return {
+          selectedPlayers: [...prevState.selectedPlayers, playerName],
+        };
+      }
+    });
+  }
+
   render() {
+    const {players, selectedPlayers} = this.state;
     return (
-      <div>
-        <button onClick={handleAddPlayer}>Add Player</button>
-        <button>Create Game</button>
-      </div>
+      <Box sx={{ p: 2, maxWidth: 'sm', margin: 'auto' }}>
+        <Typography variant="h5" align="center" mb={2}>
+            Available Players:
+        </Typography>
+        <Stack direction="row" justifyContent="space-between" spacing={2} mb={2}>
+          {players.map((player) => (
+            <Box key={player.name} sx={{ textAlign: 'center' }}>
+              <Avatar src={player.avatar}>{player.name[0]}</Avatar>
+              <Typography variant="caption">{player.name}</Typography>
+              <Typography variant="caption">{player.stack}</Typography>
+              <Checkbox
+                checked={selectedPlayers.includes(player.name)}
+                onChange={() => this.handlePlayerSelection(player.name)}
+              />
+            </Box>
+          ))}
+        </Stack>
+      </Box>
     );
   }
 };

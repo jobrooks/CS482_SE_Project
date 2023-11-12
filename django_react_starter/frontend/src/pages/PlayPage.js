@@ -1,9 +1,22 @@
-import React from 'react';
+//import React from 'react';
 import { Box, Button, Typography, Avatar, Stack, Card } from '@mui/material';
 import CasinoIcon from '@mui/icons-material/Casino'; // You can choose an icon that suits your theme
 import axios from "axios";
 
 
+import React, { useState, useEffect } from 'react';
+
+const CardDisplay = () => {
+  const [cards, setCards] = useState([]);
+
+  useEffect(() => {
+    // Fetch data from your Django API endpoint
+    fetch('your-django-api-endpoint')
+      .then(response => response.json())
+      .then(data => setCards(data))
+      .catch(error => console.error('Error fetching data:', error));
+  }, []);
+}
 
 //use for player profiles, get from db
 const players = [
@@ -87,6 +100,7 @@ class PlayPage extends React.Component {
                 Stack: 100c
             </Typography>
             </Box>
+            
         );
     }
 }

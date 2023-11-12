@@ -13,6 +13,7 @@ import CreateGamePage from './pages/CreateGamePage';
 
 import CreateAccountPage from './pages/CreateAccountPage';
 import ProfilePage from './pages/ProfilePage';
+import PlayPage2 from './pages/PlayPage2';
 
 function App() {
 
@@ -74,6 +75,7 @@ function App() {
             <Route path='/creategame' element={<CreateGamePage />} />
             <Route path='/profile' element={<ProfilePage />} />
             <Route path='/play' element={<PlayPage />} />
+            <Route path='/play2' element={<PlayPage2 />} />
           </Routes>
         {/* </ThemeProvider> */}
     </div>
