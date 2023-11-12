@@ -2,7 +2,6 @@ import React from "react";
 import { Avatar, Box, Card, CardActionArea, CardContent, Divider, Grid, List, ListItem, Typography } from "@mui/material";
 import { red, orange, yellow, green, blue, purple } from '@mui/material/colors';
 import { Button } from "@mui/base";
-import ColorPicker from "./AvatarColorPicker";
 import TableThemePicker from "./TableThemePicker";
 import axios from "axios";
 
@@ -26,7 +25,7 @@ class TableCard extends React.Component {
         let theme = "blue";
         let themeImage = this.mapThemeToImage(theme);
         let token = JSON.parse(localStorage.getItem("sessionToken"));
-        axios.get(`http://localhost:8000/user_profile/profile/tabletheme/${token}`)
+        axios.get(`http://localhost:8000/user_profile/profile/tabletheme/${token}/`)
         .then((response) => {
             theme = response.data;
             themeImage = this.mapThemeToImage(theme);
@@ -40,23 +39,24 @@ class TableCard extends React.Component {
         });
     }
 
-    putTableTheme(theme) {
+    patchTableTheme(theme) {
         const data = {
             "table_theme": theme
         }
-        axios.patch("http://localhost:8000/user_profile/profile/tabletheme/" + localStorage.getItem("sessionToken") + "/", data)
+        let token = JSON.parse(localStorage.getItem("sessionToken"));
+        axios.patch(`http://localhost:8000/user_profile/profile/tabletheme/${token}/`, data)
         .then((response) => {
             return response.data;
         }).catch((response) => {
-            console.log("Error putting table theme")
+            console.log("Error patching table theme")
             console.log(response);
         });
     }
 
     mapThemeToImage(theme) {
         const themeDict = {
-            "blue": "/images/Table Blue.png",
-            "green": "/images/Table Green.png",
+            "blue": "/images/Table Themes/Table Blue.png",
+            "green": "/images/Table Themes/Table Green.png",
         };
         let themeImage = themeDict[theme];
         if (themeImage !== undefined) {
@@ -77,7 +77,7 @@ class TableCard extends React.Component {
     changeTheme(theme) {
         let themeImage = this.mapThemeToImage(theme);
         this.setState({ tableTheme: theme, tableImage: themeImage });
-        this.putTableTheme(theme);
+        this.patchTableTheme(theme);
     }
 
     render() {
