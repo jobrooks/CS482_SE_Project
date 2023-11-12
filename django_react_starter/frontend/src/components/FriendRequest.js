@@ -47,8 +47,39 @@ class FriendRequest extends Component {
           sender: { username: usernames[index] },
         })
       );
-
       this.setState({ friendRequest: updatedRequests });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  acceptFriendRequest = async (requestId) => {
+    try {
+      await axios.post(
+        `http://localhost:8000/friend/accept_requests/${requestId}`
+      );
+
+      this.setState((prevState) => ({
+        friendRequest: prevState.friendRequest.filter(
+          (request) => request.id !== requestId
+        ),
+      }));
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  declineFriendRequest = async (requestId) => {
+    try {
+      await axios.post(
+        `http://localhost:8000/friend/decline_requests/${requestId}`
+      );
+
+      this.setState((prevState) => ({
+        friendRequest: prevState.friendRequest.filter(
+          (request) => request.id !== requestId
+        ),
+      }));
     } catch (error) {
       console.error(error);
     }
@@ -67,8 +98,13 @@ class FriendRequest extends Component {
         <ul>
           {this.state.friendRequest.map((request) => (
             <li key={request.id}>
-              {request.sender.username} <button>Accept</button>
-              <button>Decline</button>
+              {request.sender.username}{" "}
+              <button onClick={() => this.acceptFriendRequest(request.id)}>
+                Accept
+              </button>
+              <button onClick={() => this.declineFriendRequest(request.id)}>
+                Decline
+              </button>
             </li>
           ))}
         </ul>

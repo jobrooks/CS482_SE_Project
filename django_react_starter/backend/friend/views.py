@@ -63,4 +63,28 @@ def friend_requests(request):
     received_requests = FriendRequest.objects.filter(receiver=request.user, is_active=True)
     serializer = FriendRequestSerializer(received_requests, many=True)
     return JsonResponse({'friend_requests': serializer.data})
+
+@csrf_exempt
+@permission_classes([IsAuthenticated])
+def accept_friend_request(request, request_id):
+
+    friend_request = FriendRequest.objects.get(id=request_id)
+
+    if request.method == 'POST':
+        friend_request.accept()
+        return JsonResponse({'message': 'Friend request accepted'})
+    
+    return JsonResponse({'message': 'Unable to accept friend request'}, status=400)
+
+@csrf_exempt
+@permission_classes([IsAuthenticated])
+def decline_friend_request(request, request_id):
+
+    friend_request = FriendRequest.objects.get(id=request_id)
+
+    if request.method == 'POST':
+        friend_request.decline()
+        return JsonResponse({'message': 'Friend request declined'})
+    
+    return JsonResponse({'message': 'Unable to decline friend request'}, status=400)
     
