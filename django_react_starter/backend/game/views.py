@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework.parsers import JSONParser
 from rest_framework import status
 import random
+import time
 from game.models import Card, Round, Deck, Hand, Game, Player, TurnOrder, Pot, SUIT_CHOICES, RANK_CHOICES
 from game.serializers import RoundSerializer, CardSerializer, DeckSerializer, HandSerializer, PotSerializer, GameSerializer, PlayerSerializer
 
@@ -64,29 +65,6 @@ class DrawCard(APIView):
         card = self.draw_card(deckID=deckID, handID=handID)
         serializer = CardSerializer(card)
         return Response(serializer.data)
-
-class TakeTurn(APIView):
-    def get_game(self, pk):
-            try:
-                return Game.objects.get(pk=pk)
-            except:
-                raise Http404
-    def get_player(self, pk):
-        try:
-            return Player.objects.get(pk=pk)
-        except:
-            raise Http404
-    def put(self, request, playerID):
-        player = self.get_player(pk=playerID)
-        game = self.get_game(pk=player.game)
-        if playerID == game.turns.order[0]:
-            player.checkActions(playerID=playerID)
-            serializer = PlayerSerializer(player, data=request.data)
-            if serializer.is_valid():
-                serializer.save()
-                player.takeAction()
-        else:
-            return Response(status.HTTP_429_TOO_MANY_REQUESTS)
 
 class DiscardCard(APIView):
     def discard_card(self, cardID, deckID):
@@ -202,6 +180,7 @@ class PlayerList(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class PlayerDetail(APIView):
+    
     def get_player(self, pk):
         try:
             return Player.objects.get(pk=pk)
@@ -221,6 +200,40 @@ class PlayerDetail(APIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors)
+
+class StartGame(APIView):
+    def get(self, request, gameID):
+        firstRound = Round()
+        firstRound.createTurnOrder(gameID=gameID)
+        while (firstRound.turns.order != 0):
+            time.sleep(5)
+        secondRound = Round()
+        secondRound.createTurnOrder(gameID=gameID)
+        while (secondRound.turns.order != 0):
+            time.sleep(5)
+
+class TakeTurn(APIView):
+    def get_round(self, pk):
+            try:
+                return Round.objects.get(pk=pk)
+            except:
+                raise Http404
+    def get_player(self, pk):
+        try:
+            return Player.objects.get(pk=pk)
+        except:
+            raise Http404
+    def put(self, request, playerID, roundID):
+        player = self.get_player(pk=playerID)
+        round = self.get_round(pk=roundID)
+        if playerID == round.turns.order[0]:
+            player.checkActions(playerID=playerID)
+            serializer = PlayerSerializer(player, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                player.takeAction()
+        else:
+            return Response(status.HTTP_429_TOO_MANY_REQUESTS)
 
 def create_pot():
     pot = Pot(moneyAmount=0)
