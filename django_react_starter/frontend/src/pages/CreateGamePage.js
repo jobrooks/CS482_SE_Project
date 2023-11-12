@@ -11,6 +11,8 @@ const players = [
   // Add other players here...
 ];
 
+const user_token = "";
+
   const handleAddPlayer = () => {
     //setPlayers(prevPlayers => [...prevPlayers, `Player ${prevPlayers.length + 1}`]);
   };
