@@ -7,6 +7,11 @@ class User(AbstractUser):
         ("blue", "Blue"),
         ("green", "Green"),
     ]
+    CARD_BACKING_CHOICES = [
+        ("red", "Red"),
+        ("green", "Green"),
+        ("blue", "Blue"),
+    ]
     
     wins = models.PositiveIntegerField(default=0)
     avatar = models.ImageField(upload_to='avatars/', height_field=None, width_field=None, max_length=None, null=True, blank=True)
@@ -15,5 +20,6 @@ class User(AbstractUser):
     money = models.PositiveIntegerField(default=0)
     avatar_color = models.TextField(max_length=500, null=True, blank=True)
     table_theme = models.TextField(max_length=500, choices=TABLE_THEME_CHOICES, null=True, blank=True)
+    card_backing = models.TextField(max_length=500, choices=CARD_BACKING_CHOICES, null=True, blank=True)
     class Meta:
         db_table = 'auth_user'
