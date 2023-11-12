@@ -1,11 +1,16 @@
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from django.contrib.auth.models import User
-from game.models import Deck, Hand, Card, SUIT_CHOICES, RANK_CHOICES, Game, Pot, Player
+from game.models import Round, Deck, Hand, Card, SUIT_CHOICES, RANK_CHOICES, Game, Pot, Player
 
 class CardSerializer(serializers.ModelSerializer):
     class Meta:
         model = Card
+        fields = '__all__'
+
+class RoundSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Round
         fields = '__all__'
 
 class DeckSerializer(serializers.ModelSerializer):
