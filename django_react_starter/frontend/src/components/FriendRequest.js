@@ -31,8 +31,24 @@ class FriendRequest extends Component {
         "http://localhost:8000/friend/requests/",
         config
       );
-        console.log(response.data.friend_requests);
-      this.setState({ friendRequest: response.data.friend_requests });
+      const senderIds = response.data.friend_requests.map(
+        (request) => request.sender
+      );
+      const name_res = senderIds.map((senderId) =>
+        axios.get(`http://localhost:8000/friend/get_username/${senderId}`)
+      );
+
+      const usernameRes = await Promise.all(name_res);
+      const usernames = usernameRes.map((res) => res.data.username);
+
+      const updatedRequests = response.data.friend_requests.map(
+        (request, index) => ({
+          ...request,
+          sender: { username: usernames[index] },
+        })
+      );
+
+      this.setState({ friendRequest: updatedRequests });
     } catch (error) {
       console.error(error);
     }
