@@ -44,7 +44,8 @@ class TableCard extends React.Component {
         const data = {
             "table_theme": theme
         }
-        axios.patch("http://localhost:8000/user_profile/profile/tabletheme/" + localStorage.getItem("sessionToken") + "/", data)
+        let token = JSON.parse(localStorage.getItem("sessionToken"));
+        axios.patch(`http://localhost:8000/user_profile/profile/tabletheme/${token}/`, data)
         .then((response) => {
             return response.data;
         }).catch((response) => {

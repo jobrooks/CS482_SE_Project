@@ -5,6 +5,7 @@ import TableCard from "../components/TableCard";
 import { Grid } from "@mui/material";
 import LoginRedirector from "../components/LoginRedirector";
 import FriendRequest from "../components/FriendRequest";
+import FriendList from "../components/FriendList";
 
 
 class FriendPage extends React.Component {
@@ -15,6 +16,7 @@ class FriendPage extends React.Component {
                 <LoginRedirector />
                 <NavBar />
                 <FriendRequest />
+                <FriendList />
             </div>
         )
     }
