@@ -1,5 +1,8 @@
 from django.test import TestCase
-from game.models import Card, Deck, Hand
+from rest_framework.test import APIClient
+from rest_framework import status
+from game.models import Game, Round, Player, Hand, Card, Deck, Pot  # Import other models as needed
+from game.serializers import GameSerializer, RoundSerializer, PlayerSerializer, HandSerializer, CardSerializer, DeckSerializer, PotSerializer  # Import other serializers as needed
 
 
 
@@ -16,10 +19,102 @@ class PokerModelTestCase(TestCase):
 
         print("hi")
 
-        
+class GameListTestCase(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+    
+    def test_get_games(self):
+        response = self.client.get('http://127.0.0.1:8000/game/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+    def test_create_game(self):
+        data = {'name': 'Test Game'}
+        response = self.client.post('http://127.0.0.1:8000/game/', data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Game.objects.count(), 1)
+
+    # fix model to not let this happen
+    # def test_create_game_invalid_data(self):
+    #     bad_data = {'invalid_field': 'Invalid Value'}
+    #     response = self.client.post('http://127.0.0.1:8000/game/', bad_data)
+    #     #self.assertEqual(Game.objects.count(), 0)
+    #     self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+class DeckListTestCase(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+    
+    def test_get_decks(self):
+        response = self.client.get('http://127.0.0.1:8000/deck/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+    
+    def test_create_deck(self):
+        data = {'name': 'thedeck'}  # Replace with your actual data
+        response = self.client.post('http://127.0.0.1:8000/deck/', data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Deck.objects.count(), 1)
 
 """
+class DrawCardTestCase(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.deck = Deck.objects.create()
+        self.hand = Hand.objects.create(name="Test Hand")
+    
+    def test_draw_card(self):
+        response = self.client.get(f'/draw-card/{self.deck.id}/{self.hand.id}/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # Add assertions for the drawn card based on your serializer
+"""
+
+"""
+
+# Add more test cases for other views as needed
+
+class PlayerDetailTestCase(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.player = Player.objects.create(money=100)
+    
+    def test_get_player(self):
+        response = self.client.get(f'/players/{self.player.id}/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+    
+    def test_update_player(self):
+        data = {'money': 150}
+        response = self.client.put(f'/players/{self.player.id}/', data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.player.refresh_from_db()
+        self.assertEqual(self.player.money, 150)
+
+# Add more test cases for other views as needed
+
+"""
+
+"""
+
+class RoundDetailTestCase(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.game = Game.objects.create(name="Test Game")
+        self.round = Round.objects.create(game=self.game)
+
+    def test_get_rounds(self):
+        response = self.client.get('http://127.0.0.1:8000/round/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)  
+    
+    def test_get_specific_round(self):
+        response = self.client.get(f'http://127.0.0.1:8000/round/{self.round.id}/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+    
+
+    def test_update_round(self):
+        data = {'some_field': 'new_value'}
+        response = self.client.put(f'/rounds/{self.round.id}/', data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.round.refresh_from_db()
+        # Add assertions for updated data based on your serializer
+
     # see if card is 52 long
     # see if it contains Ace of Hearts and 2 of Hearts
     def test_create_standard_deck(self):
