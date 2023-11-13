@@ -95,21 +95,36 @@ class LoginPage extends React.Component {
                     value={this.state.password}
                     onChange={this.handleChange}
                   />
-                  <Button
-                    type="submit"
-                    onClick={(event) => {this.submitLogin(event, "user")}}
-                    variant="contained"
-                    sx={{ mt: 3, mb: 2, mx: 1, width: "45%"}}
-                  >
-                    Sign In
-                  </Button>
-                  <Button
-                    onClick={(event) => {this.submitLogin(event, "guest")}}
-                    variant="outlined"
-                    sx={{ mt: 3, mb: 2, mx: 1, width: "45%"}}
-                  >
-                    Enter as Guest
-                  </Button>
+                  <Grid container sx={{mt: 3, mb: 2}}>
+                    <Grid item xs={6}>
+                      <Button
+                        type="submit"
+                        onClick={(event) => {this.submitLogin(event, "user")}}
+                        variant="contained"
+                        sx={{ my: 1, width: "90%" }}
+                      >
+                        Sign In
+                      </Button>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Button
+                        onClick={(event) => {this.submitLogin(event, "guest")}}
+                        variant="outlined"
+                        sx={{ my: 1, width: "90%" }}
+                      >
+                        Enter as Guest
+                      </Button>
+                    </Grid>
+                    <Grid item xs={12}>
+                      <Button
+                        onClick={(event) => {this.props.navigate("/register")}}
+                        variant="outlined"
+                        sx={{ my: 1, width: "90%" }}
+                      >
+                        Create Account
+                      </Button>
+                    </Grid>
+                  </Grid>
                 </Box>
               </Box>
             </Container>
