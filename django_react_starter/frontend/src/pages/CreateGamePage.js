@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
-import { Checkbox } from '@mui/material';
+import { Button, Checkbox } from '@mui/material';
 
 
 
@@ -59,6 +59,7 @@ class CreateGamePage extends React.Component {
             </Box>
           ))}
         </Stack>
+        <Button variant="contained" size="large" href="PlayPage">Create Game</Button>
       </Box>
     );
   }
