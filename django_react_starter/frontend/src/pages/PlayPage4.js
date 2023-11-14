@@ -14,7 +14,7 @@ const handleSetRaise = () => console.log('Set Raise');
 const handleCall = () => console.log('Call');
 
 
-class PlayPage3 extends React.Component {
+class PlayPage4 extends React.Component {
 
   state = {
     players: [],
@@ -50,7 +50,7 @@ class PlayPage3 extends React.Component {
   render() {
     const {players, selectedPlayers} = this.state;
     return (
-      <div className='PlayPage3'>
+      <div className='PlayPage4'>
         <NavBar />
         <Box sx={{ p: 2}}>
           <Box sx={{ p: 2, maxWidth: 'sm', margin: 'auto' }}>
@@ -71,11 +71,15 @@ class PlayPage3 extends React.Component {
                 {/* Render poker chips or dealer button here */}
                 <CasinoIcon fontSize="large" /> {/* Placeholder for dealer button */}
             </Box>
-            <Button variant="contained" size="large" href="playpage4">Start Game</Button>
             <Typography variant="h5" align="center" mb={2}>
-                Layout
+                Community
             </Typography>
             <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+            <img
+                  src="/images/Cards/_2 Clubs.png"
+                  alt="card 1"
+                  style={{ width: '144px', height: '201px', marginRight: '10px' }}
+                />
             <div
               style={{
                 flex: 1,
@@ -116,73 +120,59 @@ class PlayPage3 extends React.Component {
                 border: '1px solid #888', // Add a border for better visibility
               }}
             />
-            <div
-              style={{
-                flex: 1,
-                width: '144px',
-                height: '201px',
-                marginRight: '10px',
-                backgroundColor: '#ccc', // Set the background color to grey
-                border: '1px solid #888', // Add a border for better visibility
-              }}
-            />
+            {/* <img
+                  src="/images/Cards/_King Clubs.png"
+                  alt="card 1"
+                  style={{ width: '144px', height: '201px', marginRight: '10px' }}
+                />
+            <img
+                  src="/images/Cards/_4 Diamonds.png"
+                  alt="card 1"
+                  style={{ width: '144px', height: '201px', marginRight: '10px' }}
+                />
+            <img
+                  src="/images/Cards/_10 Clubs.png"
+                  alt="card 1"
+                  style={{ width: '144px', height: '201px', marginRight: '10px' }}
+                /> */}
             </Box>
             
             <Typography variant="h5" align="center" mb={2}>
                 Your Cards
             </Typography>
             <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
-            <div
-              style={{
-                flex: 1,
-                width: '144px',
-                height: '201px',
-                marginRight: '10px',
-                backgroundColor: '#ccc', // Set the background color to grey
-                border: '1px solid #888', // Add a border for better visibility
-              }}
-            />
-            <div
-              style={{
-                flex: 1,
-                width: '144px',
-                height: '201px',
-                marginRight: '10px',
-                backgroundColor: '#ccc', // Set the background color to grey
-                border: '1px solid #888', // Add a border for better visibility
-              }}
-            />
-            <div
-              style={{
-                flex: 1,
-                width: '144px',
-                height: '201px',
-                marginRight: '10px',
-                backgroundColor: '#ccc', // Set the background color to grey
-                border: '1px solid #888', // Add a border for better visibility
-              }}
-            />
-            <div
-              style={{
-                flex: 1,
-                width: '144px',
-                height: '201px',
-                marginRight: '10px',
-                backgroundColor: '#ccc', // Set the background color to grey
-                border: '1px solid #888', // Add a border for better visibility
-              }}
-            />
-            <div
-              style={{
-                flex: 1,
-                width: '144px',
-                height: '201px',
-                marginRight: '10px',
-                backgroundColor: '#ccc', // Set the background color to grey
-                border: '1px solid #888', // Add a border for better visibility
-              }}
-            />
+            <img
+                  src="/images/Cards/_2 Clubs.png"
+                  alt="card 1"
+                  style={{ width: '144px', height: '201px', marginRight: '10px' }}
+                />
+            <img
+                  src="/images/Cards/_5 Hearts.png"
+                  alt="card 1"
+                  style={{ width: '144px', height: '201px', marginRight: '10px' }}
+                />
+            <img
+                  src="/images/Cards/_King Clubs.png"
+                  alt="card 1"
+                  style={{ width: '144px', height: '201px', marginRight: '10px' }}
+                />
+            <img
+                  src="/images/Cards/_4 Diamonds.png"
+                  alt="card 1"
+                  style={{ width: '144px', height: '201px', marginRight: '10px' }}
+                />
+            <img
+                  src="/images/Cards/_10 Clubs.png"
+                  alt="card 1"
+                  style={{ width: '144px', height: '201px', marginRight: '10px' }}
+                />
             </Box>
+
+            <Stack direction="row" spacing={2} justifyContent="center">
+                <Button variant="contained" onClick={handleFold}>Fold</Button>
+                <Button variant="contained" onClick={handleSetRaise}>Set Raise</Button>
+                <Button variant="contained" onClick={handleCall}>Call</Button>
+            </Stack>
           </Box>
         </Box>
       </div>
@@ -190,4 +180,4 @@ class PlayPage3 extends React.Component {
   }
 };
 
-export default PlayPage3;
+export default PlayPage4;
