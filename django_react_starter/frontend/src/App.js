@@ -16,6 +16,7 @@ import FriendPage from './pages/FriendPage';
 import CreateGamePage from './pages/CreateGamePage';
 import PlayPage from './pages/PlayPage';
 import PlayPage2 from './pages/PlayPage2';
+import PlayPage3 from './pages/PlayPage3';
 
 function App() {
 
@@ -80,6 +81,7 @@ function App() {
             <Route path='/playpage' element={<PlayPage />} />
             <Route path='/playpage2' element={<PlayPage2 />} />
             <Route path='/creategame' element={<CreateGamePage />} />
+            <Route path='/playpage3' element={<PlayPage3 />} />
           </Routes>
         {/* </ThemeProvider> */}
     </div>

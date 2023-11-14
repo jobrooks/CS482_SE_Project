@@ -67,7 +67,7 @@ class CreateGamePage extends React.Component {
             </Stack>
             <Link
               to={{
-                pathname: '/playpage',  // Replace with your actual path
+                pathname: '/playpage3',  // Replace with your actual path
                 state: { selectedPlayers }, // Pass selectedPlayers as state
               }}
             >
