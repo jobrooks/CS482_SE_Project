@@ -74,7 +74,7 @@ class NavBar extends React.Component {
                     >
                         <MenuItem
                         component={"a"}
-                        href={"/play"}
+                        href={"/creategame"}
                         >
                             Play
                         </MenuItem>

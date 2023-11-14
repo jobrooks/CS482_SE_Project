@@ -4,6 +4,9 @@ import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
 import { Button, Checkbox } from '@mui/material';
+import NavBar from "../components/NavBar";
+import LoginRedirector from "../components/LoginRedirector";
+import { Link } from 'react-router-dom';
 
 
 
@@ -42,25 +45,37 @@ class CreateGamePage extends React.Component {
   render() {
     const {players, selectedPlayers} = this.state;
     return (
-      <Box sx={{ p: 2, maxWidth: 'sm', margin: 'auto' }}>
-        <Typography variant="h5" align="center" mb={2}>
-            Available Players:
-        </Typography>
-        <Stack direction="row" justifyContent="space-between" spacing={2} mb={2}>
-          {players.map((player) => (
-            <Box key={player.name} sx={{ textAlign: 'center' }}>
-              <Avatar src={player.avatar}>{player.name[0]}</Avatar>
-              <Typography variant="caption">{player.name}</Typography>
-              <Typography variant="caption">{player.stack}</Typography>
-              <Checkbox
-                checked={selectedPlayers.includes(player.name)}
-                onChange={() => this.handlePlayerSelection(player.name)}
-              />
-            </Box>
-          ))}
-        </Stack>
-        <Button variant="contained" size="large" href="PlayPage">Create Game</Button>
-      </Box>
+      <div className='CreateGamePage'>
+        <NavBar />
+        <Box sx={{ p: 2}}>
+          <Box sx={{ p: 2, maxWidth: 'sm', margin: 'auto' }}>
+            <Typography variant="h5" align="center" mb={2}>
+                Available Players:
+            </Typography>
+            <Stack direction="row" justifyContent="space-between" spacing={2} mb={2}>
+              {players.map((player) => (
+                <Box key={player.name} sx={{ textAlign: 'center' }}>
+                  <Avatar src={player.avatar}>{player.name[0]}</Avatar>
+                  <Typography variant="caption">{player.name}</Typography>
+                  <Typography variant="caption">{player.stack}</Typography>
+                  <Checkbox
+                    checked={selectedPlayers.includes(player.name)}
+                    onChange={() => this.handlePlayerSelection(player.name)}
+                  />
+                </Box>
+              ))}
+            </Stack>
+            <Link
+              to={{
+                pathname: '/playpage',  // Replace with your actual path
+                state: { selectedPlayers }, // Pass selectedPlayers as state
+              }}
+            >
+            <Button variant="contained" size="large">Create Game</Button>
+            </Link>
+          </Box>
+        </Box>
+      </div>
     );
   }
 };

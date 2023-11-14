@@ -13,6 +13,9 @@ import CreateAccountPage from './pages/CreateAccountPage';
 import ProfilePage from './pages/ProfilePage';
 import SearchPage from './pages/SearchPage';
 import FriendPage from './pages/FriendPage';
+import CreateGamePage from './pages/CreateGamePage';
+import PlayPage from './pages/PlayPage';
+import PlayPage2 from './pages/PlayPage2';
 
 function App() {
 
@@ -74,6 +77,9 @@ function App() {
             <Route path='/profile' element={<ProfilePage />} />
             <Route path='/search' element={<SearchPage />} />
             <Route path='/friends' element={<FriendPage />} />
+            <Route path='/playpage' element={<PlayPage />} />
+            <Route path='/playpage2' element={<PlayPage2 />} />
+            <Route path='/creategame' element={<CreateGamePage />} />
           </Routes>
         {/* </ThemeProvider> */}
     </div>
