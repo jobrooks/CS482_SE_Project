@@ -8,12 +8,11 @@ import HomePage from './pages/HomePage';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { CssBaseline } from '@mui/material';
 import LoginPage from './pages/LoginPage';
-import PlayPage from './pages/PlayPage';
-import CreateGamePage from './pages/CreateGamePage';
 
 import CreateAccountPage from './pages/CreateAccountPage';
 import ProfilePage from './pages/ProfilePage';
-import PlayPage2 from './pages/PlayPage2';
+import SearchPage from './pages/SearchPage';
+import FriendPage from './pages/FriendPage';
 
 function App() {
 
@@ -72,10 +71,9 @@ function App() {
             <Route path="/account" element={<AccountSettings />} />
             <Route path='/login' element={<LoginPage />} />
             <Route path='/register' element={<CreateAccountPage />} />
-            <Route path='/creategame' element={<CreateGamePage />} />
             <Route path='/profile' element={<ProfilePage />} />
-            <Route path='/play' element={<PlayPage />} />
-            <Route path='/play2' element={<PlayPage2 />} />
+            <Route path='/search' element={<SearchPage />} />
+            <Route path='/friends' element={<FriendPage />} />
           </Routes>
         {/* </ThemeProvider> */}
     </div>
