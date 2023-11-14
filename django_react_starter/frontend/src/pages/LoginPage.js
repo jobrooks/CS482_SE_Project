@@ -35,7 +35,7 @@ class LoginPage extends React.Component {
         console.log('Username:', this.state.username, 'Password:', this.state.password);
 
         if (loginType == "guest") {
-          localStorage.setItem("sessionToken", "guest");
+          localStorage.setItem("sessionToken", JSON.stringify("guest"));
           this.props.navigate("/");
         } else {
           // Handle login from backend
