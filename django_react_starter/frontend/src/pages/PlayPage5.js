@@ -14,7 +14,7 @@ const handleSetRaise = () => console.log('Set Raise');
 const handleCall = () => console.log('Call');
 
 
-class PlayPage4 extends React.Component {
+class PlayPage5 extends React.Component {
 
   state = {
     players: [],
@@ -50,7 +50,7 @@ class PlayPage4 extends React.Component {
   render() {
     const {players, selectedPlayers} = this.state;
     return (
-      <div className='PlayPage4'>
+      <div className='PlayPage5'>
         <NavBar />
         <Box sx={{ p: 2}}>
           <Box sx={{ p: 2, maxWidth: 'sm', margin: 'auto' }}>
@@ -80,16 +80,11 @@ class PlayPage4 extends React.Component {
                   alt="card 1"
                   style={{ width: '144px', height: '201px', marginRight: '10px' }}
                 />
-            <div
-              style={{
-                flex: 1,
-                width: '144px',
-                height: '201px',
-                marginRight: '10px',
-                backgroundColor: '#ccc', // Set the background color to grey
-                border: '1px solid #888', // Add a border for better visibility
-              }}
-            />
+                <img
+                  src="/images/Cards/_5 Clubs.png"
+                  alt="card 1"
+                  style={{ width: '144px', height: '201px', marginRight: '10px' }}
+                />
             <div
               style={{
                 flex: 1,
@@ -142,22 +137,22 @@ class PlayPage4 extends React.Component {
             </Typography>
             <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
             <img
-                  src="/images/Cards/_2 Clubs.png"
+                  src="/images/Cards/_6 Hearts.png"
                   alt="card 1"
                   style={{ width: '144px', height: '201px', marginRight: '10px' }}
                 />
             <img
-                  src="/images/Cards/_5 Hearts.png"
+                  src="/images/Cards/_Ace Hearts.png"
                   alt="card 1"
                   style={{ width: '144px', height: '201px', marginRight: '10px' }}
                 />
             <img
-                  src="/images/Cards/_King Clubs.png"
+                  src="/images/Cards/_Queen Clubs.png"
                   alt="card 1"
                   style={{ width: '144px', height: '201px', marginRight: '10px' }}
                 />
             <img
-                  src="/images/Cards/_4 Diamonds.png"
+                  src="/images/Cards/_4 Hearts.png"
                   alt="card 1"
                   style={{ width: '144px', height: '201px', marginRight: '10px' }}
                 />
@@ -172,7 +167,7 @@ class PlayPage4 extends React.Component {
                 <Button variant="contained" onClick={handleFold}>Fold</Button>
                 <Button variant="contained" onClick={handleSetRaise}>Set Raise</Button>
                 <Button variant="contained" onClick={handleCall}>Call</Button>
-                <Button variant="contained" onClick={handleCall} href="/playpage5">ReDraw</Button>
+                <Button variant="contained" onClick={handleCall}>ReDraw</Button>
             </Stack>
           </Box>
         </Box>
@@ -181,4 +176,4 @@ class PlayPage4 extends React.Component {
   }
 };
 
-export default PlayPage4;
+export default PlayPage5;
