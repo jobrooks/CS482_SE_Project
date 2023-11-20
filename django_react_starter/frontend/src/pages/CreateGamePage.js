@@ -9,8 +9,7 @@ import LoginRedirector from "../components/LoginRedirector";
 import { Link } from 'react-router-dom';
 import TableCard from '../components/TableCard';
 import axios from "axios";
-
-
+import CreateGame from '../components/CreateGame';
 
 class CreateGamePage extends React.Component {
 
@@ -39,36 +38,6 @@ componentDidMount() {
   this.setTableTheme()
 }
 
-  // state = {
-  //   players: [],
-  //   selectedPlayers: []
-  // };
-
-  // componentDidMount() {
-  //   fetch('http://127.0.0.1:8000/player')
-  //     .then(response => response.json())
-  //     .then(data => this.setState({ players: data }))
-  //     .catch(error => console.error('Error fetching deck:', error));
-  // }
-
-  // handlePlayerSelection = (playerName) => {
-  //   this.setState((prevState) => {
-  //     const isSelected = prevState.selectedPlayers.includes(playerName);
-
-  //     if (isSelected) {
-  //       // If player is already selected, remove from selectedPlayers
-  //       return {
-  //         selectedPlayers: prevState.selectedPlayers.filter(name => name !== playerName),
-  //       };
-  //     } else {
-  //       // If player is not selected, add to selectedPlayers
-  //       return {
-  //         selectedPlayers: [...prevState.selectedPlayers, playerName],
-  //       };
-  //     }
-  //   });
-  // }
-
   render() {
     //const {players, selectedPlayers} = this.state;
     const backImgPath = this.state.tableImage + this.state.tableTheme + ".png";
@@ -87,6 +56,13 @@ componentDidMount() {
           margin: 0,
           padding: 0
         }}>
+
+          {/* box holding create game stuff */}
+          <Box>
+            <CreateGame />
+          </Box>
+
+
         </Box>
       </div>
     );
