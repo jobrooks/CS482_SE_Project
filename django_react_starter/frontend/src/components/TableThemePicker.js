@@ -36,7 +36,7 @@ class TableThemePicker extends React.Component {
                             >
                                 <Box
                                     component="img"
-                                    src="/images/Table Themes/Table Blue.png"
+                                    src="/images/Table_Themes/table_blue.png"
                                     sx={{
                                         width: "100%",
                                         height: "auto",
@@ -50,7 +50,7 @@ class TableThemePicker extends React.Component {
                             >
                                 <Box
                                     component="img"
-                                    src="/images/Table Themes/Table Green.png"
+                                    src="/images/Table_Themes/table_green.png"
                                     sx={{
                                         width: "100%",
                                         height: "auto",

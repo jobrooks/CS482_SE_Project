@@ -55,9 +55,9 @@ class CardBackingCard extends React.Component {
 
     mapBackingToImage(backing) {
         const backingDict = {
-            "red": "/images/Card Backings/Back Red Plaid.png",
-            "blue": "/images/Card Backings/Back Blue Plaid.png",
-            "green": "/images/Card Backings/Back Green Plaid.png",
+            "red": "/images/Card_Backings/Back Red Plaid.png",
+            "blue": "/images/Card_Backings/Back Blue Plaid.png",
+            "green": "/images/Card_Backings/Back Green Plaid.png",
         };
         let backingImage = backingDict[backing];
         if (backingImage !== undefined) {

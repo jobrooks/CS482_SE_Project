@@ -40,7 +40,9 @@ class NavBar extends React.Component {
                         elevation={0}
                         sx={{
                             mb: 2,
-                            position: "sticky"
+                            position: "sticky",
+                            margin: 0,
+                            padding:0
                         }}
                     >
                         <Toolbar sx={{square: true}}>
