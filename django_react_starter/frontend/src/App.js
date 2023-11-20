@@ -1,5 +1,4 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
 import NavBar from './components/NavBar';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
@@ -13,6 +12,12 @@ import CreateAccountPage from './pages/CreateAccountPage';
 import ProfilePage from './pages/ProfilePage';
 import SearchPage from './pages/SearchPage';
 import FriendPage from './pages/FriendPage';
+import CreateGamePage from './pages/CreateGamePage';
+import PlayPage from './pages/PlayPage';
+import PlayPage2 from './pages/PlayPage2';
+import PlayPage3 from './pages/PlayPage3';
+import PlayPage4 from './pages/PlayPage4';
+import PlayPage5 from './pages/PlayPage5';
 
 function App() {
 
@@ -74,6 +79,12 @@ function App() {
             <Route path='/profile' element={<ProfilePage />} />
             <Route path='/search' element={<SearchPage />} />
             <Route path='/friends' element={<FriendPage />} />
+            <Route path='/playpage' element={<PlayPage />} />
+            <Route path='/playpage2' element={<PlayPage2 />} />
+            <Route path='/creategame' element={<CreateGamePage />} />
+            <Route path='/playpage3' element={<PlayPage3 />} />
+            <Route path='/playpage4' element={<PlayPage4 />} />
+            <Route path='/playpage5' element={<PlayPage5 />} />
           </Routes>
         {/* </ThemeProvider> */}
     </div>

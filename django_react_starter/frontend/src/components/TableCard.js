@@ -55,8 +55,8 @@ class TableCard extends React.Component {
 
     mapThemeToImage(theme) {
         const themeDict = {
-            "blue": "/images/Table Themes/Table Blue.png",
-            "green": "/images/Table Themes/Table Green.png",
+            "blue": "/images/Table_Themes/table_blue.png",
+            "green": "/images/Table_Themes/table_green.png",
         };
         let themeImage = themeDict[theme];
         if (themeImage !== undefined) {
