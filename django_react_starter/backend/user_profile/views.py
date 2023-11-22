@@ -10,24 +10,31 @@ from django.http import JsonResponse
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from django.core.serializers import serialize
+from django.db.models import Count
 import json
 
 # Create your views here.
-def get_user_profile(request, token):
-    try:
-        token_object = Token.objects.get(key=token)
-        user = token_object.user 
+class GetUserProfile(APIView):
+    def get(self, request, token, *args, **kwargs):
+        try:
+            token_object = Token.objects.get(key=token)
+            user = token_object.user 
 
-        user_data_json = serialize('json', [user], use_natural_primary_keys=True)
-        user_data = json.loads(user_data_json)[0]['fields']
-        
-        if user_data['avatar']:
-            user_data['avatar'] = user['avatar'].url  
+            user_data_json = serialize('json', [user], use_natural_primary_keys=True)
+            user_data = json.loads(user_data_json)[0]['fields']
+            
+            if user_data['avatar']:
+                user_data['avatar'] = user['avatar'].url  
 
-        return JsonResponse(user_data)
-    except Token.DoesNotExist:
-        return JsonResponse({"error": "User not found"}, status=404)
+            return JsonResponse(user_data)
+        except Token.DoesNotExist:
+            return JsonResponse({"error": "User not found"}, status=404)
 
+class Leaderboard(APIView):
+    def get(self, request, token, *args, **kwargs):
+        global_leaders = [leader for leader in User.objects.values("username", "wins").order_by('-wins')[:5]]
+        return JsonResponse({"leaders": json.dumps(global_leaders)}, status=200)
+    
 class TableTheme(APIView):
     def get_user(self, token):
         try:
@@ -35,12 +42,12 @@ class TableTheme(APIView):
         except:
             raise Http404
         
-    def get(self, request, token):
+    def get(self, request, token, *args, **kwargs):
         user = self.get_user(token)
         serializer = UserSerializer(user)
         return Response(serializer.data["table_theme"])
     
-    def patch(self, request, token):
+    def patch(self, request, token, *args, **kwargs):
         user = self.get_user(token)
         
         # Cleaning request very important while using patch since partial=True allows any field to be changed
@@ -62,12 +69,12 @@ class CardBacking(APIView):
         except:
             raise Http404
         
-    def get(self, request, token):
+    def get(self, request, token, *args, **kwargs):
         user = self.get_user(token)
         serializer = UserSerializer(user)
         return Response(serializer.data["card_backing"])
     
-    def patch(self, request, token):
+    def patch(self, request, token, *args, **kwargs):
         user = self.get_user(token)
         
         # Cleaning request very important while using patch since partial=True allows any field to be changed
