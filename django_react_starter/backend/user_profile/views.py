@@ -31,7 +31,7 @@ class GetUserProfile(APIView):
             return JsonResponse({"error": "User not found"}, status=404)
 
 class Leaderboard(APIView):
-    def get(self, request, token, *args, **kwargs):
+    def get(self, *args, **kwargs):
         global_leaders = [leader for leader in User.objects.values("username", "wins").order_by('-wins')[:5]]
         return JsonResponse({"leaders": json.dumps(global_leaders)}, status=200)
     
