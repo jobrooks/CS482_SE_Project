@@ -32,8 +32,8 @@ class GetUserProfile(APIView):
 
 class Leaderboard(APIView):
     def get(self, *args, **kwargs):
-        global_leaders = [leader for leader in User.objects.values("username", "wins").order_by('-wins')[:5]]
-        return JsonResponse({"leaders": json.dumps(global_leaders)}, status=200)
+        global_leaders = {"leaders": [leader for leader in User.objects.values("username", "wins").order_by('-wins')[:5]]}
+        return JsonResponse(global_leaders, status=200)
     
 class TableTheme(APIView):
     def get_user(self, token):
