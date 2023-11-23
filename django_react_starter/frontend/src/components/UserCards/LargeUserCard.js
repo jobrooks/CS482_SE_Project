@@ -3,14 +3,25 @@ import axios from "axios";
 import { Avatar, Badge, Box, Card, Divider, Grid, Skeleton, Stack, Typography } from "@mui/material";
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 
+/** LargeUserCard
+ * - This is a user card object that displays user information in a Large size
+ * - It displays a complete set of user information by making a request for the user
+ * specified by the username prop to the backend
+ * Props:
+ * - username: the username for the user being displayed
+ * - friendable: whether or not to display an add friend button on the card
+ */
 class LargeUserCard extends React.Component {
 
     constructor(props) {
         super(props)
         this.state = {
+            // Information
             username: this.props.username,
             userdata: null,
+            // Component state
             isLoading: true,
+            // How component is displayed
         }
     }
 
@@ -62,8 +73,9 @@ class LargeUserCard extends React.Component {
                                 <Avatar
                                     sx = {{
                                         bgcolor: this.state.avatarColor,
-                                        width: 100,
-                                        height: 100,
+                                        width: "90%",
+                                        height: "auto",
+                                        aspectRatio: 1,
                                     }}
                                 />
                             </Badge>
@@ -135,7 +147,31 @@ class LargeUserCard extends React.Component {
                                                     Money
                                                 </Typography>
                                                 <Typography variant="subtitle" noWrap={false}>
-                                                    {this.state.userdata.money}
+                                                    ${this.state.userdata.money}
+                                                </Typography>
+                                            </Stack>
+                                        </Grid>
+                                        <Grid item xs={6}>
+                                            <Stack direction="column"
+                                                alignItems="start"
+                                            >
+                                                <Typography variant="caption" noWrap={false}>
+                                                    Status
+                                                </Typography>
+                                                <Typography variant="subtitle" noWrap={false}>
+                                                    {this.state.userdata.is_active ? "Online" : "Offline"}
+                                                </Typography>
+                                            </Stack>
+                                        </Grid>
+                                        <Grid item xs={6}>
+                                            <Stack direction="column"
+                                                alignItems="start"
+                                            >
+                                                <Typography variant="caption" noWrap={false}>
+                                                    Date Joined
+                                                </Typography>
+                                                <Typography variant="subtitle" noWrap={false}>
+                                                    {this.state.userdata.date_joined}
                                                 </Typography>
                                             </Stack>
                                         </Grid>
