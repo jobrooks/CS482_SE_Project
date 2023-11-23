@@ -23,6 +23,8 @@ class HomePage extends React.Component {
                         <UserCard />
                         <LargeUserCard
                             username="collinkatz"
+                            friendable={true}
+                            editable={false}
                         />
                     </Grid>
                     <Grid item xs={6}>
