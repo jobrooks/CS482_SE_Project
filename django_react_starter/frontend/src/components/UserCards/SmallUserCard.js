@@ -82,8 +82,8 @@ class SmallUserCard extends React.Component {
                         <Badge
                             color="success"
                             badgeContent=" "
+                            overlap="circular"
                             variant="dot"
-                            size="large"
                             anchorOrigin={{
                                 vertical: 'bottom',
                                 horizontal: 'right',

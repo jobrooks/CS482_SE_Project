@@ -62,14 +62,10 @@ class LargeUserCard extends React.Component {
                             <Badge
                                 color="success"
                                 badgeContent=" "
-                                variant="dot"
-                                size="large"
+                                overlap="circular"
                                 anchorOrigin={{
                                     vertical: 'bottom',
                                     horizontal: 'right',
-                                }}
-                                sx={{
-                                    m: 2,
                                 }}
                             >
                                 <Avatar
