@@ -22,6 +22,6 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('id','username','email','password',
-                  'wins', 'avatar', 'bio', 'games_played', 'money',
+                  'wins', 'avatar', 'bio', 'games_played', 'money', 'is_active', 'date_joined',
                   'avatar_color', 'table_theme', 'card_backing')
 
