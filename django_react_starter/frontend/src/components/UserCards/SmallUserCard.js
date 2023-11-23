@@ -1,7 +1,8 @@
-import { Avatar, Card, CardContent, Stack, Item, Typography, Divider, CardActionArea, Button, Badge, IconButton, Box } from "@mui/material";
+import { Avatar, Card, CardContent, Stack, Item, Typography, Divider, CardActionArea, Button, Badge, IconButton, Box, Dialog } from "@mui/material";
 import React from "react";
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import LargeUserCard from "./LargeUserCard";
 
 /** SmallUserCard
  * - This is a user card object that displays user information in a small size
@@ -17,12 +18,16 @@ class SmallUserCard extends React.Component {
     constructor(props) {
         super(props);
         this.handleInfoClick = this.handleInfoClick.bind(this);
+        this.handleInfoDialogClose = this.handleInfoDialogClose.bind(this);
         this.handleAddFriend = this.handleAddFriend.bind(this);
         this.state = {
+            // Info displayed
             avatarColor: this.props.avatarColor,
             username: this.props.username,
             wins: this.props.wins,
-            
+            // Component state
+            infoDialogOpen: false,
+            // Governs how component is displayed
             info: this.props.info,
             friendable: this.props.friendable,
         }
@@ -30,10 +35,15 @@ class SmallUserCard extends React.Component {
 
     handleInfoClick() {
         console.log("Clicked");
+        this.setState({ infoDialogOpen: true });
     }
 
     handleAddFriend() {
         console.log("Add Friend");
+    }
+
+    handleInfoDialogClose() {
+        this.setState({ infoDialogOpen: false });
     }
 
     getAddFriendIcon() {
@@ -147,6 +157,11 @@ class SmallUserCard extends React.Component {
                         >
                             { mainComponent }
                         </Button>
+                        <Dialog open={this.state.infoDialogOpen} onClose={this.handleInfoDialogClose}>
+                            <LargeUserCard
+                                username={this.state.username}
+                            />
+                        </Dialog>
                     </Box>
                 :
                     <Box
