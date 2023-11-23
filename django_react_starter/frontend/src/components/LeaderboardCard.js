@@ -24,6 +24,7 @@ class LeaderboardCard extends React.Component {
                 <SmallUserCard
                     username={leader.username}
                     wins={leader.wins}
+                    is_active={leader.is_active}
                     info={true}
                     friendable={false}
                 />
