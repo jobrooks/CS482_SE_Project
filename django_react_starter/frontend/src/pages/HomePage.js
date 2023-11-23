@@ -8,6 +8,7 @@ import CardBackingCard from "../components/CardBackingCard";
 import LeaderboardCard from "../components/LeaderboardCard";
 import SmallUserCard from "../components/UserCards/SmallUserCard";
 import { blue, red } from "@mui/material/colors";
+import LargeUserCard from "../components/UserCards/LargeUserCard";
 
 
 class HomePage extends React.Component {
@@ -20,6 +21,9 @@ class HomePage extends React.Component {
                 <Grid container spacing={0}>
                     <Grid item xs={6}>
                         <UserCard />
+                        <LargeUserCard
+                            username="collinkatz"
+                        />
                     </Grid>
                     <Grid item xs={6}>
                         <LeaderboardCard />
