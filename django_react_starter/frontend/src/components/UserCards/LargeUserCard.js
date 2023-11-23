@@ -2,6 +2,7 @@ import React, { Suspense } from "react";
 import axios from "axios";
 import { Avatar, Badge, Box, Card, Divider, Grid, Skeleton, Stack, Typography } from "@mui/material";
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import { blue, grey } from "@mui/material/colors";
 
 /** LargeUserCard
  * - This is a user card object that displays user information in a Large size
@@ -60,7 +61,7 @@ class LargeUserCard extends React.Component {
                             xs={6}
                         >
                             <Badge
-                                color="success"
+                                color={!this.state.isLoading ? (this.state.userdata.is_active ? "success" : "error") : "error"}
                                 badgeContent=" "
                                 overlap="circular"
                                 anchorOrigin={{
@@ -70,7 +71,7 @@ class LargeUserCard extends React.Component {
                             >
                                 <Avatar
                                     sx = {{
-                                        bgcolor: this.state.avatarColor,
+                                        bgcolor: this.state.isLoading ? grey[500] : this.state.userdata.avatar_color,
                                         width: "90%",
                                         height: "auto",
                                         aspectRatio: 1,
