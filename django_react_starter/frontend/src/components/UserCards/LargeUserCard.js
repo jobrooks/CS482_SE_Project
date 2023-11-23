@@ -1,7 +1,12 @@
 import React, { Suspense } from "react";
 import axios from "axios";
-import { Avatar, Badge, Box, Card, Divider, Grid, Skeleton, Stack, Typography } from "@mui/material";
+import { Avatar, Badge, Box, Button, Card, CardActionArea, Divider, Grid, IconButton, Skeleton, Stack, Typography } from "@mui/material";
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import MarkEmailReadIcon from '@mui/icons-material/MarkEmailRead';
+import EditIcon from '@mui/icons-material/Edit';
+import QueueIcon from '@mui/icons-material/Queue';
+import ChatIcon from '@mui/icons-material/Chat';
 import { blue, grey } from "@mui/material/colors";
 
 /** LargeUserCard
@@ -43,6 +48,52 @@ class LargeUserCard extends React.Component {
             console.log("Error getting user data");
             return response;
         })
+    }
+
+    getInviteChatIcons() {
+        if (!this.state.editable) {
+            return (
+                <>
+                    <IconButton
+                        aria-label="Invite to Game"
+                        onClick={this.handleInvite}
+                    >
+                        <QueueIcon />
+                    </IconButton>
+                    <IconButton
+                        aria-label="Message"
+                        onClick={this.handleChat}
+                    >
+                        <ChatIcon />
+                    </IconButton>
+                </>
+            );
+        }
+    }
+
+    getAddFriendIcon() {
+        if (this.state.friendable && !this.state.editable) {
+            return (
+                <IconButton
+                    aria-label="Add Friend"
+                    onClick={this.handleAddFriend}
+                >
+                    <PersonAddIcon />
+                </IconButton>
+            );
+        }
+    }
+
+    handleAddFriend() {
+        console.log("Add Friend");
+    }
+
+    handleChat() {
+        console.log("Open Chat");
+    }
+
+    handleInvite() {
+        console.log("Invited");
     }
 
     render() {
@@ -207,6 +258,13 @@ class LargeUserCard extends React.Component {
                             </Box>
                         </Grid>
                     </Grid>
+                    <Stack direction="row"
+                        spacing={2}
+                        justifyContent="space-around"
+                    >
+                        { this.getInviteChatIcons() }
+                        { this.getAddFriendIcon() }
+                    </Stack>
                 </Card>
             </div>
         );
