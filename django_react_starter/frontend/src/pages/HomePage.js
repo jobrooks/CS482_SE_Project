@@ -20,7 +20,6 @@ class HomePage extends React.Component {
                 <NavBar />
                 <Grid container spacing={0}>
                     <Grid item xs={6}>
-                        <UserCard />
                         <LargeUserCard
                             username="collinkatz"
                             friendable={false}
