@@ -10,6 +10,7 @@ import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
  * Props:
  * - username: the username for the user being displayed
  * - friendable: whether or not to display an add friend button on the card
+ * - editable: whether or not this card can be edited, i.e. it is the logged in user's card
  */
 class LargeUserCard extends React.Component {
 
@@ -23,6 +24,7 @@ class LargeUserCard extends React.Component {
             isLoading: true,
             // How component is displayed
             friendable: this.props.friendable,
+            editable: this.props.editable,
         }
     }
 
