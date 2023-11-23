@@ -1,22 +1,36 @@
 import { List, Card, Button, ListItem } from "@mui/material";
 import axios from "axios";
 import React from "react";
+import SmallUserCard from "./UserCards/SmallUserCard";
 
 class LeaderboardCard extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            leaderboardData: this.getLeaderboard(),
+            leaderboardData: null,
         }
+    }
+
+    componentDidMount() {
+        this.getLeaderboard();
     }
 
     makeLeaderboardTable() {
         let listBuffer = [];
-        listBuffer.push(<ListItem>Hi</ListItem>);
-        listBuffer.push(<ListItem>Bye</ListItem>);
-        listBuffer.push(<ListItem>Thanks</ListItem>);
-        listBuffer.push(<ListItem>You're Welcome</ListItem>);
+        console.log(this.state.leaderboardData);
+        for (let i in this.state.leaderboardData) {
+            let leader = this.state.leaderboardData[i];
+            console.log(leader);
+            listBuffer.push(
+                <SmallUserCard
+                    username={leader.username}
+                    wins={leader.wins}
+                    info={true}
+                    friendable={false}
+                />
+            );
+        }
         return (
             <div id="leaderboardTable">
                 <List>
@@ -29,10 +43,11 @@ class LeaderboardCard extends React.Component {
     getLeaderboard() {
         axios.get("http://localhost:8000/user_profile/profile/leaderboard")
         .then((response) => {
+            this.setState({ leaderboardData: response.data.leaders });
             return response.data;
         })
         .catch((response) => {
-            console.log("Error getting leaderboard")
+            console.log("Error getting leaderboard");
             return response;
         })
     }
@@ -47,7 +62,6 @@ class LeaderboardCard extends React.Component {
                         m: 2
                     }}
                 >
-                    <Button>Hi :3</Button>
                     { this.makeLeaderboardTable() }
                 </Card>
             </div>
