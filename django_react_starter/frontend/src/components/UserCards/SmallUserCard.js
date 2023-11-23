@@ -160,6 +160,7 @@ class SmallUserCard extends React.Component {
                         <Dialog open={this.state.infoDialogOpen} onClose={this.handleInfoDialogClose}>
                             <LargeUserCard
                                 username={this.state.username}
+                                friendable={this.state.friendable}
                             />
                         </Dialog>
                     </Box>
