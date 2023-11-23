@@ -28,6 +28,7 @@ class HomePage extends React.Component {
                             username="My Account"
                             wins={5}
                             info={true}
+                            friendable={false}
                         />
                     </Grid>
                     <Grid item xs={6}>
