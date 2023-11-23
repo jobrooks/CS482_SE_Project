@@ -34,7 +34,6 @@ class SmallUserCard extends React.Component {
     }
 
     handleInfoClick() {
-        console.log("Clicked");
         this.setState({ infoDialogOpen: true });
     }
 

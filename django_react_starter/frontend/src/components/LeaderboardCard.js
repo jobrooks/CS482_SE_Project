@@ -18,10 +18,8 @@ class LeaderboardCard extends React.Component {
 
     makeLeaderboardTable() {
         let listBuffer = [];
-        console.log(this.state.leaderboardData);
         for (let i in this.state.leaderboardData) {
             let leader = this.state.leaderboardData[i];
-            console.log(leader);
             listBuffer.push(
                 <SmallUserCard
                     username={leader.username}

@@ -22,6 +22,7 @@ class LargeUserCard extends React.Component {
             // Component state
             isLoading: true,
             // How component is displayed
+            friendable: this.props.friendable,
         }
     }
 
@@ -33,7 +34,6 @@ class LargeUserCard extends React.Component {
         axios.get(`http://localhost:8000/user_profile/profile/getuserprofile/${this.state.username}`)
         .then((response) => {
             this.setState({ userdata: response.data, isLoading: false });
-            console.log(this.state.userdata);
             return response.data;
         })
         .catch((response) => {
