@@ -7,6 +7,9 @@ import AvatarColorPicker from "../AvatarColorPicker"
 
 var globalAvatarColor = red[500]
 
+/** UserCard (Deprecated)
+ * Please use the better LargeUserCard instead with props.editable = true
+ */
 class UserCard extends React.Component {
 
     constructor(props) {
