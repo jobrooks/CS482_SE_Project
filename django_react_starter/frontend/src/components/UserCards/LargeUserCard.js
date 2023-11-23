@@ -7,7 +7,10 @@ import MarkEmailReadIcon from '@mui/icons-material/MarkEmailRead';
 import EditIcon from '@mui/icons-material/Edit';
 import QueueIcon from '@mui/icons-material/Queue';
 import ChatIcon from '@mui/icons-material/Chat';
-import { blue, grey } from "@mui/material/colors";
+import { blue, grey, red } from "@mui/material/colors";
+import AvatarColorPicker from "../AvatarColorPicker";
+
+let globalAvatarColor = red[500]
 
 /** LargeUserCard
  * - This is a user card object that displays user information in a Large size
@@ -17,6 +20,8 @@ import { blue, grey } from "@mui/material/colors";
  * - username: the username for the user being displayed
  * - friendable: whether or not to display an add friend button on the card
  * - editable: whether or not this card can be edited, i.e. it is the logged in user's card
+ * - messageable: whether or not this user can be messaged
+ * - inviteable: whether or not this user can be invited to a game
  */
 class LargeUserCard extends React.Component {
 
@@ -28,9 +33,12 @@ class LargeUserCard extends React.Component {
             userdata: null,
             // Component state
             isLoading: true,
+            avatarColorPickerOpen: false,
             // How component is displayed
             friendable: this.props.friendable,
             editable: this.props.editable,
+            messageable: this.props.messageable,
+            inviteable: this.props.inviteable,
         }
     }
 
@@ -50,23 +58,28 @@ class LargeUserCard extends React.Component {
         })
     }
 
-    getInviteChatIcons() {
-        if (!this.state.editable) {
+    getInviteIcon() {
+        if (this.state.inviteable && !this.state.editable) {
             return (
-                <>
-                    <IconButton
-                        aria-label="Invite to Game"
-                        onClick={this.handleInvite}
-                    >
-                        <QueueIcon />
-                    </IconButton>
-                    <IconButton
-                        aria-label="Message"
-                        onClick={this.handleChat}
-                    >
-                        <ChatIcon />
-                    </IconButton>
-                </>
+                <IconButton
+                    aria-label="Invite to Game"
+                    onClick={this.handleInvite}
+                >
+                    <QueueIcon />
+                </IconButton>
+            );
+        }
+    }
+
+    getMessageIcon() {
+        if (this.state.messageable && !this.state.editable) {
+            return (
+                <IconButton
+                    aria-label="Message"
+                    onClick={this.handleMessage}
+                >
+                    <ChatIcon />
+                </IconButton>
             );
         }
     }
@@ -84,21 +97,54 @@ class LargeUserCard extends React.Component {
         }
     }
 
+    getEditIcon() {
+        if (this.state.editable) {
+            return (
+                <IconButton
+                    aria-label="Invite to Game"
+                    onClick={() => {this.toggleAvatarColorPicker()}}
+                >
+                    <EditIcon />
+                </IconButton>
+            );
+        }
+    }
+
     handleAddFriend() {
         console.log("Add Friend");
     }
 
-    handleChat() {
+    handleMessage() {
         console.log("Open Chat");
     }
 
     handleInvite() {
         console.log("Invited");
     }
+    
+    toggleAvatarColorPicker() {
+        this.setState({ avatarColorPickerOpen: !this.state.avatarColorPickerOpen });
+    }
+
+    changeColor(color) {
+        this.setState((prevState) => ({
+            userdata: {
+              ...prevState.userdata,
+              avatar_color: color
+            }
+        }));
+    }
 
     render() {
         return (
             <div className="LargeUserCard">
+                <div className="AvatarColorPicker">
+                    <AvatarColorPicker
+                        colorPickerOpen={this.state.avatarColorPickerOpen}
+                        toggleColorPicker={() => this.toggleAvatarColorPicker()}
+                        changeColor={(color) => this.changeColor(color)}
+                    />
+                </div>
                 <Card elevation={3}
                     sx={{
                         width: 430,
@@ -120,14 +166,23 @@ class LargeUserCard extends React.Component {
                                     horizontal: 'right',
                                 }}
                             >
-                                <Avatar
-                                    sx = {{
-                                        bgcolor: !this.state.isLoading ? this.state.userdata.avatar_color : grey[500],
-                                        width: "90%",
-                                        height: "auto",
-                                        aspectRatio: 1,
+                                <Badge
+                                    badgeContent={ this.getEditIcon() }
+                                    overlap="circular"
+                                    anchorOrigin={{
+                                        vertical: 'top',
+                                        horizontal: 'left',
                                     }}
-                                />
+                                >
+                                    <Avatar
+                                        sx = {{
+                                            bgcolor: !this.state.isLoading ? this.state.userdata.avatar_color : grey[500],
+                                            width: "70%",
+                                            height: "auto",
+                                            aspectRatio: 1,
+                                        }}
+                                    />
+                                </Badge>
                             </Badge>
                         </Grid>
                         <Grid item
@@ -262,7 +317,8 @@ class LargeUserCard extends React.Component {
                         spacing={2}
                         justifyContent="space-around"
                     >
-                        { this.getInviteChatIcons() }
+                        { this.getInviteIcon() }
+                        { this.getMessageIcon() }
                         { this.getAddFriendIcon() }
                     </Stack>
                 </Card>
