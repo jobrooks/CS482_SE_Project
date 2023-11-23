@@ -25,6 +25,7 @@ class SmallUserCard extends React.Component {
             avatarColor: this.props.avatarColor,
             username: this.props.username,
             wins: this.props.wins,
+            is_active: this.props.is_active,
             // Component state
             infoDialogOpen: false,
             // Governs how component is displayed
@@ -80,7 +81,7 @@ class SmallUserCard extends React.Component {
                         justifyContent="space-between"
                     >
                         <Badge
-                            color="success"
+                            color={this.state.is_active ? "success" : "error"}
                             badgeContent=" "
                             overlap="circular"
                             variant="dot"
