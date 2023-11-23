@@ -71,7 +71,7 @@ class LargeUserCard extends React.Component {
                             >
                                 <Avatar
                                     sx = {{
-                                        bgcolor: this.state.isLoading ? grey[500] : this.state.userdata.avatar_color,
+                                        bgcolor: !this.state.isLoading ? this.state.userdata.avatar_color : grey[500],
                                         width: "90%",
                                         height: "auto",
                                         aspectRatio: 1,
