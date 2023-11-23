@@ -29,6 +29,18 @@ class GetUserProfile(APIView):
             return JsonResponse(user_data)
         except Token.DoesNotExist:
             return JsonResponse({"error": "User not found"}, status=404)
+        
+class GetOtherUserProfile(APIView):
+    def get_user(self, username):
+        try:
+            return User.objects.get(username=username)
+        except:
+            raise Http404
+    
+    def get(self, request, username, *args, **kwargs):
+        user = self.get_user(username)
+        serializer = UserSerializer(user)
+        return Response(serializer.data)
 
 class Leaderboard(APIView):
     def get(self, *args, **kwargs):
