@@ -39,8 +39,11 @@ class GetOtherUserProfile(APIView):
     
     def get(self, request, username, *args, **kwargs):
         user = self.get_user(username)
+        string_date = user.date_joined.strftime("%x") # Convert user date joined to nice date i.e. "9/20/23"
         serializer = UserSerializer(user)
-        return Response(serializer.data)
+        new_data = serializer.data
+        new_data["date_joined"] = string_date # Overwrite data for old date with better format
+        return Response(new_data)
 
 class Leaderboard(APIView):
     def get(self, *args, **kwargs):
