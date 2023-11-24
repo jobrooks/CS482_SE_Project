@@ -1,7 +1,10 @@
-import { Avatar, Card, CardContent, Stack, Item, Typography, Divider, CardActionArea, Button, Badge, IconButton, Box, Dialog } from "@mui/material";
+import { Avatar, Card, CardContent, Stack, Item, Typography, Divider, CardActionArea, Button, Badge, IconButton, Box, Dialog, ButtonGroup } from "@mui/material";
 import React from "react";
+import axios from "axios";
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import ChatIcon from '@mui/icons-material/Chat';
+import QueueIcon from '@mui/icons-material/Queue';
 import LargeUserCard from "./LargeUserCard";
 
 /** SmallUserCard
@@ -11,7 +14,14 @@ import LargeUserCard from "./LargeUserCard";
  * - avatarColor: the avatar color for the card
  * - username: the username for the card
  * - wins: the number of wins for the card
+ * - is_active: the users online status
  * - info: whether or not the box should be clickable in order to reveal more info
+ * - friendable: whether or not the add friend icon appears
+ * - inviteable: whether or not the invite icon appears
+ * - messageable: whether or not the message icon appears
+ * Notes:
+ * - If you don't specify username, avatar color, wins, and is_active, the component will automatically make a
+ * request to the backend to retrieve the rest of the user data based on the username
  */
 class SmallUserCard extends React.Component {
 
@@ -28,9 +38,30 @@ class SmallUserCard extends React.Component {
             is_active: this.props.is_active,
             // Component state
             infoDialogOpen: false,
+            isLoading: false,
+            userdata: null,
             // Governs how component is displayed
             info: this.props.info,
             friendable: this.props.friendable,
+            inviteable: this.props.inviteable,
+            messageable: this.props.messageable,
+        }
+    }
+
+    componentDidMount() {
+        if (this.state.username && (!this.state.avatarColor || !this.state.wins || !this.state.is_active)) {
+            axios.get(`http://localhost:8000/user_profile/profile/getuserprofile/${this.state.username}`)
+            .then((response) => {
+                this.setState({
+                    userdata: response.data, isLoading: false,
+                    avatarColor: response.data.avatar_color, wins: response.data.wins, is_active: response.data.is_active,
+                });
+                return response.data;
+            })
+            .catch((response) => {
+                console.log("Error getting user data");
+                return response;
+            })
         }
     }
 
@@ -42,12 +73,20 @@ class SmallUserCard extends React.Component {
         console.log("Add Friend");
     }
 
+    handleMessage() {
+        console.log("Open Chat");
+    }
+
+    handleInvite() {
+        console.log("Invited");
+    }
+
     handleInfoDialogClose() {
         this.setState({ infoDialogOpen: false });
     }
 
     getAddFriendIcon() {
-        if (this.state.friendable) {
+        if (this.state.friendable && !this.state.info) {
             return (
                 <IconButton
                     aria-label="Add Friend"
@@ -55,6 +94,44 @@ class SmallUserCard extends React.Component {
                 >
                     <PersonAddIcon />
                 </IconButton>
+            );
+        }
+    }
+
+    getMessageIcon() {
+        if (this.state.messageable && !this.state.info) {
+            return (
+                <IconButton
+                    aria-label="Message"
+                    onClick={this.handleMessage}
+                >
+                    <ChatIcon />
+                </IconButton>
+            );
+        }
+    }
+
+    getInviteIcon() {
+        if (this.state.inviteable && !this.state.info) {
+            return (
+                <IconButton
+                    aria-label="Invite to Game"
+                    onClick={this.handleInvite}
+                >
+                    <QueueIcon />
+                </IconButton>
+            );
+        }
+    }
+
+    getButtonGroup() {
+        if ( (this.state.friendable || this.state.inviteable || this.state.messageable) && !this.state.info) {
+            return (
+                <ButtonGroup>
+                    { this.getInviteIcon() }
+                    { this.getMessageIcon() }
+                    { this.getAddFriendIcon() }
+                </ButtonGroup>
             );
         }
     }
@@ -118,7 +195,7 @@ class SmallUserCard extends React.Component {
                                 {this.state.wins}
                             </Typography>
                         </Stack>
-                        { this.getAddFriendIcon() }
+                        { this.getButtonGroup() }
                     </Stack>
                 </CardContent>
                 <CardActionArea>
@@ -147,7 +224,7 @@ class SmallUserCard extends React.Component {
                             textTransform: "none",
                         }}
                     >
-                        <Button
+                        <CardActionArea
                             onClick={this.handleInfoClick}
                             sx={{
                                 p: 0,
@@ -156,11 +233,13 @@ class SmallUserCard extends React.Component {
                             }}
                         >
                             { mainComponent }
-                        </Button>
+                        </CardActionArea>
                         <Dialog open={this.state.infoDialogOpen} onClose={this.handleInfoDialogClose}>
                             <LargeUserCard
                                 username={this.state.username}
                                 friendable={this.state.friendable}
+                                inviteable={this.state.inviteable}
+                                messageable={this.state.friendable}
                             />
                         </Dialog>
                     </Box>
