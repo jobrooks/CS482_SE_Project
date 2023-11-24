@@ -19,12 +19,18 @@ class GetUserProfile(APIView):
         try:
             token_object = Token.objects.get(key=token)
             user = token_object.user 
+            
+            string_date_joined = user.date_joined.strftime("%x") # Convert user date joined to nice date i.e. "9/20/23"
+            string_last_login = user.last_login.strftime("%x") # Convert user date joined to nice date i.e. "9/20/23"
 
             user_data_json = serialize('json', [user], use_natural_primary_keys=True)
-            user_data = json.loads(user_data_json)[0]['fields']
+            user_data = json.loads(user_data_json)[0]['fields']            
             
             if user_data['avatar']:
                 user_data['avatar'] = user['avatar'].url  
+                
+            user_data['date_joined'] = string_date_joined
+            user_data['last_login'] = string_last_login
 
             return JsonResponse(user_data)
         except Token.DoesNotExist:
@@ -97,6 +103,33 @@ class CardBacking(APIView):
         # other fields besides "table_theme".
         cleaned_request = request.data.copy()
         cleaned_request = {key:value for (key, value) in cleaned_request.items() if key == "card_backing"}
+        
+        serializer = UserSerializer(user, data=cleaned_request, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class AvatarColor(APIView):
+    def get_user(self, token):
+        try:
+            return User.objects.get(auth_token=token)
+        except:
+            raise Http404
+        
+    def get(self, request, token, *args, **kwargs):
+        user = self.get_user(token)
+        serializer = UserSerializer(user)
+        return Response(serializer.data["avatar_color"])
+    
+    def patch(self, request, token, *args, **kwargs):
+        user = self.get_user(token)
+        
+        # Cleaning request very important while using patch since partial=True allows any field to be changed
+        # without requiring the username and password. Here we use a dictionary comprehention to ignore any 
+        # other fields besides "avatar_color".
+        cleaned_request = request.data.copy()
+        cleaned_request = {key:value for (key, value) in cleaned_request.items() if key == "avatar_color"}
         
         serializer = UserSerializer(user, data=cleaned_request, partial=True)
         if serializer.is_valid():
