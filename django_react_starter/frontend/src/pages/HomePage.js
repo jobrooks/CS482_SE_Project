@@ -27,13 +27,6 @@ class HomePage extends React.Component {
                             messageable={false}
                             inviteable={false}
                         />
-                        <SmallUserCard
-                            avatarColor={blue[500]}
-                            username="collinkatz"
-                            wins={5}
-                            info={true}
-                            friendable={false}
-                        />
                     </Grid>
                     <Grid item xs={6}>
                         <LeaderboardCard />
