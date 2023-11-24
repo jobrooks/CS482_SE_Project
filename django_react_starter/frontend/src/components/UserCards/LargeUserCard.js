@@ -1,6 +1,6 @@
 import React, { Suspense } from "react";
 import axios from "axios";
-import { Avatar, Badge, Box, Button, Card, CardActionArea, Divider, Grid, IconButton, Skeleton, Stack, Typography } from "@mui/material";
+import { Avatar, Badge, Box, Button, Card, CardActionArea, Divider, Fab, Grid, IconButton, Paper, Skeleton, Stack, Typography } from "@mui/material";
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import MarkEmailReadIcon from '@mui/icons-material/MarkEmailRead';
@@ -18,10 +18,13 @@ let globalAvatarColor = red[500]
  * specified by the username prop to the backend
  * Props:
  * - username: the username for the user being displayed
+ * - token: alternative to username, can be used to load the data
  * - friendable: whether or not to display an add friend button on the card
  * - editable: whether or not this card can be edited, i.e. it is the logged in user's card
  * - messageable: whether or not this user can be messaged
  * - inviteable: whether or not this user can be invited to a game
+ * Notes:
+ * - in order to initialize the editable version, it is beneficial to use the users token
  */
 class LargeUserCard extends React.Component {
 
@@ -30,8 +33,9 @@ class LargeUserCard extends React.Component {
         this.state = {
             // Information
             username: this.props.username,
-            userdata: null,
+            token: this.props.token,
             // Component state
+            userdata: null,
             isLoading: true,
             avatarColorPickerOpen: false,
             // How component is displayed
@@ -47,15 +51,32 @@ class LargeUserCard extends React.Component {
     }
 
     getUserInfo() {
-        axios.get(`http://localhost:8000/user_profile/profile/getuserprofile/${this.state.username}`)
-        .then((response) => {
-            this.setState({ userdata: response.data, isLoading: false });
-            return response.data;
-        })
-        .catch((response) => {
-            console.log("Error getting user data");
-            return response;
-        })
+        if (this.state.token) {
+            axios.get(`http://localhost:8000/user_profile/profile/${this.state.token}`)
+            .then((response) => {
+                this.setState({ userdata: response.data, isLoading: false });
+                console.log(this.state.userdata);
+                return response.data;
+            })
+            .catch((response) => {
+                console.log("Error getting user data");
+                return response;
+            })
+        } else if (this.state.username) {
+            axios.get(`http://localhost:8000/user_profile/profile/getuserprofile/${this.state.username}`)
+            .then((response) => {
+                this.setState({ userdata: response.data, isLoading: false });
+                console.log(this.state.userdata);
+                return response.data;
+            })
+            .catch((response) => {
+                console.log("Error getting user data");
+                return response;
+            })
+        } else {
+            console.log("No token or username specified");
+            return null;
+        }
     }
 
     getInviteIcon() {
@@ -100,12 +121,13 @@ class LargeUserCard extends React.Component {
     getEditIcon() {
         if (this.state.editable) {
             return (
-                <IconButton
+                <Fab
+                    size="small"
                     aria-label="Invite to Game"
                     onClick={() => {this.toggleAvatarColorPicker()}}
                 >
                     <EditIcon />
-                </IconButton>
+                </Fab>
             );
         }
     }
@@ -133,6 +155,21 @@ class LargeUserCard extends React.Component {
               avatar_color: color
             }
         }));
+        this.patchAvatarColor(color);
+    }
+
+    patchAvatarColor(color) {
+        const data = {
+            "avatar_color": color
+        }
+        let token = this.state.token;
+        axios.patch(`http://localhost:8000/user_profile/profile/avatarcolor/${token}/`, data)
+        .then((response) => {
+            return response.data;
+        }).catch((response) => {
+            console.log("Error patching avatar color")
+            console.log(response);
+        });
     }
 
     render() {
