@@ -36,7 +36,7 @@ class CardBackingPicker extends React.Component {
                             >
                                 <Box
                                     component="img"
-                                    src="/images/Card_Backings/Back Blue Plaid.png"
+                                    src="/images/Card_Backings/Back Blue Plaid.svg"
                                     sx={{
                                         width: "100%",
                                         height: "auto",
@@ -50,7 +50,7 @@ class CardBackingPicker extends React.Component {
                             >
                                 <Box
                                     component="img"
-                                    src="/images/Card_Backings/Back Green Plaid.png"
+                                    src="/images/Card_Backings/Back Green Plaid.svg"
                                     sx={{
                                         width: "100%",
                                         height: "auto",
@@ -64,7 +64,7 @@ class CardBackingPicker extends React.Component {
                             >
                                 <Box
                                     component="img"
-                                    src="/images/Card_Backings/Back Red Plaid.png"
+                                    src="/images/Card_Backings/Back Red Plaid.svg"
                                     sx={{
                                         width: "100%",
                                         height: "auto",

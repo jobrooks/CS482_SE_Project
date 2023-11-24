@@ -1,6 +1,6 @@
 import React from "react";
 import NavBar from "../components/NavBar";
-import UserCard from "../components/UserCard";
+import UserCard from "../components/UserCards/UserCard";
 import TableCard from "../components/TableCard";
 import { Grid } from "@mui/material";
 import LoginRedirector from "../components/LoginRedirector";

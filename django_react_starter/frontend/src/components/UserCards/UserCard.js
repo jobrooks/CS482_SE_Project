@@ -3,10 +3,13 @@ import axios from 'axios';
 import { Avatar, Box, Card, CardActionArea, CardContent, Divider, Grid, List, ListItem, Typography } from "@mui/material";
 import { red, orange, yellow, green, blue, purple } from '@mui/material/colors';
 import { Button } from "@mui/base";
-import AvatarColorPicker from "./AvatarColorPicker"
+import AvatarColorPicker from "../AvatarColorPicker"
 
 var globalAvatarColor = red[500]
 
+/** UserCard (Deprecated)
+ * Please use the better LargeUserCard instead with props.editable = true
+ */
 class UserCard extends React.Component {
 
     constructor(props) {

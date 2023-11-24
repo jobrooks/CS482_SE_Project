@@ -2,6 +2,7 @@ import React from "react";
 import axios from "axios";
 import { Container, CssBaseline, Avatar, Typography, TextField, FormControlLabel, Checkbox, Button, Grid, Link, Box } from '@mui/material';
 import { useNavigate } from "react-router-dom";
+import LockIcon from '@mui/icons-material/Lock';
 
 class LoginPage extends React.Component {
 
@@ -61,9 +62,9 @@ class LoginPage extends React.Component {
                   alignItems: 'center',
                 }}
               >
-                {/* <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-
-                </Avatar> */}
+                <Avatar sx={{ m: 1, bgcolor: 'primary.main' }}>
+                  <LockIcon />
+                </Avatar>
                 <Typography component="h1" variant="h5">
                   Sign in
                 </Typography>

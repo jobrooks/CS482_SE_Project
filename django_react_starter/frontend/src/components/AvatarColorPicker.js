@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dialog, Avatar, Button, DialogActions, DialogContent, DialogTitle, Box } from '@mui/material';
+import { Dialog, Avatar, Button, DialogActions, DialogContent, DialogTitle, Box, Grid } from '@mui/material';
 import { red, orange, yellow, green, blue, purple } from '@mui/material/colors';
 
 class AvatarColorPicker extends React.Component {
@@ -31,32 +31,58 @@ class AvatarColorPicker extends React.Component {
             <Dialog open={this.props.colorPickerOpen} onClose={this.handleClose}>
             <DialogTitle>Change Avatar Color</DialogTitle>
             <DialogContent>
-                <Box display="flex" justifyContent="space-between" p={2}>
-                    <Avatar
-                        sx={{ bgcolor: red[500], cursor: 'pointer' }}
-                        onClick={() => this.handleColorChange(red[500])}
-                    />
-                    <Avatar
-                        sx={{ bgcolor: orange[500], cursor: 'pointer' }}
-                        onClick={() => this.handleColorChange(orange[500])}
-                    />
-                    <Avatar
-                        sx={{ bgcolor: yellow[500], cursor: 'pointer' }}
-                        onClick={() => this.handleColorChange(yellow[500])}
-                    />
-                    <Avatar
-                        sx={{ bgcolor: green[500], cursor: 'pointer' }}
-                        onClick={() => this.handleColorChange(green[500])}
-                    />
-                    <Avatar
-                        sx={{ bgcolor: blue[500], cursor: 'pointer' }}
-                        onClick={() => this.handleColorChange(blue[500])}
-                    />
-                    <Avatar
-                        sx={{ bgcolor: purple[500], cursor: 'pointer' }}
-                        onClick={() => this.handleColorChange(purple[500])}
-                    />
-                </Box>
+                <Grid container
+                    spacing={2}
+                >
+                    <Grid item
+                        xs={4}
+                    >
+                        <Avatar
+                            sx={{ bgcolor: red[500], cursor: 'pointer' }}
+                            onClick={() => this.handleColorChange(red[500])}
+                        />
+                    </Grid>
+                    <Grid item
+                        xs={4}
+                    >
+                        <Avatar
+                            sx={{ bgcolor: orange[500], cursor: 'pointer' }}
+                            onClick={() => this.handleColorChange(orange[500])}
+                        />
+                    </Grid>
+                    <Grid item
+                        xs={4}
+                    >
+                        <Avatar
+                            sx={{ bgcolor: yellow[500], cursor: 'pointer' }}
+                            onClick={() => this.handleColorChange(yellow[500])}
+                        />
+                    </Grid>
+                    <Grid item
+                        xs={4}
+                    >
+                        <Avatar
+                            sx={{ bgcolor: green[500], cursor: 'pointer' }}
+                            onClick={() => this.handleColorChange(green[500])}
+                        />
+                    </Grid>
+                    <Grid item
+                        xs={4}
+                    >
+                        <Avatar
+                            sx={{ bgcolor: blue[500], cursor: 'pointer' }}
+                            onClick={() => this.handleColorChange(blue[500])}
+                        />
+                    </Grid>
+                    <Grid item
+                        xs={4}
+                    >
+                        <Avatar
+                            sx={{ bgcolor: purple[500], cursor: 'pointer' }}
+                            onClick={() => this.handleColorChange(purple[500])}
+                        />
+                    </Grid>
+                </Grid>
             </DialogContent>
             <DialogActions>
                 <Button onClick={this.handleClose}>Cancel</Button>
