@@ -21,22 +21,22 @@ class HomePage extends React.Component {
                 <Grid container spacing={0}>
                     <Grid item xs={6}>
                         <LargeUserCard
-                            username="collinkatz"
+                            token={JSON.parse(localStorage.getItem("sessionToken"))}
                             friendable={false}
                             editable={true}
                             messageable={false}
                             inviteable={false}
                         />
-                    </Grid>
-                    <Grid item xs={6}>
-                        <LeaderboardCard />
                         <SmallUserCard
                             avatarColor={blue[500]}
-                            username="My Account"
+                            username="collinkatz"
                             wins={5}
                             info={true}
                             friendable={false}
                         />
+                    </Grid>
+                    <Grid item xs={6}>
+                        <LeaderboardCard />
                     </Grid>
                     <Grid item xs={6}>
                         <TableCard />
