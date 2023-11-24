@@ -25,8 +25,11 @@ class LeaderboardCard extends React.Component {
                     username={leader.username}
                     wins={leader.wins}
                     is_active={leader.is_active}
+                    avatarColor={leader.avatar_color}
                     info={true}
-                    friendable={false}
+                    friendable={true}
+                    inviteable={true}
+                    messageable={true}
                 />
             );
         }
