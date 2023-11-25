@@ -50,6 +50,19 @@ class GetOtherUserProfile(APIView):
         new_data = serializer.data
         new_data["date_joined"] = string_date # Overwrite data for old date with better format
         return Response(new_data)
+    
+class IsAdmin(APIView):
+    def get_user(self, token):
+        try:
+            return User.objects.get(auth_token=token)
+        except:
+            raise Http404
+        
+    def get(self, request, token, *args, **kwargs):
+        user = self.get_user(token)
+        serializer = UserSerializer(user)
+        print(serializer.data["is_staff"])
+        return Response(serializer.data["is_staff"])
 
 class Leaderboard(APIView):
     def get(self, *args, **kwargs):
