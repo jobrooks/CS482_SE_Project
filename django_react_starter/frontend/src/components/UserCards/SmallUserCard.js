@@ -220,7 +220,7 @@ class SmallUserCard extends React.Component {
                     <Box
                         sx={{
                             p: 0,
-                            m: 2,
+                            m: 1,
                             textTransform: "none",
                         }}
                     >
@@ -229,6 +229,7 @@ class SmallUserCard extends React.Component {
                             sx={{
                                 p: 0,
                                 m: 0,
+                                width: "auto",
                                 textTransform: "none",
                             }}
                         >
@@ -247,7 +248,7 @@ class SmallUserCard extends React.Component {
                     <Box
                         sx={{
                             p: 0,
-                            m: 2,
+                            m: 1,
                             textTransform: "none",
                         }}
                     >
