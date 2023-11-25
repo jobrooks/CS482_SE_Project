@@ -8,7 +8,9 @@ import {
     Drawer,
     ClickAwayListener,
     MenuItem,
-    Link
+    Link,
+    Stack,
+    Fab
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useNavigate } from 'react-router-dom';
@@ -17,6 +19,7 @@ class NavBar extends React.Component {
     
     constructor(props) {
         super(props);
+        this.handleLogoClick = this.handleLogoClick.bind(this);
         this.state = {
             drawerOpen: false
         };
@@ -30,6 +33,10 @@ class NavBar extends React.Component {
     handleLogout = () => {
         localStorage.setItem("sessionToken", "null");
         this.props.navigate("/login");
+    }
+
+    handleLogoClick() {
+        this.props.navigate("/");
     }
 
     render() {
@@ -56,9 +63,22 @@ class NavBar extends React.Component {
                             >
                                 <MenuIcon />
                             </IconButton>
-                            <Typography variant="h6">
-                                Five Card Draw
-                            </Typography>
+                            <Stack direction="row" spacing={2} alignItems="center">
+                                <Fab
+                                    onClick={ this.handleLogoClick }
+                                    sx={{
+                                        width: "10%",
+                                        height: "auto",
+                                        aspectRatio: 1,
+                                        m: "10px",
+                                    }}
+                                >
+                                    <img src="/images/Logos/Logo Small.png" width="110%" height="auto"  />
+                                </Fab>
+                                <Typography variant="h6">
+                                    Five Card Draw
+                                </Typography>
+                            </Stack>
                         </Toolbar>
                     </AppBar>
                 </div>
