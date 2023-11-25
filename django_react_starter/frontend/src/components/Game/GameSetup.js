@@ -14,6 +14,8 @@ class GameSetup extends React.Component {
             selectedPlayers: [],
             myMoney: ""
         }
+        this.postGame = this.postGame.bind(this)
+        this.postPlayers = this.postPlayers.bind(this)
 
     }
 
@@ -72,7 +74,7 @@ class GameSetup extends React.Component {
     postGame() {
       const gameData = {
       }
-      axios.patch(`http://127.0.0.1:8000/game/`, gameData)
+      axios.patch(`http://localhost:8000/game/`, gameData)
       .then((response) => {
         console.log(response.data["id"]);
         return response.data["id"]
@@ -99,7 +101,7 @@ class GameSetup extends React.Component {
           "hand": null
         }
 
-        axios.patch(`http://127.0.0.1:8000/player/`, playerData)
+        axios.patch(`http://localhost:8000/player/`, playerData)
         .then((response) => {
           console.log(response.data);
         })
@@ -123,7 +125,7 @@ class GameSetup extends React.Component {
         "hand": null
       }
 
-      axios.patch(`http://127.0.0.1:8000/player/`, myData)
+      axios.patch(`http://localhost:8000/player/`, myData)
       .then((response) => {
         console.log(response.data);
       })
@@ -134,18 +136,16 @@ class GameSetup extends React.Component {
       
     }
 
-    createGame() {
-      //make sure game is only created once, and if there are selected players
-      if (this.state.selectedPlayers) {
-        if (this.state.selectedPlayers.length > 0) {
-          const gameID = this.postGame()
-          this.postPlayers(gameID)
-        }
-      else {
-        console.log("no players selected")
-      }
+    createGame = async () => {
+      try {
+        // Make sure game is only created once, and if there are selected players
+        const gameID = await this.postGame();
+        this.postPlayers(gameID);
+      } catch (error) {
+        console.error("Error creating game:", error);
       }
     }
+    
 
     render() {
         const {friends, selectedPlayers} = this.state;
