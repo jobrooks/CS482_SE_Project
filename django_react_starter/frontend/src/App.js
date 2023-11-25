@@ -19,7 +19,7 @@ import PlayPage2 from './pages/PlayPage2';
 import PlayPage3 from './pages/PlayPage3';
 import PlayPage4 from './pages/PlayPage4';
 import PlayPage5 from './pages/PlayPage5';
-import AdminPage from './pages/AdminPage';
+import AdminPage from './components/AdminPage';
 
 class App extends React.Component {
 
