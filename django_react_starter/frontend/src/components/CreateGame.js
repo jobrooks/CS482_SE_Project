@@ -1,6 +1,7 @@
 import React from "react"
-import {Box, Stack, Avatar, Typography, Checkbox} from "@mui/material";
+import {Box, Stack, Avatar, Typography, Checkbox, Card} from "@mui/material";
 import axios from "axios";
+import SmallUserCard from "./UserCards/SmallUserCard";
 
 class CreateGame extends React.Component {
 
@@ -32,7 +33,7 @@ class CreateGame extends React.Component {
         const config = {headers: {Authorization: `Bearer ${token}`}};
         axios.get(`http://localhost:8000/friend/get_friends`,config)
         .then((response) => {
-            this.setState({friends: response.data})
+            this.setState({friends: response.data['friends']})
             console.log(response.data['friends']);
         })
         .catch((response) => {
@@ -68,8 +69,26 @@ class CreateGame extends React.Component {
         const selectedPlayers = [];
         return (
             <div className="CreateGame">
-                <Stack direction="row" justifyContent="space-between" spacing={2} mb={2}>
-              {friends.map((friend) => (
+              <Card elevation={5}
+                    sx={{
+                        width: 250,
+                        height: 25,
+                    }}>
+                Friends
+              </Card>
+              
+              <Stack direction="row" justifyContent="space-between" spacing={2} mb={2}>
+                {friends.map((friend) => (
+                  <SmallUserCard 
+                  username = {friend.username}
+                  is_active={friend.is_active}
+                  avatarColor={friend.avatar_color}
+                  inviteable={true}
+                  messageable={true}>
+                  </SmallUserCard>
+                  ))}
+              </Stack> 
+              {/* {friends.map((friend) => (
                 <Box key={friend.username} sx={{ textAlign: 'center' }}>
                   <Avatar src={friend.avatar}>{friend.username[0]}</Avatar>
                   <Typography variant="caption">{friend.username}</Typography>
@@ -79,8 +98,7 @@ class CreateGame extends React.Component {
                     onChange={() => this.handlePlayerSelection(friend.username)}
                   />
                 </Box>
-              ))}
-            </Stack>
+              ))} */}
                 {/* <Box sx={{ display: 'flex', justifyContent: 'center'}}> */}
                 {/* stack to hold waiting players */}
                 {/* <Stack justifyContent='space-between' direction='row' spacing={2} sx={{ border: '1px solid'}}>
