@@ -9,7 +9,7 @@ import LoginRedirector from "../components/LoginRedirector";
 import { Link } from 'react-router-dom';
 import TableCard from '../components/TableCard';
 import axios from "axios";
-import CreateGame from '../components/CreateGame';
+import GameSetup from '../components/Game/GameSetup';
 
 class CreateGamePage extends React.Component {
 
@@ -17,7 +17,8 @@ class CreateGamePage extends React.Component {
     super(props)
     this.state = {
         tableTheme: "",
-        tableImage: "/images/Table_Themes/table_"
+        tableImage: "/images/Table_Themes/table_",
+        selectedPlayers: []
     }
 }
 
@@ -46,7 +47,12 @@ componentDidMount() {
       <div className='CreateGamePage'>
         <LoginRedirector />
         <NavBar />
-        {/* box holding create game stuff */}
+        {/* box holding game setup stuff */}
+        <Box>
+          <GameSetup />
+        </Box>
+
+        {/* box holding game itself*/}
         <Box 
           style={{backgroundImage:`url(${backImgPath})`,
           backgroundSize: 'cover',
@@ -56,14 +62,20 @@ componentDidMount() {
           margin: 0,
           padding: 0
         }}>
+          
+          <Stack justifyContent='space-between' direction='row' spacing={2} sx={{ border: '1px solid'}}>
 
-          {/* box holding create game stuff */}
-          <Box>
-            <CreateGame />
-          </Box>
+                    <Box sx={{backgroundColor: '#ccc', height:'100px', width:'100px'}}/>
+                    <Box sx={{backgroundColor: '#ccc', height:'100px', width:'100px'}}/>
+                    <Box sx={{backgroundColor: '#ccc', height:'100px', width:'100px'}}/>
+                </Stack>
+
 
 
         </Box>
+
+
+
       </div>
     );
   }
