@@ -9,4 +9,5 @@ urlpatterns = [
     path('profile/avatarcolor/<str:token>/', views.AvatarColor.as_view(), name='avatar_color'),
     path('profile/leaderboard', views.Leaderboard.as_view(), name='leaderboard'),
     path('profile/isadmin/<str:token>/', views.IsAdmin.as_view(), name='is_admin'),
+    path('profile/usermanager/<str:token>/<int:page>/', views.Adminpage.as_view(), name='admin_page'),
 ]
