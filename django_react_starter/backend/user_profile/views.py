@@ -65,9 +65,34 @@ class IsAdmin(APIView):
         return Response(serializer.data["is_staff"])
 
 class Leaderboard(APIView):
-    def get(self, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         global_leaders = {"leaders": [leader for leader in User.objects.values("username", "wins", "is_active", "avatar_color").order_by('-wins')[:5]]}
         return JsonResponse(global_leaders, status=200)
+    
+class Adminpage(APIView):
+    
+    users_per_page = 10
+    
+    def get_user(self, token):
+        try:
+            return User.objects.get(auth_token=token)
+        except:
+            raise Http404
+        
+    def user_is_admin(self, token):
+        user = self.get_user(token)
+        serializer = UserSerializer(user)
+        return serializer.data["is_staff"]
+    
+    def get(self, request, token, page, *args, **kwargs):
+        if self.user_is_admin(token):
+            exclude_fields = ['password']
+            keys = [f.name for f in User._meta.local_fields if f.name not in exclude_fields]
+            users_on_page = {"users": [user for user in User.objects.values(*keys).order_by('id')[self.users_per_page*(page-1):self.users_per_page*page]]}
+            print(users_on_page)
+            return JsonResponse(users_on_page, status=200)
+        else:
+            return Response(status=401)
     
 class TableTheme(APIView):
     def get_user(self, token):
