@@ -1,7 +1,7 @@
 import React from "react"
 import {Box, Stack, Avatar, Typography, Checkbox, Card, Button} from "@mui/material";
 import axios from "axios";
-import SmallUserCard from "../UserCards/SmallUserCard";
+import SmallUserCard from "./UserCards/SmallUserCard";
 
 class GameSetup extends React.Component {
 
@@ -13,11 +13,18 @@ class GameSetup extends React.Component {
             friends: [],
             selectedPlayers: [],
             myMoney: "",
+            isVisible: true
         }
         this.postGame = this.postGame.bind(this)
         this.postPlayers = this.postPlayers.bind(this)
 
     }
+
+    handleCreateGameButtonClick= () => {
+      //set invisible in create game
+      this.createGame();
+
+    };
 
     getFriends() {
         let token = JSON.parse(localStorage.getItem("sessionToken"));
@@ -152,6 +159,7 @@ class GameSetup extends React.Component {
           const gameID = await this.postGame();
           this.postPlayers(gameID);
           this.postSelf(gameID);
+          this.setState({ isVisible: false });
         }
         else {
           console.log("no selected players");
@@ -164,36 +172,39 @@ class GameSetup extends React.Component {
 
     render() {
         const {friends, selectedPlayers} = this.state;
+        const { isVisible } = this.state;
         return (
             <div className="CreateGame">
-              <Card elevation={5}
-                    sx={{
-                        width: 250,
-                        height: 25,
-                    }}>
-                Friends
-              </Card>
-              
-              <Stack direction="row" justifyContent="space-between" spacing={2} mb={2}>
-                {friends.map((friend) => (
-                  <div key={friend.id}>
-                    <SmallUserCard 
-                      username = {friend.username}
-                      wins = {friend.wins}
-                      is_active={friend.is_active}
-                      avatarColor={friend.avatar_color}
-                      messageable={true}
-                    />
-                    <Checkbox
-                      checked={selectedPlayers.includes(friend)}
-                      onChange={() => this.handlePlayerSelection(friend)}
-                    />
-                  </div>
-                  ))}
-              </Stack> 
+              {isVisible && (<div>
+                <Card elevation={5}
+                      sx={{
+                          width: 250,
+                          height: 25,
+                      }}>
+                  Friends
+                </Card>
+                
+                <Stack direction="row" justifyContent="space-between" spacing={2} mb={2}>
+                  {friends.map((friend) => (
+                    <div key={friend.id}>
+                      <SmallUserCard 
+                        username = {friend.username}
+                        wins = {friend.wins}
+                        is_active={friend.is_active}
+                        avatarColor={friend.avatar_color}
+                        messageable={true}
+                      />
+                      <Checkbox
+                        checked={selectedPlayers.includes(friend)}
+                        onChange={() => this.handlePlayerSelection(friend)}
+                      />
+                    </div>
+                    ))}
+                </Stack> 
 
-              <Button onClick={this.createGame} variant="contained" size="large" style={{ marginBottom: '16px' }}>Create Game</Button>
+                <Button onClick={this.handleCreateGameButtonClick} variant="contained" size="large" style={{ marginBottom: '16px' }}>Create Game</Button>
 
+              </div> )}
             </div>
         )
     }

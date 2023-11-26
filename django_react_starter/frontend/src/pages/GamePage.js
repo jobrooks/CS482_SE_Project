@@ -9,9 +9,9 @@ import LoginRedirector from "../components/LoginRedirector";
 import { Link } from 'react-router-dom';
 import TableCard from '../components/TableCard';
 import axios from "axios";
-import GameSetup from '../components/Game/GameSetup';
+import GameSetup from '../components/GameSetup';
 
-class CreateGamePage extends React.Component {
+class GamePage extends React.Component {
 
   constructor(props) {
     super(props)
@@ -51,7 +51,7 @@ componentDidMount() {
         <Box>
           <GameSetup />
         </Box>
-
+        
         {/* box holding game itself*/}
         <Box 
           style={{backgroundImage:`url(${backImgPath})`,
@@ -81,4 +81,4 @@ componentDidMount() {
   }
 };
 
-export default CreateGamePage;
+export default GamePage;
