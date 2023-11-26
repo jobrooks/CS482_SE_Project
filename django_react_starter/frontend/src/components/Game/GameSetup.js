@@ -12,7 +12,7 @@ class GameSetup extends React.Component {
             username: "",
             friends: [],
             selectedPlayers: [],
-            myMoney: ""
+            myMoney: "",
         }
         this.postGame = this.postGame.bind(this)
         this.postPlayers = this.postPlayers.bind(this)
@@ -26,10 +26,10 @@ class GameSetup extends React.Component {
         axios.get(`http://localhost:8000/user_profile/profile/${token}/`)
         .then((response) => {
             this.setState({username: response.data['username']})
-            console.log(this.state.username);
+            console.log("logged in user: " + this.state.username);
 
             this.setState({myMoney: response.data['money']})
-            console.log(this.state.myMoney);
+            console.log("my money: " + this.state.myMoney);
         })
         .catch((response) => {
             console.log("username not found")
@@ -40,6 +40,7 @@ class GameSetup extends React.Component {
         axios.get(`http://localhost:8000/friend/get_friends`,config)
         .then((response) => {
             this.setState({friends: response.data['friends']})
+            console.log("Friends: ")
             console.log(response.data['friends']);
         })
         .catch((response) => {
@@ -52,36 +53,40 @@ class GameSetup extends React.Component {
         this.getFriends()
     }
 
-    handlePlayerSelection = (playerName) => {
+    handlePlayerSelection = (player) => {
         this.setState((prevState) => {
-          const isSelected = prevState.selectedPlayers.includes(playerName);
+          const isSelected = prevState.selectedPlayers.includes(player.username);
     
           if (isSelected) {
             // If player is already selected, remove from selectedPlayers
             return {
-              selectedPlayers: prevState.selectedPlayers.filter(name => name !== playerName),
+              selectedPlayers: prevState.selectedPlayers.filter(name => name !== player),
             };
           } else {
             // If player is not selected, add to selectedPlayers
             return {
-              selectedPlayers: [...prevState.selectedPlayers, playerName],
+              selectedPlayers: [...prevState.selectedPlayers, player],
             };
           }
         });
       }
 
-    //make game, post to db, return game id
-    postGame() {
-      const gameData = {
-      }
-      axios.patch(`http://localhost:8000/game/`, gameData)
-      .then((response) => {
+    //make game, post to db, return gameID
+    postGame = async () => {
+      try {
+        const gameName = this.state.username + "'s game";
+        const gameData = {
+          "name": gameName
+        };
+    
+        const response = await axios.post(`http://localhost:8000/game/`, gameData);
         console.log(response.data["id"]);
-        return response.data["id"]
-      })
-      .catch((response) => {
-        console.log("idk game not made")
-      })
+
+        return response.data["id"];
+      } catch (error) {
+        console.log("idk game not made", error);
+        throw error;
+      }
     }
 
     //parse selected players and add player to db
@@ -101,7 +106,7 @@ class GameSetup extends React.Component {
           "hand": null
         }
 
-        axios.patch(`http://localhost:8000/player/`, playerData)
+        axios.post(`http://localhost:8000/player/`, playerData)
         .then((response) => {
           console.log(response.data);
         })
@@ -111,6 +116,9 @@ class GameSetup extends React.Component {
 
       });
 
+    }
+
+    postSelf(gameID) {
       //also add yourself to the game
       const myData = {
         "money": this.state.myMoney,
@@ -125,7 +133,7 @@ class GameSetup extends React.Component {
         "hand": null
       }
 
-      axios.patch(`http://localhost:8000/player/`, myData)
+      axios.post(`http://localhost:8000/player/`, myData)
       .then((response) => {
         console.log(response.data);
       })
@@ -136,11 +144,18 @@ class GameSetup extends React.Component {
       
     }
 
+
     createGame = async () => {
       try {
         // Make sure game is only created once, and if there are selected players
-        const gameID = await this.postGame();
-        this.postPlayers(gameID);
+        if(this.state.selectedPlayers.length > 0) {
+          const gameID = await this.postGame();
+          this.postPlayers(gameID);
+          this.postSelf(gameID);
+        }
+        else {
+          console.log("no selected players");
+        }
       } catch (error) {
         console.error("Error creating game:", error);
       }
@@ -170,8 +185,8 @@ class GameSetup extends React.Component {
                       messageable={true}
                     />
                     <Checkbox
-                      checked={selectedPlayers.includes(friend.username)}
-                      onChange={() => this.handlePlayerSelection(friend.username)}
+                      checked={selectedPlayers.includes(friend)}
+                      onChange={() => this.handlePlayerSelection(friend)}
                     />
                   </div>
                   ))}

@@ -54,7 +54,7 @@ class TurnOrder():
     order = deque()
 
 class Game(models.Model):
-    name = models.CharField(max_length=10, null=True)
+    name = models.CharField(max_length=50, null=True)
     deck = models.OneToOneField(Deck(), null=True, on_delete=models.CASCADE)
     pot = models.OneToOneField(Pot(), null=True, on_delete=models.CASCADE)
 
