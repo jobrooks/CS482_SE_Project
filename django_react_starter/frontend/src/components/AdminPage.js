@@ -1,15 +1,19 @@
 import React from 'react';
 import axios from "axios";
-import { Button, Card, List, Stack } from '@mui/material';
-import { DataGrid } from '@mui/x-data-grid';
+import { Button, Card, List, Skeleton, Stack } from '@mui/material';
+import { DataGrid, GridActionsCellItem, GridRowParams } from '@mui/x-data-grid';
 import NavBar from './NavBar';
 import SmallUserCard from './UserCards/SmallUserCard';
+import PublishIcon from '@mui/icons-material/Publish';
+import DeleteIcon from '@mui/icons-material/Delete';
+import _ from 'lodash';
 
 
 class AdminPage extends React.Component {
 
     constructor(props) {
         super(props);
+        this.handleUserUpdate = this.handleUserUpdate.bind(this);
         this.state = {
             // How component is displayed
             userManagerPageSize: 10,
@@ -55,7 +59,7 @@ class AdminPage extends React.Component {
 
     getUserManagerPage() {
         this.setState({ isLoading: true });
-        axios.get(`http://localhost:8000/user_profile/profile/usermanager/${JSON.parse(localStorage.getItem("sessionToken"))}/${this.state.page}`)
+        axios.get(`http://localhost:8000/user_profile/profile/usermanager/${JSON.parse(localStorage.getItem("sessionToken"))}/${this.state.page}/`)
         .then((response) => {
             this.setState({ currentPageData: response.data.users, isLoading: false });
             return response.data;
@@ -67,14 +71,58 @@ class AdminPage extends React.Component {
         })
     }
 
-    columns = [
-        { field: 'id', headerName: 'ID', width: 90, type: 'number' },
-        { field: 'username', headerName: 'Username', width: 150 },
-        { field: 'email', headerName: 'Email', width: 150 },
-        { field: 'wins', headerName: 'Wins', width: 90, type: 'number' },
-        { field: 'games_played', headerName: 'Games Played', width: 150, type: 'number' },
-        { field: 'money', headerName: 'Money', width: 150, type: 'number' },
+    async handleUserUpdate(updatedRow, originalRow) {
+        return await axios.patch(`http://localhost:8000/user_api/user-management/${JSON.parse(localStorage.getItem("sessionToken"))}/${updatedRow.username}/`, updatedRow)
+        .then((response) => {
+            // Map returns the current page data and applys a function on each row and if that row is the row needed to be updated it changes it to the updated row
+            let newPageData = this.state.currentPageData.map((row) => {
+                if (_.isEqual(row, originalRow)) {
+                    return updatedRow;
+                } else {
+                    return row;
+                }
+            });
+            this.setState({ currentPageData: newPageData });
+            return updatedRow;
+        })
+        .catch((response) => { 
+            console.log("Error patching user" + updatedRow.username);
+            return originalRow;
+        });
+    }
+    
+    handleUserUpdateError(error) {
+        console.log(error);
+        return Promise.reject(error);
+    }
 
+    columns = [
+        { field: 'id', headerName: 'User ID', width: 90, type: 'number', editable: false },
+        { field: 'username', headerName: 'Username', width: 150, editable: true },
+        { field: 'email', headerName: 'Email', width: 150, editable: true },
+        { field: 'wins', headerName: 'Wins', width: 90, type: 'number', editable: true },
+        { field: 'games_played', headerName: 'Games Played', width: 150, type: 'number', editable: true },
+        { field: 'money', headerName: 'Money', width: 150, type: 'number', editable: true },
+        { field: 'is_staff', headerName: 'Staff', width: 150, type: 'boolean', editable: true },
+        { field: 'last_login', headerName: 'Last Login', width: 200, type: 'dateTime', editable: true,
+        valueGetter: (params) => {return new Date(params.row.last_login)}
+        },
+        { field: 'date_joined', headerName: 'Date Joined', width: 200, type: 'dateTime', editable: true,
+        valueGetter: (params) => {return new Date(params.row.date_joined)}
+        },
+        {
+            field: 'actions',
+            type: 'actions',
+            headerName: 'Actions',
+            getActions: (params) => [
+                <GridActionsCellItem icon={<SmallUserCard info={true} isButton={true} username={params.row.username}/>} label="Account" />,
+                <GridActionsCellItem icon={<DeleteIcon />} onClick={() => {
+                    if (!params.row.is_staff) {
+                        // Add Delete
+                    }
+                }} label="Delete" />,
+            ]
+        },
     ];
 
     render() {
@@ -83,26 +131,51 @@ class AdminPage extends React.Component {
                 <NavBar />
                 <Card elevation={3}
                     sx={{
-                        width: 1000,
+                        width: "auto",
                         height: "auto",
-                        aspectRatio: 1,
                         m: 2
                     }}
                 >
-                    <DataGrid
-                        rows={this.state.isLoading ? [{"id": "Loading..."}] : this.state.currentPageData}
-                        columns={this.columns}
-                        initialState={{
-                          pagination: {
-                            paginationModel: {
-                              pageSize: this.state.userManagerPageSize,
+                    { this.state.isLoading ? 
+                    ( // Skeleton UI returned while data is loading
+                        <Card>
+                            <Skeleton variant="rounded" sx={{ height: 30, m: 2 }} />
+                            <Skeleton variant="rounded" sx={{ height: 30, m: 2 }} />
+                            <Skeleton variant="rounded" sx={{ height: 30, m: 2 }} />
+                            <Skeleton variant="rounded" sx={{ height: 30, m: 2 }} />
+                            <Skeleton variant="rounded" sx={{ height: 30, m: 2 }} />
+                            <Skeleton variant="rounded" sx={{ height: 30, m: 2 }} />
+                            <Skeleton variant="rounded" sx={{ height: 30, m: 2 }} />
+                            <Skeleton variant="rounded" sx={{ height: 30, m: 2 }} />
+                            <Skeleton variant="rounded" sx={{ height: 30, m: 2 }} />
+                            <Skeleton variant="rounded" sx={{ height: 30, m: 2 }} />
+                        </Card>
+                    )
+                    : 
+                    (
+                        <DataGrid
+                            rows={this.state.currentPageData}
+                            columns={this.columns}
+                            processRowUpdate={this.handleUserUpdate}
+                            onProcessRowUpdateError={this.handleUserUpdateError}
+                            initialState={{
+                            pagination: {
+                                paginationModel: {
+                                pageSize: this.state.userManagerPageSize,
+                                },
                             },
-                          },
-                        }}
-                        pageSizeOptions={[this.state.userManagerPageSize]}
-                        checkboxSelection
-                        disableRowSelectionOnClick
-                    />
+                            }}
+                            editMode="row"
+                            isCellEditable={(params) => !params.row.is_staff}
+                            pageSizeOptions={[this.state.userManagerPageSize]}
+                            checkboxSelection
+                            disableRowSelectionOnClick
+                            sx={{
+                                height: "auto"
+                            }}
+                        />
+                    )
+                    }
                 </Card>
             </div>
         );
