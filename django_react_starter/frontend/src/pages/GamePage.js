@@ -10,6 +10,7 @@ import { Link } from 'react-router-dom';
 import TableCard from '../components/TableCard';
 import axios from "axios";
 import GameSetup from '../components/GameSetup';
+import PlayingCard from '../components/PlayingCardViews/PlayingCard';
 
 class GamePage extends React.Component {
 
@@ -51,7 +52,7 @@ componentDidMount() {
         <Box>
           <GameSetup />
         </Box>
-        
+
         {/* box holding game itself*/}
         <Box 
           style={{backgroundImage:`url(${backImgPath})`,
@@ -60,15 +61,16 @@ componentDidMount() {
           width: '100%',
           height: '100vh', //view heigh
           margin: 0,
-          padding: 0
-        }}>
+          padding: 0 }}>
           
           <Stack justifyContent='space-between' direction='row' spacing={2} sx={{ border: '1px solid'}}>
 
-                    <Box sx={{backgroundColor: '#ccc', height:'100px', width:'100px'}}/>
-                    <Box sx={{backgroundColor: '#ccc', height:'100px', width:'100px'}}/>
-                    <Box sx={{backgroundColor: '#ccc', height:'100px', width:'100px'}}/>
-                </Stack>
+            <Box sx={{backgroundColor: '#ccc', height:'100px', width:'100px'}}/>
+            <Box sx={{backgroundColor: '#ccc', height:'100px', width:'100px'}}/>
+            <Box sx={{backgroundColor: '#ccc', height:'100px', width:'100px'}}/>
+          </Stack>
+
+          <PlayingCard cardSrc="2H" w='100px' h='200px'/>
 
 
 
