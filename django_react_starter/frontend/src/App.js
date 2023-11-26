@@ -7,6 +7,7 @@ import HomePage from './pages/HomePage';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { CssBaseline } from '@mui/material';
 import LoginPage from './pages/LoginPage';
+import axios from 'axios';
 
 import CreateAccountPage from './pages/CreateAccountPage';
 import ProfilePage from './pages/ProfilePage';
@@ -18,10 +19,19 @@ import PlayPage2 from './pages/PlayPage2';
 import PlayPage3 from './pages/PlayPage3';
 import PlayPage4 from './pages/PlayPage4';
 import PlayPage5 from './pages/PlayPage5';
+import AdminPage from './components/AdminPage';
 
-function App() {
+class App extends React.Component {
 
-  const theme = createTheme({
+  constructor(props) {
+    super(props);
+    this.state = {
+      isLoading: true,
+      isAdmin: true,
+    }
+  }
+
+  theme = createTheme({
     palette: {
       primary: {
         main: "#4E0416",
@@ -67,28 +77,63 @@ function App() {
     ],
   });
 
-  return (
-    <div className="App">
-        {/* <ThemeProvider theme={theme}>
-          <CssBaseline /> */}
-          <Routes>
-            <Route path='/' element={<HomePage />} />
-            <Route path="/account" element={<AccountSettings />} />
-            <Route path='/login' element={<LoginPage />} />
-            <Route path='/register' element={<CreateAccountPage />} />
-            <Route path='/profile' element={<ProfilePage />} />
-            <Route path='/search' element={<SearchPage />} />
-            <Route path='/friends' element={<FriendPage />} />
-            <Route path='/playpage' element={<PlayPage />} />
-            <Route path='/playpage2' element={<PlayPage2 />} />
-            <Route path='/creategame' element={<CreateGamePage />} />
-            <Route path='/playpage3' element={<PlayPage3 />} />
-            <Route path='/playpage4' element={<PlayPage4 />} />
-            <Route path='/playpage5' element={<PlayPage5 />} />
-          </Routes>
-        {/* </ThemeProvider> */}
-    </div>
-  );
+  /**
+   * This method for checking whether a user is an admin when app to allow 
+   * them access to the admin page is likely insecure. 
+   * Possibly app state can be changed in browser, or response object can be spoofed/altered
+   * Nonetheless, every admin-related endpoint should recieve a session token and should
+   * verify user&token&admin authenticity before performing any operations on the database
+   * Principle is, you should not trust the user even if they say they are an admin
+   */
+  componentDidMount() {
+    axios.get(`http://localhost:8000/user_profile/profile/isadmin/${JSON.parse(localStorage.getItem("sessionToken"))}`)
+    .then((response) => {
+      this.setState({ isAdmin: response.data });
+    })
+    .catch((response) => {
+      console.log("Error checking user admin");
+      console.log(response);
+    })
+  }
+
+  getAdminSite() {
+    let adminSiteRouting = (
+      <Route path='/admin' element={<AdminPage />}>
+        
+      </Route>
+    );
+    if (this.state.isAdmin) {
+      return adminSiteRouting;
+    } else {
+      return null;
+    }
+  }
+
+  render() {
+    return (
+      <div className="App">
+          {/* <ThemeProvider theme={theme}>
+            <CssBaseline /> */}
+            <Routes>
+              <Route path='/' element={<HomePage />} />
+              <Route path="/account" element={<AccountSettings />} />
+              <Route path='/login' element={<LoginPage />} />
+              <Route path='/register' element={<CreateAccountPage />} />
+              <Route path='/profile' element={<ProfilePage />} />
+              <Route path='/search' element={<SearchPage />} />
+              <Route path='/friends' element={<FriendPage />} />
+              <Route path='/playpage' element={<PlayPage />} />
+              <Route path='/playpage2' element={<PlayPage2 />} />
+              <Route path='/creategame' element={<CreateGamePage />} />
+              <Route path='/playpage3' element={<PlayPage3 />} />
+              <Route path='/playpage4' element={<PlayPage4 />} />
+              <Route path='/playpage5' element={<PlayPage5 />} />
+              { this.getAdminSite() }
+            </Routes>
+          {/* </ThemeProvider> */}
+      </div>
+    );
+  }
 }
 
 export default App;
