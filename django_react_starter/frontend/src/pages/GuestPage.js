@@ -32,7 +32,7 @@ class GuestPage extends Component{
                 this.state.credentials
             );
             
-            this.props.navigate("/login");
+            this.props.navigate("/");
         } catch (error) {
             console.error(error);
         }
