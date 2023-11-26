@@ -5,6 +5,7 @@ import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import ChatIcon from '@mui/icons-material/Chat';
 import QueueIcon from '@mui/icons-material/Queue';
+import PersonIcon from '@mui/icons-material/Person';
 import LargeUserCard from "./LargeUserCard";
 
 /** SmallUserCard
@@ -42,6 +43,7 @@ class SmallUserCard extends React.Component {
             userdata: null,
             // Governs how component is displayed
             info: this.props.info,
+            isButton: this.props.isButton,
             friendable: this.props.friendable,
             inviteable: this.props.inviteable,
             messageable: this.props.messageable,
@@ -49,7 +51,7 @@ class SmallUserCard extends React.Component {
     }
 
     componentDidMount() {
-        if (this.state.username && (!this.state.avatarColor || !this.state.wins || !this.state.is_active)) {
+        if (this.state.username && !this.state.isButton && (!this.state.avatarColor || !this.state.wins || !this.state.is_active)) {
             axios.get(`http://localhost:8000/user_profile/profile/getuserprofile/${this.state.username}`)
             .then((response) => {
                 this.setState({
@@ -207,6 +209,16 @@ class SmallUserCard extends React.Component {
                 </CardActionArea>
             </Card>
         );
+        let largeCardDialog = (
+            <Dialog open={this.state.infoDialogOpen} onClose={this.handleInfoDialogClose}>
+                <LargeUserCard
+                    username={this.state.username}
+                    friendable={this.state.friendable}
+                    inviteable={this.state.inviteable}
+                    messageable={this.state.friendable}
+                />
+            </Dialog>
+        );
 
         return (
             <div className="UserCard">
@@ -217,43 +229,51 @@ class SmallUserCard extends React.Component {
                     it only renders the component in a box.
                 */}
                 { this.state.info ?
-                    <Box
-                        sx={{
-                            p: 0,
-                            m: 1,
-                            textTransform: "none",
-                        }}
-                    >
-                        <CardActionArea
-                            onClick={this.handleInfoClick}
+                    ( this.state.isButton ?
+                        (
+                            <>
+                                <IconButton onClick={this.handleInfoClick}>
+                                    <PersonIcon />
+                                </IconButton>
+                                { largeCardDialog }
+                            </>
+                        )
+                        :
+                        (
+                            <Box
+                                sx={{
+                                    p: 0,
+                                    m: 1,
+                                    textTransform: "none",
+                                }}
+                            >
+                                <CardActionArea
+                                    onClick={this.handleInfoClick}
+                                    sx={{
+                                        p: 0,
+                                        m: 0,
+                                        width: "auto",
+                                        textTransform: "none",
+                                    }}
+                                >
+                                    { mainComponent }
+                                </CardActionArea>
+                                { largeCardDialog }
+                            </Box>
+                        )
+                    )
+                :
+                    (
+                        <Box
                             sx={{
                                 p: 0,
-                                m: 0,
-                                width: "auto",
+                                m: 1,
                                 textTransform: "none",
                             }}
                         >
                             { mainComponent }
-                        </CardActionArea>
-                        <Dialog open={this.state.infoDialogOpen} onClose={this.handleInfoDialogClose}>
-                            <LargeUserCard
-                                username={this.state.username}
-                                friendable={this.state.friendable}
-                                inviteable={this.state.inviteable}
-                                messageable={this.state.friendable}
-                            />
-                        </Dialog>
-                    </Box>
-                :
-                    <Box
-                        sx={{
-                            p: 0,
-                            m: 1,
-                            textTransform: "none",
-                        }}
-                    >
-                        { mainComponent }
-                    </Box>
+                        </Box>
+                    )
                 }
             </div>
         )
