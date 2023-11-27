@@ -36,8 +36,7 @@ class LoginPage extends React.Component {
         console.log('Username:', this.state.username, 'Password:', this.state.password);
 
         if (loginType == "guest") {
-          localStorage.setItem("sessionToken", JSON.stringify("guest"));
-          this.props.navigate("/");
+          this.props.navigate("/guest");
         } else {
           // Handle login from backend
           axios.post("http://localhost:8000/user_login/login/", this.state.loginInfo)

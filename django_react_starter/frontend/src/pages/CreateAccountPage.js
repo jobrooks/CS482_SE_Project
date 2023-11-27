@@ -39,6 +39,15 @@ class CreateAccountPage extends Component {
         }
     }
 
+    navigateGuest = async (e) => {
+        e.preventDefault();
+        try {
+            this.props.navigate("/guest");
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
     render() {
         return (
             <Container component="main" maxWidth="xs">
@@ -99,6 +108,7 @@ class CreateAccountPage extends Component {
                             type="submit"
                             variant="outlined"
                             sx={{ mt: 3, mb: 2, mx: 1, width: "45%" }}
+                            onClick={this.navigateGuest}
                         >
                             Enter as Guest
                         </Button>

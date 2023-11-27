@@ -44,8 +44,6 @@ class GuestUser(AbstractUser):
     avatar = models.ImageField(upload_to='avatars/', height_field=None, width_field=None, max_length=None, null=True, blank=True)
     games_played = models.PositiveIntegerField(default=0)
     money = models.PositiveIntegerField(default=0)
-    is_active = models.BooleanField(default=0)
-    date_joined = models.DateTimeField(default=timezone.now,null=False)
     avatar_color = models.TextField(max_length=500, null=True, blank=True)
     table_theme = models.TextField(max_length=500, choices=TABLE_THEME_CHOICES, null=True, blank=True)
     card_backing = models.TextField(max_length=500, choices=CARD_BACKING_CHOICES, null=True, blank=True)
@@ -56,5 +54,5 @@ class GuestUser(AbstractUser):
     is_guest = models.BooleanField(default=1)
 
     def __str__(self):
-        return self.name
+        return self.username
     

@@ -31,6 +31,8 @@ class GuestPage extends Component{
                 "http://localhost:8000/user_api/register-guest/",
                 this.state.credentials
             );
+            console.log(res.data);
+            localStorage.setItem("Guest", JSON.stringify(res.data.username))
             
             this.props.navigate("/");
         } catch (error) {
@@ -95,4 +97,4 @@ function WithNavigate(props) {
     const navigate = useNavigate();
     return <GuestPage {...props} navigate={navigate} />
 }
-export default GuestPage
+export default WithNavigate
