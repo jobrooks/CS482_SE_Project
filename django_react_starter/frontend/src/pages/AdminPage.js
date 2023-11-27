@@ -100,7 +100,6 @@ class AdminPage extends React.Component {
                 <Skeleton variant="rounded" sx={{ height: 30, m: 2 }} />
             );
         }
-        console.log(listBuffer);
         return listBuffer;
     }
 
