@@ -88,7 +88,7 @@ class Adminpage(APIView):
         if self.user_is_admin(token):
             exclude_fields = ['password']
             keys = [f.name for f in User._meta.local_fields if f.name not in exclude_fields]
-            users_on_page = {"users": [user for user in User.objects.values(*keys).order_by('id')[self.users_per_page*(page-1):self.users_per_page*page]]}
+            users_on_page = {"users": [user for user in User.objects.values(*keys).order_by('id')[self.users_per_page*(page):self.users_per_page*(page+1)]]}
             print(users_on_page)
             return JsonResponse(users_on_page, status=200)
         else:
