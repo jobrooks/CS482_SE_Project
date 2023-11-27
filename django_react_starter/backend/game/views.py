@@ -5,8 +5,6 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.parsers import JSONParser
 from rest_framework import status
-import random
-import time
 from game.models import Card, Deck, Hand, Game, Player, TurnOrder, Pot, SUIT_CHOICES, RANK_CHOICES
 from game.serializers import CardSerializer, DeckSerializer, HandSerializer, PotSerializer, GameSerializer, PlayerSerializer
 
@@ -60,22 +58,9 @@ class DrawCard(APIView):
         except:
             raise Http404
         
-    def get_game(self, pk):
-        try:
-            return Game.objects.get(pk=pk)
-        except:
-            raise Http404
-        
     def draw_card(self, playerID):
         player = self.get_player(playerID)
-        game = self.get_game(player.game)
-        deck_cards = list(Card.objects.filter(deck=game.deck))
-        chosen_card = random.sample(deck_cards, 1)
-        hand = Hand.objects.get(pk=player.hand)
-        chosen_card[0].deck = None
-        chosen_card[0].hand = hand
-        chosen_card[0].save()
-        return hand
+        return player.draw_card()
 
     def get(self, request, playerID):
         serializer = HandSerializer(self.draw_card(playerID=playerID), many=True)
@@ -101,27 +86,19 @@ class DiscardCard(APIView):
             return Player.objects.get(pk=pk)
         except:
             raise Http404
-        
-    def get_game(self, pk):
-        try:
-            return Game.objects.get(pk=pk)
-        except:
-            raise Http404
     
     def discard_card(self, cardID, playerID):
         player = self.get_player(playerID)
-        game = Game.objects.get(pk=player.game)
-        deck = Deck.objects.get(pk=game.deck)
-        card = Card.objects.get(pk=cardID)
-        card.deck = deck
-        card.hand = None
-        card.save()
-        hand = Hand.objects.get(pk=player.hand)
-        return hand
+        return player.discard_card(cardID=cardID)
     
     def get(self, request, cardID, playerID):
-        serializer = HandSerializer(self.discard_card(cardID=cardID, playerID=playerID))
-        return Response(serializer.data)
+        player = self.get_player(playerID)
+        game = Game.objects.get(pk=player.game)
+        if player.discardedCards < 5 and game.isDrawingRound == True:
+            serializer = HandSerializer(self.discard_card(cardID=cardID, playerID=playerID))
+            return Response(serializer.data)
+        else:
+            return Response(status.HTTP_429_TOO_MANY_REQUESTS)
     
 class GameDetail(APIView):
     def get_game(self, pk):
