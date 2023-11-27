@@ -14,11 +14,17 @@ class AdminPage extends React.Component {
     constructor(props) {
         super(props);
         this.handleUserUpdate = this.handleUserUpdate.bind(this);
+        this.handleUserUpdateError = this.handleUserUpdateError.bind(this);
+        this.getUserManagerPage = this.getUserManagerPage.bind(this);
+        this.setPaginationModel = this.setPaginationModel.bind(this);
+        this.getLoadingBuffer = this.getLoadingBuffer.bind(this);
         this.state = {
-            // How component is displayed
-            userManagerPageSize: 10,
             // Component State
-            page: 1,
+            paginationModel: {
+                pageSize: 10,
+                page: 0,
+            },
+            totalUsers: 0,
             isLoading: true,
             currentPageData: null,
         }
@@ -26,40 +32,12 @@ class AdminPage extends React.Component {
 
     componentDidMount() {
         this.getUserManagerPage();
-    }
-
-    makeUserManagerTable() {
-        let listBuffer = [];
-        for (let i in this.state.currentPageData) {
-            let user = this.state.currentPageData[i];
-            listBuffer.push(
-                <SmallUserCard
-                    username={user.username}
-                    wins={user.wins}
-                    is_active={user.is_active}
-                    avatarColor={user.avatar_color}
-                    info={true}
-                    friendable={true}
-                    inviteable={true}
-                    messageable={true}
-                />
-            );
-        }
-        return (
-            <div id="userTable">
-                <Stack direction="column"
-                    alignItems="center"
-                    spacing={0}
-                >
-                    { listBuffer }
-                </Stack>
-            </div>
-        );
+        this.getUserCount()
     }
 
     getUserManagerPage() {
         this.setState({ isLoading: true });
-        axios.get(`http://localhost:8000/user_profile/profile/usermanager/${JSON.parse(localStorage.getItem("sessionToken"))}/${this.state.page}/`)
+        axios.get(`http://localhost:8000/user_profile/profile/usermanager/${JSON.parse(localStorage.getItem("sessionToken"))}/${this.state.paginationModel.page}/`)
         .then((response) => {
             this.setState({ currentPageData: response.data.users, isLoading: false });
             return response.data;
@@ -94,6 +72,36 @@ class AdminPage extends React.Component {
     handleUserUpdateError(error) {
         console.log(error);
         return Promise.reject(error);
+    }
+
+    setPaginationModel(newModel) {
+        this.setState({ paginationModel: newModel }, () => {
+            this.getUserManagerPage();
+        });
+    }
+
+    getUserCount() {
+        axios.get(`http://localhost:8000/user_api/total-users`)
+        .then((response) => {
+            this.setState({ isLoading: false, totalUsers: response.data });
+            return response.data;
+        })
+        .catch((response) => {
+            this.setState({ isLoading: false })
+            console.log("Error getting user count");
+            return response;
+        })
+    }
+
+    getLoadingBuffer() {
+        let listBuffer = [];
+        for (let i = 0; i < this.state.paginationModel.pageSize; i++) {
+            listBuffer.push(
+                <Skeleton variant="rounded" sx={{ height: 30, m: 2 }} />
+            );
+        }
+        console.log(listBuffer);
+        return listBuffer;
     }
 
     columns = [
@@ -139,35 +147,24 @@ class AdminPage extends React.Component {
                     { this.state.isLoading ? 
                     ( // Skeleton UI returned while data is loading
                         <Card>
-                            <Skeleton variant="rounded" sx={{ height: 30, m: 2 }} />
-                            <Skeleton variant="rounded" sx={{ height: 30, m: 2 }} />
-                            <Skeleton variant="rounded" sx={{ height: 30, m: 2 }} />
-                            <Skeleton variant="rounded" sx={{ height: 30, m: 2 }} />
-                            <Skeleton variant="rounded" sx={{ height: 30, m: 2 }} />
-                            <Skeleton variant="rounded" sx={{ height: 30, m: 2 }} />
-                            <Skeleton variant="rounded" sx={{ height: 30, m: 2 }} />
-                            <Skeleton variant="rounded" sx={{ height: 30, m: 2 }} />
-                            <Skeleton variant="rounded" sx={{ height: 30, m: 2 }} />
-                            <Skeleton variant="rounded" sx={{ height: 30, m: 2 }} />
+                            { this.getLoadingBuffer() }
                         </Card>
                     )
                     : 
                     (
-                        <DataGrid
+                        <DataGrid pagination
                             rows={this.state.currentPageData}
                             columns={this.columns}
                             processRowUpdate={this.handleUserUpdate}
                             onProcessRowUpdateError={this.handleUserUpdateError}
-                            initialState={{
-                            pagination: {
-                                paginationModel: {
-                                pageSize: this.state.userManagerPageSize,
-                                },
-                            },
-                            }}
+
+                            rowCount={this.state.totalUsers}
+                            paginationModel={this.state.paginationModel}
+                            onPaginationModelChange={this.setPaginationModel}
+                            paginationMode="server"
                             editMode="row"
                             isCellEditable={(params) => !params.row.is_staff}
-                            pageSizeOptions={[this.state.userManagerPageSize]}
+                            pageSizeOptions={[this.state.paginationModel.pageSize]}
                             checkboxSelection
                             disableRowSelectionOnClick
                             sx={{
