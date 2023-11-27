@@ -40,6 +40,15 @@ class Deck(models.Model):
 
 class Hand(models.Model):
     name = models.CharField(max_length=10, null=True)
+    score = models.IntegerField(default=0)
+    rating = (0, 0)
+
+    def evaluateHand(self):
+        self.rating = (0,0)
+    
+    def isRoyalFlush(self):
+        for card in Card.objects.filter(hand=self.pk):
+            print(card)
 
 class Card(models.Model):
     suit = models.CharField(max_length=1, choices=SUIT_CHOICES)

@@ -7,8 +7,8 @@ from rest_framework.parsers import JSONParser
 from rest_framework import status
 import random
 import time
-from game.models import Card, Round, Deck, Hand, Game, Player, TurnOrder, Pot, SUIT_CHOICES, RANK_CHOICES
-from game.serializers import RoundSerializer, CardSerializer, DeckSerializer, HandSerializer, PotSerializer, GameSerializer, PlayerSerializer
+from game.models import Card, Deck, Hand, Game, Player, TurnOrder, Pot, SUIT_CHOICES, RANK_CHOICES
+from game.serializers import CardSerializer, DeckSerializer, HandSerializer, PotSerializer, GameSerializer, PlayerSerializer
 
 # Create your views here.
 
