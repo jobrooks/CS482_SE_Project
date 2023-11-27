@@ -24,6 +24,11 @@ class UserCreate(APIView):
             
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class TotalUsers(APIView):
+    def get(self, request, *args, **kwargs):
+        total_users = api_User.objects.count()
+        return Response(total_users, status=200)
+
 """
 A lot like some of the endpoints in user_profile, but requires admin perms.
 Additionally, has fewer restrictions on what can be done through this endpoint
