@@ -38,6 +38,11 @@ class LeaderboardCard extends React.Component {
             <div id="leaderboardTable">
                 <Stack direction="column"
                     alignItems="center"
+                    sx={{
+                        width: "auto",
+                        maxHeight: "100%",
+                        overflow: "auto",
+                    }}
                 >
                     { listBuffer }
                 </Stack>
@@ -62,10 +67,10 @@ class LeaderboardCard extends React.Component {
             <div id="leaderboard">
                 <Card elevation={3}
                     sx={{
-                        width: 430,
-                        height: "auto",
+                        width: 450,
+                        height: "100%",
                         m: 2,
-                        p: 0.5,
+                        p: 1,
                     }}
                 >
                     <CardHeader

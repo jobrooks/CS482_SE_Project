@@ -9,8 +9,8 @@ import PersonIcon from '@mui/icons-material/Person';
 import LargeUserCard from "./LargeUserCard";
 
 /** SmallUserCard
- * - This is a user card object that displays user information in a small size
- * - It also allows users to click on the card to reveal extra information
+ * This is a user card object that displays user information in a small size
+ * It also allows users to click on the card to reveal extra information
  * Props:
  * - avatarColor: the avatar color for the card
  * - username: the username for the card
