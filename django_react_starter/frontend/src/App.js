@@ -2,7 +2,7 @@ import React from 'react';
 import './App.css';
 import NavBar from './components/NavBar';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import AccountSettings from './pages/AccountSettingsPage';
+import EditProfilePage from './pages/EditProfilePage';
 import HomePage from './pages/HomePage';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { CssBaseline } from '@mui/material';
@@ -116,7 +116,7 @@ class App extends React.Component {
             <CssBaseline /> */}
             <Routes>
               <Route path='/' element={<HomePage />} />
-              <Route path="/account" element={<AccountSettings />} />
+              <Route path="/edit-profile" element={<EditProfilePage />} />
               <Route path='/login' element={<LoginPage />} />
               <Route path='/register' element={<CreateAccountPage />} />
               <Route path='/profile' element={<ProfilePage />} />

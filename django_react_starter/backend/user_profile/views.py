@@ -12,6 +12,8 @@ from rest_framework.authtoken.models import Token
 from django.core.serializers import serialize
 from django.db.models import Count
 import json
+from django.shortcuts import render
+from rest_framework.permissions import IsAuthenticated
 
 # Create your views here.
 class GetUserProfile(APIView):
@@ -35,6 +37,21 @@ class GetUserProfile(APIView):
             return JsonResponse(user_data)
         except Token.DoesNotExist:
             return JsonResponse({"error": "User not found"}, status=404)
+        
+class UpdateUserProfile(APIView):
+    def put(self, request, token, *args, **kwargs):
+        try:
+            token_object = Token.objects.get(key=token)
+            user = token_object.user
+            serializer = UserSerializer(user, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return JsonResponse(serializer.data)
+            else:
+                print(serializer.errors)
+                return JsonResponse({"error": "Invalid data"}, status=status.HTTP_400_BAD_REQUEST)
+        except Token.DoesNotExist:
+            return JsonResponse({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
         
 class GetOtherUserProfile(APIView):
     def get_user(self, username):
@@ -174,3 +191,7 @@ class AvatarColor(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+def edit_profile(request):
+    return render(request, 'editProfile.html')

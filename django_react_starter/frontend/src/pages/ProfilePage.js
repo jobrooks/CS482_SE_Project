@@ -27,6 +27,15 @@ class ProfilePage extends Component {
     }
   }
 
+  handleClick = (e) =>{
+    e.preventDefault();
+    try {
+        this.props.navigate("/edit-profile")
+    } catch (error) {
+        console.error(error);
+    }
+}
+
   render() {
     const { userData, error } = this.state;
 
@@ -48,6 +57,16 @@ class ProfilePage extends Component {
           <strong>Username:</strong> {userData.username}
         </p>
         <p>
+          <strong>Email:</strong> {userData.email}
+        </p>
+        <p>
+          <strong>First Name:</strong> {userData.first_name}
+          <strong >Last Name: </strong> {userData.last_name}
+        </p>
+        <p>
+          <strong>Money:</strong> {userData.money}
+        </p>
+        <p>
           <strong>Wins:</strong> {userData.wins}
         </p>
         <p>
@@ -56,9 +75,15 @@ class ProfilePage extends Component {
         <p>
           <strong>Bio:</strong> {userData.bio}
         </p>
+        <button onClick={this.handleClick}>Edit Profile</button>
       </div>
     );
   }
 }
 
-export default ProfilePage;
+function WithNavigate(props) {
+  const navigate = useNavigate();
+  return <ProfilePage {...props} navigate={navigate} />
+}
+
+export default WithNavigate;
