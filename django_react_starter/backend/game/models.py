@@ -1,6 +1,7 @@
 from django.db import models
 from user_api.models import User
 from collections import deque
+import random
 
 
 DECK_SIZE = 52
@@ -14,19 +15,19 @@ SUIT_CHOICES = (
     )
 
 RANK_CHOICES = (
-    ('2', '2'),
-    ('3', '3'),
-    ('4', '4'),
-    ('5', '5'),
-    ('6', '6'),
-    ('7', '7'),
-    ('8', '8'),
-    ('9', '9'),
+    ('02', '2'),
+    ('03', '3'),
+    ('04', '4'),
+    ('05', '5'),
+    ('06', '6'),
+    ('07', '7'),
+    ('08', '8'),
+    ('09', '9'),
     ('10', '10'),
-    ('J', 'Jack'),
-    ('Q', 'Queen'),
-    ('K', 'King'),
-    ('A', 'Ace'),
+    ('11', 'Jack'),
+    ('12', 'Queen'),
+    ('13', 'King'),
+    ('14', 'Ace'),
 )
 
 class Deck(models.Model):
@@ -67,10 +68,15 @@ class Game(models.Model):
     name = models.CharField(max_length=10, null=True)
     deck = models.OneToOneField(Deck(), null=True, on_delete=models.CASCADE)
     pot = models.OneToOneField(Pot(), null=True, on_delete=models.CASCADE)
+    turnOrder = models.CharField(max_length=5000, null=True)
     currentBetAmount = models.IntegerField(default=0)
     isFirstBetRound = models.BooleanField(default=True)
     isDrawingRound = models.BooleanField(default=False)
     isSecondBetRound = models.BooleanField(default=False)
+    isFinished = models.BooleanField(default=False)
+
+    def updateTurnOrder(self):
+        self.turnOrder = ''.join(self.turns.order)
 
     def checkFirstRoundOver(self):
         if self.isFirstBetRound == True:
@@ -92,7 +98,7 @@ class Game(models.Model):
 
     def createTurnOrder(self):
         self.turns.order.clear
-        players = Player.object.filter(game=self.pk)
+        players = Player.objects.filter(game=self.pk)
         for x in players:
             self.turns.order.append(x.pk)
 
@@ -108,28 +114,53 @@ class Player(models.Model):
     canRaise = models.BooleanField(null=True)
     canFold = models.BooleanField(null=True)
     canCall = models.BooleanField(null=True)
+    canCheck = models.BooleanField(default=True)
     canAllIn = models.BooleanField(null=True)
     action = models.CharField(max_length=5, null=True)
     betAmount = models.IntegerField(null=True)
     discardedCards = models.IntegerField(default=0)
+    drawnCards = models.IntegerField(default=0)
+    doneDrawing = models.BooleanField(default=False)
+
+    def draw_card(self):
+        game = Game.objects.get(pk=self.game)
+        deck_cards = list(Card.objects.filter(deck=game.deck))
+        chosen_card = random.sample(deck_cards, 1)
+        hand = Hand.objects.get(pk=self.hand)
+        chosen_card[0].deck = None
+        chosen_card[0].hand = hand
+        chosen_card[0].save()
+        return hand
+
+    def discard_card(self, cardID):
+        game = Game.objects.get(pk=self.game)
+        deck = Deck.objects.get(pk=game.deck)
+        card = Card.objects.get(pk=cardID)
+        card.deck = deck
+        card.hand = None
+        card.save()
+        hand = Hand.objects.get(pk=self.hand)
+        return hand
 
     def takeAction(self):
+        self.checkActions()
         game = Game.objects.get(pk=self.game)
         pot = Pot.objects.get(pk=game.pot)
-        if self.action == "raise":
+        if self.action == "raise" and self.canRaise:
             self.money -= self.betAmount
             game.currentBetAmount = self.betAmount
             pot.moneyAmount += self.betAmount
             game.turns.order.rotate(1)
-        elif self.action == "call":
-            self.money -= self.betAmount
-            pot.moneyAmount += self.betAmount
+        elif self.action == "call" and self.canCall:
+            self.money -= game.currentBetAmount
+            pot.moneyAmount += game.currentBetAmount
             game.turns.order.rotate(1)
-        elif self.action == "allIn":
+        elif self.action == "allIn" and self.canAllIn:
+            pot.moneyAmount += self.money
             self.money = 0
-            pot.moneyAmount += self.betAmount
             game.turns.order.rotate(1)
-        elif self.action == "check":
+            game.turns.order.remove(self.pk)
+        elif self.action == "check" and self.canCheck:
             game.turns.order.rotate(1)
         else:
             game.turns.order.remove(self.pk)
@@ -138,29 +169,26 @@ class Player(models.Model):
         self.action = None
 
 
-    def checkActions(PlayerID):
-        player = Player.objects.get(pk=PlayerID)
-        game = Game.objects.get(pk=player.game)
-        if player.money > game.currentBetAmount:
-            player.canRaise = True
-            player.canFold = True
-            player.canCall = True
-            player.canAllIn = True
-        elif player.money == game.currentBetAmount:
-            player.canRaise = False
-            player.canFold = True
-            player.canCall = True
-            player.canAllIn = True
-        elif player.money < game.currentBetAmount:
-            player.canRaise = False
-            player.canFold = True
-            player.canCall = False
-            player.canAllIn = True
-        elif player.money == 0:
-            player.canRaise = False
-            player.canFold = False
-            player.canCall = False
-            player.canAllIn = False
+    def checkActions(self):
+        game = Game.objects.get(pk=self.game)
+        self.canFold = True
+        self.canAllIn = True
+        if game.currentBetAmount > 0:
+            self.canCheck = False
+        if self.money > game.currentBetAmount and game.currentBetAmount > 0:
+            self.canRaise = True
+            self.canCall = True
+        elif self.money == game.currentBetAmount:
+            self.canRaise = False
+            self.canCall = True
+        elif self.money < game.currentBetAmount:
+            self.canRaise = False
+            self.canCall = False
+        elif self.money == 0:
+            self.canRaise = False
+            self.canFold = False
+            self.canCall = False
+            self.canAllIn = False
 
 
 def get_game(game: int):
@@ -179,13 +207,13 @@ def bet(gameID: int, userID: int, isBetting: bool, betAmount: int):
 
 
 # all game logic
-# def play_game(numPlayers: int, arrUsers: [int]):
+# def play_game(numselfs: int, arrUsers: [int]):
 #     # just one deck and pot for the game, game created with ids of those objects
 #     deckid = create_deck()
 #     potid = create_pot()
 #     game = create_game(pot=Pot.objects.get(pk=potid), deck=Deck.objects.get(pk=deckid))
 
-    # import player info from db and create game "users"
+    # import self info from db and create game "users"
     # need:
     # number of players
     # each players id?

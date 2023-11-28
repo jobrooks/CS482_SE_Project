@@ -21,35 +21,35 @@ class GameList(APIView):
         if serializer.is_valid(): 
             serializer.save()
             game = Game.objects.get(pk=serializer.data['id'])
-            game.createTurnOrder()
+            game.updateTurnOrder()
+            game.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-# class RoundList(APIView):
-#     def get(self, request):
-#         round = Round.objects.all()
-#         serializer = RoundSerializer(round, many=True)
-#         return Response(serializer.data)
-    
-# class RoundDetail(APIView):
-#     def get_round(self, pk):
-#             try:
-#                 return Round.objects.get(pk=pk)
-#             except:
-#                 raise Http404
+class CreateGame(APIView):
+    def post(self, request):
+        serializer = GameSerializer(data=request.data)
+        deck = Deck()
+        deck.save()
+        pot = Pot()
+        pot.save()
+        if serializer.is_valid(): 
+            serializer.save()
+            game = Game.objects.get(pk=serializer.data['id'])
+            game.createTurnOrder()
+            game.deck = deck
+            game.pot = pot
+            game.updateTurnOrder()
+            game.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-#     def get(self, request, pk, format=None):
-#             round = self.get_round(pk)
-#             serializer = RoundSerializer(round)
-#             return Response(serializer.data)
-    
-#     def put(self, request, pk, format=None):
-#         round = self.get_round(pk)
-#         serializer = GameSerializer(round, data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data)
-#         return Response(serializer.errors)
+class StartGame(APIView):
+    def get(self, request, gameID):
+        game = Game.objects.get(pk=gameID)
+        game.createTurnOrder()
+        serializer = GameSerializer(game, many=True)
+        return Response(serializer.data)
 
 class DrawCard(APIView):
     def get_player(self, pk):
@@ -63,8 +63,14 @@ class DrawCard(APIView):
         return player.draw_card()
 
     def get(self, request, playerID):
-        serializer = HandSerializer(self.draw_card(playerID=playerID), many=True)
-        return Response(serializer.data)
+        player = self.get_player(pk=playerID)
+        game = Game.objects.get(pk=player.game)
+        if player.discardedCards != player.drawnCards and game.isDrawingRound == True:
+            serializer = HandSerializer(self.draw_card(playerID=playerID), many=True)
+            player.drawnCards += 1
+            return Response(serializer.data)
+        else:
+            return Response(status.HTTP_429_TOO_MANY_REQUESTS)
 
     # def draw_card(self, deckID: int, handID: int):
     #     deck_cards = list(Card.objects.filter(deck=deckID))
@@ -96,6 +102,7 @@ class DiscardCard(APIView):
         game = Game.objects.get(pk=player.game)
         if player.discardedCards < 5 and game.isDrawingRound == True:
             serializer = HandSerializer(self.discard_card(cardID=cardID, playerID=playerID))
+            player.discardedCards += 1
             return Response(serializer.data)
         else:
             return Response(status.HTTP_429_TOO_MANY_REQUESTS)
@@ -109,16 +116,17 @@ class GameDetail(APIView):
 
     def get(self, request, pk, format=None):
             game = self.get_game(pk)
+            game.updateTurnOrder()
             serializer = GameSerializer(game)
             return Response(serializer.data)
     
-    def put(self, request, pk, format=None):
-        game = self.get_game(pk)
-        serializer = GameSerializer(game, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors)
+    # def put(self, request, pk, format=None):
+    #     game = self.get_game(pk)
+    #     serializer = GameSerializer(game, data=request.data)
+    #     if serializer.is_valid():
+    #         serializer.save()
+    #         return Response(serializer.data)
+    #     return Response(serializer.errors)
     
 class HandList(APIView):
     def get(self, request):
@@ -221,17 +229,6 @@ class PlayerDetail(APIView):
             return Response(serializer.data)
         return Response(serializer.errors)
 
-# class StartGame(APIView):
-#     def get(self, request, gameID):
-#         firstRound = Round()
-#         firstRound.createTurnOrder(gameID=gameID)
-#         while (firstRound.turns.order != 0):
-#             time.sleep(5)
-#         secondRound = Round()
-#         secondRound.createTurnOrder(gameID=gameID)
-#         while (secondRound.turns.order != 0):
-#             time.sleep(5)
-
 class TakeTurn(APIView):
     def get_player(self, pk):
         try:
@@ -253,19 +250,39 @@ class TakeTurn(APIView):
             # Then, if it is, we will take their action and input into the player object.
             # Then, execute their turn (bet, fold, etc.)
             # Lastly, remove them from the turn order - if they fold
-            if not game.checkFirstRoundOver:
+            if not game.checkFirstRoundOver():
                 if game.turns.order[0] == player.pk:
                     player.takeAction()
+                    if game.checkFirstRoundOver():
+                        game.isFirstBetRound = False
+                        game.isDrawingRound = True
                 else:
                     return Response(status.HTTP_429_TOO_MANY_REQUESTS)
-            # elif not game.checkDrawingRoundOver:
-            #     if game.turns.order[0] == player.pk:
-            #         player.takeAction()
-            #     else:
-            #         return Response(status.HTTP_429_TOO_MANY_REQUESTS)
-            elif not game.checkSecondRoundOver:
+            elif not game.checkDrawingRoundOver():
+                # We check to see if the drawing ruond is done.
+                players = Player.objects.filter(game=game)
+                num_players = len(players)
+                done_players = 0
+                # Go through each player in the game. Check to see if each player has 
+                # Done drawing = True
+                # If each player is done drawing, the game will proceed.
+                for player in players:
+                    if player.doneDrawing == True:
+                        done_players += 1
+                # If all players done, change to second betting round.
+                if num_players == done_players:
+                    game.isDrawingRound = False
+                    game.isSecondBetRound = True
+            # If it is the second round, we check to see if it is this player's turn.
+            # Then, if it is, we will take their action and input into the player object.
+            # Then, execute their turn (bet, fold, etc.)
+            # Lastly, remove them from the turn order - if they fold
+            elif not game.checkSecondRoundOver():
                 if game.turns.order[0] == player.pk:
                     player.takeAction()
+                    if game.checkSecondRoundOver():
+                        game.isSecondBetRound = False
+                        game.isFinished = True
                 else:
                     return Response(status.HTTP_429_TOO_MANY_REQUESTS)
             else:
