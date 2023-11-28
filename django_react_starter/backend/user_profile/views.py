@@ -13,7 +13,7 @@ from django.core.serializers import serialize
 from django.db.models import Count
 import json
 from django.shortcuts import render
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.parsers import MultiPartParser, FormParser
 
 # Create your views here.
 class GetUserProfile(APIView):
@@ -28,8 +28,8 @@ class GetUserProfile(APIView):
             user_data_json = serialize('json', [user], use_natural_primary_keys=True)
             user_data = json.loads(user_data_json)[0]['fields']            
             
-            if user_data['avatar']:
-                user_data['avatar'] = user['avatar'].url  
+            # if user_data['avatar']:
+            #     user_data['avatar'] = user['avatar'].url  
                 
             user_data['date_joined'] = string_date_joined
             user_data['last_login'] = string_last_login
@@ -39,6 +39,7 @@ class GetUserProfile(APIView):
             return JsonResponse({"error": "User not found"}, status=404)
         
 class UpdateUserProfile(APIView):
+    parser_classes = (MultiPartParser, FormParser)
     def put(self, request, token, *args, **kwargs):
         try:
             token_object = Token.objects.get(key=token)

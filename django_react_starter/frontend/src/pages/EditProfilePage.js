@@ -8,8 +8,9 @@ import {
   Input,
   InputAdornment,
   IconButton,
+  Avatar,
 } from "@mui/material";
-import PhotoCamera from '@mui/icons-material/PhotoCamera';
+import PhotoCamera from "@mui/icons-material/PhotoCamera";
 import React from "react";
 import NavBar from "../components/NavBar";
 import axios from "axios";
@@ -58,30 +59,45 @@ class EditProfilePage extends React.Component {
   };
 
   handleAvatarChange = (event) => {
-    console.log(event.target.files[0]);
+    this.setState({
+      userData: {
+        ...this.state.userData,
+        avatar: event.target.files[0],
+      },
+    });
   };
 
   handleClick = async (e) => {
     e.preventDefault();
     const token = JSON.parse(localStorage.getItem("sessionToken"));
     console.log(token);
+    
     try {
-      const { avatar, username, email, password, first_name, last_name, bio } =
-        this.state.userData;
-      const updateData = {
-        avatar,
-        username,
-        email,
-        password,
-        first_name,
-        last_name,
-        bio,
-      };
-      console.log(updateData);
+      const { username, email, password, first_name, last_name, bio } = this.state.userData;
+  
+      const formData = new FormData();
+      formData.append("username", username);
+      formData.append("email", email);
+      formData.append("password", password);
+      formData.append("first_name", first_name);
+      formData.append("last_name", last_name);
+      formData.append("bio", bio);
+  
+      // Append the avatar file if it exists
+      if (this.state.userData.avatar) {
+        formData.append("avatar", this.state.userData.avatar);
+      }
+  
       const res = await axios.put(
         `http://localhost:8000/user_profile/profile/edit/${token}/`,
-        updateData
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
       );
+  
       console.log(res.data);
       this.props.navigate("/profile");
     } catch (error) {
@@ -89,6 +105,7 @@ class EditProfilePage extends React.Component {
       console.error(error.response.data);
     }
   };
+  
 
   render() {
     const { userData } = this.state;
@@ -103,25 +120,42 @@ class EditProfilePage extends React.Component {
           justifyContent="space-between"
         >
           <InputLabel htmlFor="avatar">Avatar</InputLabel>
-          <Input
-            id=""
-            type=""
-            inputProps={{
-              accept: "image/*",
-            }}
+          <input
+            accept="image/*"
+            style={{ display: "none" }}
+            id="avatar-input"
+            type="file"
             onChange={this.handleAvatarChange}
-            endAdornment={
-              <InputAdornment position="end">
-                <IconButton
-                  edge="end"
-                  aria-label="upload picture"
-                  component="span"
-                >
-                  <PhotoCamera />
-                </IconButton>
-              </InputAdornment>
-            }
           />
+          <Avatar
+            alt="User Avatar"
+            src={`http://localhost:8000/media/${userData.avatar}`}
+            sx={{
+              width: 150,
+              height: 150,
+              backgroundColor: "#808080",
+            }}
+          />
+          <label htmlFor="avatar-input">
+            <Input
+              id=""
+              type=""
+              inputProps={{
+                accept: "image/*",
+              }}
+              endAdornment={
+                <InputAdornment position="end">
+                  <IconButton
+                    edge="end"
+                    aria-label="upload picture"
+                    component="span"
+                  >
+                    <PhotoCamera />
+                  </IconButton>
+                </InputAdornment>
+              }
+            />
+          </label>
           <TextField
             label="Username"
             variant="outlined"
