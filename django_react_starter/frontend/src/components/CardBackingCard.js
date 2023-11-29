@@ -95,7 +95,8 @@ class CardBackingCard extends React.Component {
                     sx={{
                         width: 430,
                         height: "auto",
-                        m: 2
+                        m: 2,
+                        p: 1,
                     }}
 
                 >
