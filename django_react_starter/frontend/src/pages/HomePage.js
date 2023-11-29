@@ -9,6 +9,7 @@ import LeaderboardCard from "../components/LeaderboardCard";
 import SmallUserCard from "../components/UserCards/SmallUserCard";
 import { blue, red } from "@mui/material/colors";
 import LargeUserCard from "../components/UserCards/LargeUserCard";
+import Chat from "../components/Chat";
 
 
 class HomePage extends React.Component {
@@ -27,6 +28,7 @@ class HomePage extends React.Component {
                             messageable={false}
                             inviteable={false}
                         />
+                        <Chat />
                     </Grid>
                     <Grid item xs={6}>
                         <LeaderboardCard />
