@@ -42,7 +42,11 @@ class Deck(models.Model):
 class Hand(models.Model):
     name = models.CharField(max_length=10, null=True)
     score = models.IntegerField(default=0)
-    rating = (0, 0)
+    ratingOut = models.CharField(max_length=30, default=0)
+    rating = ()
+
+    def updateEval(self):
+        self.ratingOut = str(self.rating)
 
     def evaluateHand(self):
         self.rating = (0,0)
@@ -58,10 +62,17 @@ class Card(models.Model):
     hand = models.ForeignKey(Hand(), null=True, on_delete=models.CASCADE)
 
 class Pot(models.Model):
-    moneyAmount = models.IntegerField()
+    moneyAmount = models.IntegerField(default=0)
 
 class TurnOrder():
     order = deque()
+
+    def convert(self, str):
+        self.order.clear()
+        for character in range(0, len(str)):
+            if str[character].isdigit():
+                self.order.append(str[character])
+            
 
 class Game(models.Model):
     turns = TurnOrder()
@@ -75,8 +86,19 @@ class Game(models.Model):
     isSecondBetRound = models.BooleanField(default=False)
     isFinished = models.BooleanField(default=False)
 
+    def pullTurnOrder(self):
+        if self.turnOrder == None:
+            self.turns.convert("")
+        else:
+            self.turns.convert(self.turnOrder)
+            self.turnOrder = None
+            self.save()
+        
+
     def updateTurnOrder(self):
-        self.turnOrder = ''.join(self.turns.order)
+        self.turnOrder = str(self.turns.order)[7:-2]
+        self.save()
+        self.turns.order.clear
 
     def checkFirstRoundOver(self):
         if self.isFirstBetRound == True:
@@ -99,8 +121,9 @@ class Game(models.Model):
     def createTurnOrder(self):
         self.turns.order.clear
         players = Player.objects.filter(game=self.pk)
-        for x in players:
-            self.turns.order.append(x.pk)
+        if len(self.turns.order) != len(players):
+            for x in players:
+                self.turns.order.append(x.pk)
 
     def nextTurn(self):
         self.turns.order.rotate(1)
@@ -144,38 +167,48 @@ class Player(models.Model):
 
     def takeAction(self):
         self.checkActions()
-        game = Game.objects.get(pk=self.game)
-        pot = Pot.objects.get(pk=game.pot)
-        if self.action == "raise" and self.canRaise:
-            self.money -= self.betAmount
-            game.currentBetAmount = self.betAmount
-            pot.moneyAmount += self.betAmount
-            game.turns.order.rotate(1)
-        elif self.action == "call" and self.canCall:
-            self.money -= game.currentBetAmount
-            pot.moneyAmount += game.currentBetAmount
-            game.turns.order.rotate(1)
-        elif self.action == "allIn" and self.canAllIn:
-            pot.moneyAmount += self.money
-            self.money = 0
-            game.turns.order.rotate(1)
-            game.turns.order.remove(self.pk)
-        elif self.action == "check" and self.canCheck:
-            game.turns.order.rotate(1)
-        else:
-            game.turns.order.remove(self.pk)
-            game.turns.order.rotate(1)
-        self.betAmount = None
-        self.action = None
+        game = Game.objects.get(pk=self.game.pk)
+        pot = Pot.objects.get(pk=game.pot.pk)
+        game.name = "dumb"
+        try:
+            if self.action == "raise" and self.canRaise:
+                self.money -= self.betAmount
+                self.save()
+                game.currentBetAmount += self.betAmount
+                print(game.currentBetAmount)
+                game.save()
+                pot.moneyAmount += self.betAmount
+                pot.save()
+                game.turns.order.rotate(-1)
+                game.save()
+            elif self.action == "call" and self.canCall:
+                self.money -= game.currentBetAmount
+                pot.moneyAmount += game.currentBetAmount
+                game.turns.order.rotate(-1)
+            elif self.action == "allIn" and self.canAllIn:
+                pot.moneyAmount += self.money
+                self.money = 0
+                game.turns.order.rotate(-1)
+                game.turns.order.remove(str(self.pk))
+            elif self.action == "check" and self.canCheck:
+                game.turns.order.rotate(-1)
+            else:
+                game.turns.order.remove(str(self.pk))
+                game.turns.order.rotate(-1)
+            self.betAmount = None
+            self.action = None
+            return True
+        except:
+            return False
 
 
     def checkActions(self):
-        game = Game.objects.get(pk=self.game)
+        game = Game.objects.get(pk=self.game.pk)
         self.canFold = True
         self.canAllIn = True
         if game.currentBetAmount > 0:
             self.canCheck = False
-        if self.money > game.currentBetAmount and game.currentBetAmount > 0:
+        if self.money > game.currentBetAmount:
             self.canRaise = True
             self.canCall = True
         elif self.money == game.currentBetAmount:
@@ -189,6 +222,7 @@ class Player(models.Model):
             self.canFold = False
             self.canCall = False
             self.canAllIn = False
+        self.save()
 
 
 def get_game(game: int):
