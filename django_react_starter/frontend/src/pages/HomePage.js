@@ -19,7 +19,10 @@ class HomePage extends React.Component {
                 <LoginRedirector />
                 <NavBar />
                 <Grid container spacing={0}>
-                    <Grid item xs={6}>
+                    <Grid item xs={12}> {/* Top Bar */}
+
+                    </Grid>
+                    <Grid item xs={6}> {/* Left Column */}
                         <LargeUserCard
                             token={JSON.parse(localStorage.getItem("sessionToken"))}
                             friendable={false}
@@ -27,15 +30,17 @@ class HomePage extends React.Component {
                             messageable={false}
                             inviteable={false}
                         />
+                        <TableCard />
+                        <CardBackingCard />
                     </Grid>
-                    <Grid item xs={6}>
+                    <Grid item xs={6}> {/* Right Column */}
                         <LeaderboardCard />
                     </Grid>
                     <Grid item xs={6}>
-                        <TableCard />
+
                     </Grid>
                     <Grid item xs={6}>
-                        <CardBackingCard />
+
                     </Grid>
                 </Grid>
             </div>
