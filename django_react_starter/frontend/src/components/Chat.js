@@ -27,13 +27,13 @@ class Chat extends React.Component {
             // User Data
             myUsername: null,
             myUserdata: null,
-            palUsername: "smelly",//this.props.palUsername,
+            palUsername: this.props.palUsername,
             palUserData: null,
 
             // Internal State
             isLoading: true,
             textFieldData: "",
-            chatData: [{sender: "smelly", message: "I am so so cool"}, {sender: "notadmin", message: "Wow good for you"}, {sender: "smelly", message: "I know, and you suck too"}],
+            chatData: [],
         }
     }
 
@@ -99,7 +99,7 @@ class Chat extends React.Component {
         for (let i in this.state.chatData) {
             let sender = this.state.chatData[i].sender;
             let message = this.state.chatData[i].message;
-            if (sender === this.state.palUsername) { // Sender is pal
+            if (sender === this.state.myUsername) { // Sender is pal
                 listBuffer.push(
                     <SenderMessage avatar={<Avatar />}>
                         { message }
