@@ -28,7 +28,7 @@ class HomePage extends React.Component {
                             messageable={false}
                             inviteable={false}
                         />
-                        <Chat />
+                        <Chat palUsername="smelly" />
                     </Grid>
                     <Grid item xs={6}>
                         <LeaderboardCard />
