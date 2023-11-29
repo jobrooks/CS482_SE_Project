@@ -14,6 +14,7 @@ from django.db.models import Count
 import json
 from django.shortcuts import render
 from rest_framework.parsers import MultiPartParser, FormParser
+from django.db.utils import IntegrityError
 
 # Create your views here.
 class GetUserProfile(APIView):
@@ -22,8 +23,8 @@ class GetUserProfile(APIView):
             token_object = Token.objects.get(key=token)
             user = token_object.user 
             
-            string_date_joined = user.date_joined.strftime("%x") # Convert user date joined to nice date i.e. "9/20/23"
-            string_last_login = user.last_login.strftime("%x") # Convert user date joined to nice date i.e. "9/20/23"
+            #string_date_joined = user.date_joined.strftime("%x") # Convert user date joined to nice date i.e. "9/20/23"
+            #string_last_login = user.last_login.strftime("%x") # Convert user date joined to nice date i.e. "9/20/23"
 
             user_data_json = serialize('json', [user], use_natural_primary_keys=True)
             user_data = json.loads(user_data_json)[0]['fields']            
@@ -31,8 +32,8 @@ class GetUserProfile(APIView):
             # if user_data['avatar']:
             #     user_data['avatar'] = user['avatar'].url  
                 
-            user_data['date_joined'] = string_date_joined
-            user_data['last_login'] = string_last_login
+            # user_data['date_joined'] = string_date_joined
+            # user_data['last_login'] = string_last_login
 
             return JsonResponse(user_data)
         except Token.DoesNotExist:
@@ -40,19 +41,37 @@ class GetUserProfile(APIView):
         
 class UpdateUserProfile(APIView):
     parser_classes = (MultiPartParser, FormParser)
+    from django.db import IntegrityError
+
+class UpdateUserProfile(APIView):
     def put(self, request, token, *args, **kwargs):
         try:
             token_object = Token.objects.get(key=token)
             user = token_object.user
             serializer = UserSerializer(user, data=request.data)
+            
             if serializer.is_valid():
                 serializer.save()
-                return JsonResponse(serializer.data)
+
+                # Delete the existing token
+                Token.objects.filter(user=user).delete()
+
+                # Create a new token
+                new_token = Token.objects.create(user=user)
+                
+                serializer_data = serializer.data
+                serializer_data['token'] = new_token.key
+                
+                return JsonResponse(serializer_data)
             else:
                 print(serializer.errors)
                 return JsonResponse({"error": "Invalid data"}, status=status.HTTP_400_BAD_REQUEST)
         except Token.DoesNotExist:
             return JsonResponse({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+        except IntegrityError:
+            return JsonResponse({"error": "Token creation failed"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
         
 class GetOtherUserProfile(APIView):
     def get_user(self, username):

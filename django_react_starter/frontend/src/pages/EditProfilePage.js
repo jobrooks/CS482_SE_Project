@@ -29,7 +29,16 @@ class EditProfilePage extends React.Component {
         password: "",
         first_name: "",
         last_name: "",
-        bio: "",
+        id: "",
+        is_staff: "",
+        wins: "",
+        games_played: "",
+        money: "",
+        is_active: "",
+        date_joined: "",
+        avatar_color: "",
+        table_theme: "",
+        card_backing: "",
       },
       error: null,
     };
@@ -71,10 +80,32 @@ class EditProfilePage extends React.Component {
     e.preventDefault();
     const token = JSON.parse(localStorage.getItem("sessionToken"));
     console.log(token);
-    
+
     try {
-      const { username, email, password, first_name, last_name, bio } = this.state.userData;
-  
+      const {
+        username,
+        email,
+        password,
+        first_name,
+        last_name,
+        bio,
+        id,
+        is_staff,
+        wins,
+        games_played,
+        money,
+        is_active,
+        date_joined,
+        avatar_color,
+        table_theme,
+        card_backing,
+      } = this.state.userData;
+
+      const updateData = {
+        table_theme: table_theme === "null" ? null : table_theme,
+        card_backing: card_backing === "null" ? null : card_backing,
+      };
+
       const formData = new FormData();
       formData.append("username", username);
       formData.append("email", email);
@@ -82,12 +113,23 @@ class EditProfilePage extends React.Component {
       formData.append("first_name", first_name);
       formData.append("last_name", last_name);
       formData.append("bio", bio);
-  
+      formData.append("id", id);
+      formData.append("is_staff", is_staff);
+      formData.append("wins", wins);
+      formData.append("games_played", games_played);
+      formData.append("money", money);
+      formData.append("is_active", is_active);
+      formData.append("date_joined", date_joined);
+      formData.append("avatar_color", avatar_color);
+      formData.append("table_theme", updateData.table_theme);
+      formData.append("card_backing", updateData.card_backing);
+
       // Append the avatar file if it exists
       if (this.state.userData.avatar) {
         formData.append("avatar", this.state.userData.avatar);
       }
-  
+
+      console.log(formData);
       const res = await axios.put(
         `http://localhost:8000/user_profile/profile/edit/${token}/`,
         formData,
@@ -97,7 +139,7 @@ class EditProfilePage extends React.Component {
           },
         }
       );
-  
+      localStorage.setItem("sessionToken", JSON.stringify(res.data.token));
       console.log(res.data);
       this.props.navigate("/profile");
     } catch (error) {
@@ -105,7 +147,6 @@ class EditProfilePage extends React.Component {
       console.error(error.response.data);
     }
   };
-  
 
   render() {
     const { userData } = this.state;
