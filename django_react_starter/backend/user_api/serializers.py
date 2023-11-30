@@ -26,7 +26,7 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ('id','username','email','password', 'is_staff',
                   'wins', 'avatar', 'bio', 'games_played', 'money', 'is_active', 'date_joined',
-                  'avatar_color', 'table_theme', 'card_backing', 'first_name', 'last_name')
+                  'avatar_color', 'table_theme', 'card_backing', 'first_name', 'last_name', 'security_question', 'security_answer')
         
     extra_kwargs = {'password': {'write_only': True},
                     'id': {'write_only': True},
@@ -38,5 +38,7 @@ class UserSerializer(serializers.ModelSerializer):
                     'date_joined': {'write_only': True},
                     'avatar_color': {'write_only': True},
                     'table_theme': {'write_only': True},
-                    'card_backing': {'write_only': True},}
+                    'card_backing': {'write_only': True},
+                    'security_question': {'write_only': True},
+                    'security_answer': {'write_only': True},}
 
