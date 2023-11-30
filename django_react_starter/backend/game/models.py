@@ -3,7 +3,6 @@ from user_api.models import User
 from collections import deque
 import random
 
-
 DECK_SIZE = 52
 MAX_HAND_SIZE = 5
 
@@ -80,11 +79,16 @@ class Game(models.Model):
     deck = models.OneToOneField(Deck(), null=True, on_delete=models.CASCADE)
     pot = models.OneToOneField(Pot(), null=True, on_delete=models.CASCADE)
     turnOrder = models.CharField(max_length=5000, null=True)
+    playersPassed = models.IntegerField(default=0)
     currentBetAmount = models.IntegerField(default=0)
     isFirstBetRound = models.BooleanField(default=True)
     isDrawingRound = models.BooleanField(default=False)
     isSecondBetRound = models.BooleanField(default=False)
     isFinished = models.BooleanField(default=False)
+
+    def incrementPlayer(self):
+        self.playersPassed += 1
+        self.save()
 
     def pullTurnOrder(self):
         if self.turnOrder == None:
@@ -93,16 +97,25 @@ class Game(models.Model):
             self.turns.convert(self.turnOrder)
             self.turnOrder = None
             self.save()
-        
-
+    
     def updateTurnOrder(self):
         self.turnOrder = str(self.turns.order)[7:-2]
         self.save()
         self.turns.order.clear
 
+    def checkBetAmount(self):
+        amount = None
+        for player in Player.objects.filter(game=self.pk):
+            if amount == None:
+                amount = player.totalAmountBet
+            if amount != player.totalAmountBet:
+                return False
+        return True
+
     def checkFirstRoundOver(self):
+        players = Player.objects.filter(game=self.pk)
         if self.isFirstBetRound == True:
-            return True if self.turns.order == 0 else False
+            return True if len(self.turns.order) == 0 or (self.playersPassed >= len(players) and self.checkBetAmount) else False
         else:
             return True
         
@@ -141,6 +154,7 @@ class Player(models.Model):
     canAllIn = models.BooleanField(null=True)
     action = models.CharField(max_length=5, null=True)
     betAmount = models.IntegerField(null=True)
+    totalAmountBet = models.IntegerField(default=0)
     discardedCards = models.IntegerField(default=0)
     drawnCards = models.IntegerField(default=0)
     doneDrawing = models.BooleanField(default=False)
@@ -165,28 +179,24 @@ class Player(models.Model):
         hand = Hand.objects.get(pk=self.hand)
         return hand
 
-    def takeAction(self):
-        self.checkActions()
-        game = Game.objects.get(pk=self.game.pk)
+    def takeAction(self, game):
         pot = Pot.objects.get(pk=game.pot.pk)
-        game.name = "dumb"
         try:
             if self.action == "raise" and self.canRaise:
                 self.money -= self.betAmount
-                self.save()
+                self.totalAmountBet += self.betAmount
                 game.currentBetAmount += self.betAmount
-                print(game.currentBetAmount)
-                game.save()
                 pot.moneyAmount += self.betAmount
-                pot.save()
                 game.turns.order.rotate(-1)
-                game.save()
             elif self.action == "call" and self.canCall:
                 self.money -= game.currentBetAmount
+                self.totalAmountBet += game.currentBetAmount
                 pot.moneyAmount += game.currentBetAmount
                 game.turns.order.rotate(-1)
             elif self.action == "allIn" and self.canAllIn:
                 pot.moneyAmount += self.money
+                game.currentBetAmount += self.money
+                self.totalBetAmount += self.money
                 self.money = 0
                 game.turns.order.rotate(-1)
                 game.turns.order.remove(str(self.pk))
@@ -195,15 +205,15 @@ class Player(models.Model):
             else:
                 game.turns.order.remove(str(self.pk))
                 game.turns.order.rotate(-1)
-            self.betAmount = None
-            self.action = None
+            self.save()
+            pot.save()
+            game.save()
             return True
         except:
             return False
 
 
-    def checkActions(self):
-        game = Game.objects.get(pk=self.game.pk)
+    def checkActions(self, game):
         self.canFold = True
         self.canAllIn = True
         if game.currentBetAmount > 0:

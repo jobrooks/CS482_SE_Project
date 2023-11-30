@@ -263,11 +263,10 @@ class TakeTurn(APIView):
             if not game.checkFirstRoundOver():
                 game.pullTurnOrder()
                 if int(game.turns.order[0]) == player.pk:
-                    turnResponse = Response({"Turn Successful": player.takeAction()})
-                    game.currentBetAmount += player.betAmount
-                    game.save()
-                    print(game.currentBetAmount)
+                    player.checkActions()
+                    turnResponse = Response({"Turn Successful": player.takeAction(game)})
                     game.updateTurnOrder()
+                    game.incrementPlayer()
                     if game.checkFirstRoundOver():
                         game.isFirstBetRound = False
                         game.isDrawingRound = True
