@@ -108,12 +108,6 @@ class NavBar extends React.Component {
                         </MenuItem>
                         <MenuItem
                             component={"a"}
-                            href={"/account"}
-                        >
-                            Account
-                        </MenuItem>
-                        <MenuItem
-                            component={"a"}
                             href={"/profile"}
                         >
                             Profile
