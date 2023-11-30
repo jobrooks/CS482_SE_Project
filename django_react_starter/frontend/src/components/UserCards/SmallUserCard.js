@@ -6,6 +6,7 @@ import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import ChatIcon from '@mui/icons-material/Chat';
 import QueueIcon from '@mui/icons-material/Queue';
 import PersonIcon from '@mui/icons-material/Person';
+import { blue, grey, red } from "@mui/material/colors";
 import LargeUserCard from "./LargeUserCard";
 
 /** SmallUserCard
@@ -39,7 +40,7 @@ class SmallUserCard extends React.Component {
             is_active: this.props.is_active,
             // Component state
             infoDialogOpen: false,
-            isLoading: false,
+            isLoading: true,
             userdata: null,
             // Governs how component is displayed
             info: this.props.info,
@@ -232,8 +233,14 @@ class SmallUserCard extends React.Component {
                     ( this.state.isButton ?
                         (
                             <>
+                            
                                 <IconButton onClick={this.handleInfoClick}>
-                                    <PersonIcon />
+                                    {/* <PersonIcon /> */}
+                                    <Avatar
+                                        sx = {{
+                                            bgcolor: this.state.avatarColor,
+                                        }}
+                                    />
                                 </IconButton>
                                 { largeCardDialog }
                             </>
