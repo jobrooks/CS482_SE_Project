@@ -1,8 +1,9 @@
 import React from "react";
 import axios from "axios";
 import { ChatBox, ReceiverMessage, SenderMessage } from "mui-chat-box";
-import { Avatar, Icon, IconButton, Paper, Stack, TextField } from "@mui/material";
+import { Avatar, Grid, Icon, IconButton, Paper, Stack, TextField } from "@mui/material";
 import SendIcon from '@mui/icons-material/Send';
+import SmallUserCard from "./UserCards/SmallUserCard";
 
 /**
  * Chat box will allow users to chat with eachother.
@@ -101,13 +102,13 @@ class Chat extends React.Component {
             let message = this.state.chatData[i].message;
             if (sender === this.state.myUsername) { // Sender is pal
                 listBuffer.push(
-                    <SenderMessage avatar={<Avatar />}>
+                    <SenderMessage avatar={<SmallUserCard username={sender} avatarColor={this.state.myUserdata.avatar_color} info={true} isButton={true} />}>
                         { message }
                     </SenderMessage>
                 );
             } else {
                 listBuffer.push(
-                    <ReceiverMessage avatar={<Avatar />}>
+                    <ReceiverMessage avatar={<SmallUserCard username={sender} avatarColor={this.state.palUserData.avatar_color} isButton={true} />}>
                         { message }
                     </ReceiverMessage>
                 );
@@ -131,9 +132,9 @@ class Chat extends React.Component {
                         height: "auto",
                     }}
                 >
-                    <ChatBox>
+                    <Stack direction="column" spacing={2} sx={{maxHeight: 400, overflow: "auto"}}>
                         { this.makeMessagesFromChatData() }
-                    </ChatBox>
+                    </Stack>
                     <Stack direction="row" justifyContent="space-around">
                         <TextField
                             id="chat-entry"
