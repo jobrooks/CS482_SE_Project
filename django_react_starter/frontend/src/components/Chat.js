@@ -1,7 +1,7 @@
 import React from "react";
 import axios from "axios";
 import { ChatBox, ReceiverMessage, SenderMessage } from "mui-chat-box";
-import { Avatar, Grid, Icon, IconButton, Paper, Stack, TextField } from "@mui/material";
+import { Avatar, Grid, Icon, IconButton, Paper, Stack, TextField, Typography } from "@mui/material";
 import SendIcon from '@mui/icons-material/Send';
 import SmallUserCard from "./UserCards/SmallUserCard";
 
@@ -34,10 +34,12 @@ class Chat extends React.Component {
 
             // Internal State
             mode: this.props.mode, // [ friend, global, game ]
+            gameId: this.props.gameId, // pass this as well if mode is game
             chattable: false,
             isLoading: true,
             textFieldData: "",
             chatData: [],
+            friends: [],
         }
     }    
 
@@ -47,6 +49,9 @@ class Chat extends React.Component {
         }));
         this.bottomRef = React.createRef();
         this.getUserDatas();
+        if (this.state.mode === "friend") {
+            this.getFriends();
+        }
         this.setState({ chatSocket: new WebSocket(`ws://localhost:8000/ws/chat/${roomName}/`) }, () => {
             this.state.chatSocket.addEventListener("message", this.onIncomingMessage.bind(this));
         });
@@ -92,7 +97,7 @@ class Chat extends React.Component {
 
     handleSend() {
         if (this.state.textFieldData !== "") {
-            this.state.chatSocket.send(JSON.stringify( {sender: this.state.myUsername, message: this.state.textFieldData} ));
+            this.state.chatSocket.send(JSON.stringify( {sender: this.state.myUsername, avatar_color: this.state.myUserdata.avatar_color, message: this.state.textFieldData} ));
             this.setState({ textFieldData: "" });
         }
     }
@@ -121,15 +126,16 @@ class Chat extends React.Component {
         for (let i in this.state.chatData) {
             let sender = this.state.chatData[i].sender;
             let message = this.state.chatData[i].message;
-            if (sender === this.state.myUsername) { // Sender is pal
+            let avatar_color = this.state.chatData[i].avatar_color;
+            if (sender === this.state.myUsername) { // Sender is me
                 listBuffer.push(
-                    <SenderMessage avatar={<SmallUserCard username={sender} avatarColor={this.state.myUserdata.avatar_color} info={true} isButton={true} />}>
+                    <SenderMessage avatar={<SmallUserCard username={sender} avatarColor={avatar_color} info={true} isButton={true} />}>
                         { message }
                     </SenderMessage>
                 );
             } else {
                 listBuffer.push(
-                    <ReceiverMessage avatar={<SmallUserCard username={sender} avatarColor={this.state.palUserData.avatar_color} info={true} isButton={true} />}>
+                    <ReceiverMessage avatar={<SmallUserCard username={sender} avatarColor={avatar_color} info={true} isButton={true} />}>
                         { message }
                     </ReceiverMessage>
                 );
@@ -143,6 +149,26 @@ class Chat extends React.Component {
         );
     }
 
+    getFriends() {
+        let token = JSON.parse(localStorage.getItem("sessionToken"));
+
+        let config = {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        };
+
+        axios.get("http://localhost:8000/friend/get_friends/", config)
+        .then((response) => {
+            console.log(response.data.friends);
+            this.setState({ friends: response.data.friends });
+        })
+        .catch((response) => {
+            console.log("Error getting friends");
+            console.error(response);
+        });
+    }
+
     render() {
         let chatBoxInterface = (
             <Paper elevation={3}
@@ -153,47 +179,46 @@ class Chat extends React.Component {
                         height: "auto",
                     }}
                 >
-                    <Stack direction="column" ref={ this.bottomRef } spacing={2} sx={{maxHeight: 400, overflow: "auto"}}>
+                    <Stack direction="column" ref={ this.bottomRef } spacing={2} sx={{maxHeight: 400, overflow: "auto", width: "auto"}}>
                         { this.makeMessagesFromChatData() }
                     </Stack>
-                    <Stack direction="row" justifyContent="space-around">
-                        <TextField
-                            id="chat-entry"
-                            label="Send a Message"
-                            variant="outlined"
-                            onChange={ this.handleMessageChange }
-                            onKeyDown={ this.handleEnterPressed }
-                            value={ this.state.textFieldData }
-                            sx={{
-                                m: 2,
-                                width: "80%",
-                                height: "auto",
-                            }}
-                        />
-                        <IconButton
-                            onClick={ this.handleSend }
-                        >
-                            <SendIcon />
-                        </IconButton>
-                    </Stack>
+                    { this.state.chattable ?
+                        <Stack direction="row" justifyContent="space-around">
+                            <TextField
+                                id="chat-entry"
+                                label="Send a Message"
+                                variant="outlined"
+                                onChange={ this.handleMessageChange }
+                                onKeyDown={ this.handleEnterPressed }
+                                value={ this.state.textFieldData }
+                                sx={{
+                                    m: 2,
+                                    width: "80%",
+                                    height: "auto",
+                                }}
+                            />
+                            <IconButton
+                                onClick={ this.handleSend }
+                            >
+                                <SendIcon />
+                            </IconButton>
+                        </Stack>
+                        :
+                        <></>
+                    }
                 </Paper>
         );
         let friendInterface = (
             <div id="friendInterface">
-
+                <Typography>This doesn't work yet since get_friends doesn't work</Typography>
             </div>
         );
         return (
             <div id="chat">
                 { this.state.mode === "friend" ?
-                    <></>
+                    friendInterface
                 :
-                    <></>
-                }
-                { this.state.chattable ?
                     chatBoxInterface
-                :
-                    <></>
                 }
             </div>
         );
