@@ -17,4 +17,5 @@ urlpatterns = [
     path("creategame/", views.CreateGame.as_view()),
     path("startgame/<int:gameID>/", views.StartGame.as_view()),
     path("resetgame/<int:gameID>/", views.ResetGame.as_view()),
+    path("gamestate/<int:playerID>/", views.GameState.as_view()),
 ]

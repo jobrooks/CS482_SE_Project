@@ -32,16 +32,18 @@ RANK_CHOICES = (
 class Deck(models.Model):
     name = models.CharField(max_length=10, null=True)
 
-    def create_deck(deckserializer):
+    def create_deck(self):
         for x in SUIT_CHOICES:
             for y in RANK_CHOICES:
-                card = Card(suit=x, rank=y, deck=Deck.objects.get(pk=deckserializer.data['id']))
+                card = Card(suit=x, rank=y, deck=Deck.objects.get(pk=self.pk))
                 card.save()
     def resetToDefault(self, player):
-        cards = Card.objects.filter(pk=player.hand.pk)
+        cards = Card.objects.filter(hand=player.hand.pk)
         if len(cards) > 0:
             for card in cards:
                 card.deck = self
+                card.hand = None
+                card.save()
 
 class Hand(models.Model):
     name = models.CharField(max_length=10, null=True)
@@ -219,7 +221,7 @@ class Player(models.Model):
         self.doneDrawing = False
         self.save()
 
-    def checkIfDrawingDone(self, game):
+    def checkIfDrawingDone(self):
         return True if self.doneDrawing else False
 
     def draw_card(self, hand, deck):
@@ -230,15 +232,15 @@ class Player(models.Model):
         chosen_card[0].save()
         return hand
 
-    def discard_card(self, cardID, hand, deck):
-        game = Game.objects.get(pk=self.game)
-        deck = Deck.objects.get(pk=game.deck)
+    def discard_card(self, cardID, game):
+        deck = Deck.objects.get(pk=game.deck.pk)
         card = Card.objects.get(pk=cardID)
-        card.deck = deck
-        card.hand = None
-        card.save()
-        hand = Hand.objects.get(pk=self.hand)
-        return hand
+        if card != None:
+            card.deck = deck
+            card.hand = None
+            card.save()
+            return True
+        return False
 
     def takeAction(self, game, pot):
         try:

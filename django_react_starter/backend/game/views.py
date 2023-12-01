@@ -31,6 +31,7 @@ class CreateGame(APIView):
         serializer = GameSerializer(data=request.data)
         deck = Deck()
         deck.save()
+        deck.create_deck()
         pot = Pot()
         pot.save()
         if serializer.is_valid(): 
@@ -112,21 +113,29 @@ class DiscardCard(APIView):
             return Player.objects.get(pk=pk)
         except:
             raise Http404
-    
-    def discard_card(self, cardID, playerID):
-        player = self.get_player(playerID)
-        return player.discard_card(cardID=cardID)
-    
+    def get_game(self, player):
+        try:
+            return Game.objects.get(pk=player.game.pk)
+        except:
+            return Http404
+    def get_card(self, cardID):
+        try:
+            return Card.objects.get(pk=cardID)
+        except:
+            return Http404
     def get(self, request, cardID, playerID):
-        player = self.get_player(playerID)
-        game = Game.objects.get(pk=player.game)
+        player = self.get_player(pk=playerID)
+        game = self.get_game(player=player)
+        card = self.get_card(cardID=cardID)
         if player.discardedCards < 5 and game.isDrawingRound == True:
-            serializer = HandSerializer(self.discard_card(cardID=cardID, playerID=playerID))
-            player.discardedCards += 1
-            return Response(serializer.data)
+            if player.discard_card == True:
+                player.discardedCards += 1
+                player.save()
+                return Response({"Card": CardSerializer(card).data, "Discarded": True})
+            return Response({"Card": CardSerializer(card).data, "Discarded": False, "Reason": "Card Not Found"})
         else:
             return Response(status.HTTP_429_TOO_MANY_REQUESTS)
-    
+
 class GameDetail(APIView):
     def get_game(self, pk):
             try:
@@ -305,7 +314,6 @@ class GameState(APIView):
         cards = self.get_cards(hand=hand)
         return Response({"Player": PlayerSerializer(player).data, "Game": GameSerializer(game).data, "Pot": PotSerializer(pot).data, "Hand": HandSerializer(hand).data, "Cards": CardSerializer(cards, many=True).data})
         
-
 class TakeTurn(APIView):
     def get_player(self, pk):
         try:
@@ -371,17 +379,18 @@ class TakeTurn(APIView):
             #
             # Drawing Round:
             if not game.checkDrawingRoundOver() and game.checkFirstRoundOver():
+                print("success!")
                 # We check to see if the drawing round is done.
                 # Go through each player in the game. Check to see if each player has 
                 # Done drawing = True
                 # If all players done, change to second betting round.
                 playersFinished = 0
                 for player in players:
-                    if player.checkIfDrawingDone:
+                    if player.checkIfDrawingDone():
                         playersFinished += 1
                 print("players finished: " + str(playersFinished))
                 print("num playeres: " + str(len(players)))
-                if playersFinished == len(players) or game.checkDrawingRoundOver:
+                if playersFinished == len(players) or game.checkDrawingRoundOver():
                     game.isDrawingRound = False
                     game.isSecondBetRound = True
                     game.save()

@@ -71,6 +71,14 @@ Note: Any string will technically work for folding, but put 'fold' to avoid any 
 
 ```
 
+On a successful turn, you will see the following JSON return:
+
+```
+{
+    "Turn Successful": true
+}
+```
+
 ## **D.2 Folding**
 
 To fold, make a PUT call to this API endpoint:
