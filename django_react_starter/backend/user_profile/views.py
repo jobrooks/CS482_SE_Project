@@ -41,9 +41,7 @@ class GetUserProfile(APIView):
         
 class UpdateUserProfile(APIView):
     parser_classes = (MultiPartParser, FormParser)
-    from django.db import IntegrityError
-
-class UpdateUserProfile(APIView):
+    
     def put(self, request, token, *args, **kwargs):
         try:
             token_object = Token.objects.get(key=token)
