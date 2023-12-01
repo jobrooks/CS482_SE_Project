@@ -20,6 +20,7 @@ class Chat extends React.Component {
         this.handleSend = this.handleSend.bind(this);
         this.handleEnterPressed = this.handleEnterPressed.bind(this);
         this.getChatData = this.getChatData.bind(this);
+        this.bottomRef = null;
         // this.onIncomingMessage = this.onIncomingMessage.bind(this);
         this.state = {
             // Websocket
@@ -32,19 +33,27 @@ class Chat extends React.Component {
             palUserData: null,
 
             // Internal State
+            mode: this.props.mode, // [ friend, global, game ]
+            chattable: false,
             isLoading: true,
             textFieldData: "",
             chatData: [],
         }
-    }
-
-    
+    }    
 
     componentDidMount() {
+        this.setState((prevState) => ({
+            chattable: prevState.mode !== "friend"
+        }));
+        this.bottomRef = React.createRef();
         this.getUserDatas();
         this.setState({ chatSocket: new WebSocket(`ws://localhost:8000/ws/chat/${roomName}/`) }, () => {
             this.state.chatSocket.addEventListener("message", this.onIncomingMessage.bind(this));
         });
+    }
+
+    componentDidUpdate() {
+        this.scrollToBottom();
     }
     
     onIncomingMessage(event) {
@@ -53,6 +62,7 @@ class Chat extends React.Component {
         this.setState((prevState) => ({
             chatData: [ ...prevState.chatData, serialized_data ]
         }));
+        this.scrollToBottom();
     }
 
     getUserDatas() {
@@ -81,8 +91,10 @@ class Chat extends React.Component {
     }
 
     handleSend() {
-        this.state.chatSocket.send(JSON.stringify( {sender: this.state.myUsername, message: this.state.textFieldData} ));
-        this.setState({ textFieldData: "" });
+        if (this.state.textFieldData !== "") {
+            this.state.chatSocket.send(JSON.stringify( {sender: this.state.myUsername, message: this.state.textFieldData} ));
+            this.setState({ textFieldData: "" });
+        }
     }
 
     handleEnterPressed(event) {
@@ -94,6 +106,15 @@ class Chat extends React.Component {
     getChatData() {
         // Handle request to backend
     }
+
+    scrollToBottom() {
+        if (this.state.chattable) {
+            this.bottomRef.current.scroll({
+                top: this.bottomRef.current.scrollHeight,
+                behavior: "smooth",
+            });
+        }
+    };
 
     makeMessagesFromChatData() {
         let listBuffer = [];
@@ -108,11 +129,12 @@ class Chat extends React.Component {
                 );
             } else {
                 listBuffer.push(
-                    <ReceiverMessage avatar={<SmallUserCard username={sender} avatarColor={this.state.palUserData.avatar_color} isButton={true} />}>
+                    <ReceiverMessage avatar={<SmallUserCard username={sender} avatarColor={this.state.palUserData.avatar_color} info={true} isButton={true} />}>
                         { message }
                     </ReceiverMessage>
                 );
             }
+            // listBuffer.push(<div className="stack-bottom" ref={ this.bottomRef } />)
         }
         return (
             <>
@@ -122,9 +144,8 @@ class Chat extends React.Component {
     }
 
     render() {
-        return (
-            <div id="chat">
-                <Paper elevation={3}
+        let chatBoxInterface = (
+            <Paper elevation={3}
                     sx={{
                         p: 1,
                         m: 2,
@@ -132,7 +153,7 @@ class Chat extends React.Component {
                         height: "auto",
                     }}
                 >
-                    <Stack direction="column" spacing={2} sx={{maxHeight: 400, overflow: "auto"}}>
+                    <Stack direction="column" ref={ this.bottomRef } spacing={2} sx={{maxHeight: 400, overflow: "auto"}}>
                         { this.makeMessagesFromChatData() }
                     </Stack>
                     <Stack direction="row" justifyContent="space-around">
@@ -156,6 +177,24 @@ class Chat extends React.Component {
                         </IconButton>
                     </Stack>
                 </Paper>
+        );
+        let friendInterface = (
+            <div id="friendInterface">
+
+            </div>
+        );
+        return (
+            <div id="chat">
+                { this.state.mode === "friend" ?
+                    <></>
+                :
+                    <></>
+                }
+                { this.state.chattable ?
+                    chatBoxInterface
+                :
+                    <></>
+                }
             </div>
         );
     }
