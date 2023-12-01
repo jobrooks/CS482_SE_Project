@@ -127,7 +127,46 @@ class GameDetail(APIView):
     #         serializer.save()
     #         return Response(serializer.data)
     #     return Response(serializer.errors)
-    
+
+class ResetGame(APIView):
+    def get(self, request, gameID):
+        players = Player.objects.filter(game=gameID)
+        game = Game.objects.get(pk=gameID)
+        pot = Pot.objects.get(pk=game.pot.pk)
+        deck = Deck.objects.get(pk=game.deck.pk)
+        for player in players:
+            if player.hand != None:
+                cards = Card.objects.filter(pk=player.hand.pk)
+                if len(cards) > 0:
+                    for card in cards:
+                        card.deck = deck
+            player.money = 1000
+            player.action = None
+            player.betAmount = None
+            player.canCall = None
+            player.canAllIn = None
+            player.canCheck = None
+            player.canFold = None
+            player.canRaise = None
+            player.totalAmountBet = 0
+            player.discardedCards = 0 
+            player.drawnCards = 0
+            player.doneDrawing = False
+            player.save()
+        game.turnOrder = ""
+        game.currentBetAmount = 0
+        game.playersPassed = 0
+        game.isFirstBetRound = True
+        game.isDrawingRound = False
+        game.isSecondBetRound = False
+        game.isFinished = False
+        game.save()
+        pot.moneyAmount = 0
+        pot.save()
+        gameserializer = GameSerializer(game)
+        potserializer = PotSerializer(pot)
+        response = {"game": gameserializer.data, "pot": potserializer.data}
+        return Response(response)
 class HandList(APIView):
     def get(self, request):
         hand = Hand.objects.all()
@@ -222,7 +261,7 @@ class PlayerDetail(APIView):
 
     def get(self, request, pk, format=None):
         player = self.get_player(pk)
-        player.checkActions()
+        player.checkActions(game=player.game)
         serializer = PlayerSerializer(player)
         return Response(serializer.data)
     
@@ -247,12 +286,14 @@ class TakeTurn(APIView):
             raise Http404
     def get(self, request, playerID):
         player = self.get_player(playerID)
-        player.checkActions()
+        game = self.get_game(player)
+        player.checkActions(game)
         serializer = PlayerSerializer(player)
         return Response(serializer.data)
     def put(self, request, playerID):
         player = self.get_player(pk=playerID)
         game = self.get_game(player=player)
+        players = Player.objects.filter(game=game.pk)
         serializer = PlayerSerializer(player, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -260,17 +301,21 @@ class TakeTurn(APIView):
             # Then, if it is, we will take their action and input into the player object.
             # Then, execute their turn (bet, fold, etc.)
             # Lastly, remove them from the turn order - if they fold
+            print(game.isFirstBetRound)
+            print(game.checkFirstRoundOver())
+            game.pullTurnOrder()
             if not game.checkFirstRoundOver():
-                game.pullTurnOrder()
                 if int(game.turns.order[0]) == player.pk:
-                    player.checkActions()
+                    player.checkActions(game)
                     turnResponse = Response({"Turn Successful": player.takeAction(game)})
-                    game.updateTurnOrder()
                     game.incrementPlayer()
                     if game.checkFirstRoundOver():
                         game.isFirstBetRound = False
                         game.isDrawingRound = True
                         game.save()
+                        game.updateTurnOrder()
+                        return Response("First Round Over!")
+                    game.updateTurnOrder()
                     return turnResponse
                 else:
                     game.updateTurnOrder()

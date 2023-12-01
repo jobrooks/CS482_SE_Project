@@ -115,7 +115,7 @@ class Game(models.Model):
     def checkFirstRoundOver(self):
         players = Player.objects.filter(game=self.pk)
         if self.isFirstBetRound == True:
-            return True if len(self.turns.order) == 0 or (self.playersPassed >= len(players) and self.checkBetAmount) else False
+            return True if len(self.turns.order) == 0 or len(self.turns.order) == 1 or (self.playersPassed >= len(players) and self.checkBetAmount) else False
         else:
             return True
         
@@ -150,7 +150,7 @@ class Player(models.Model):
     canRaise = models.BooleanField(null=True)
     canFold = models.BooleanField(null=True)
     canCall = models.BooleanField(null=True)
-    canCheck = models.BooleanField(default=True)
+    canCheck = models.BooleanField(null=True)
     canAllIn = models.BooleanField(null=True)
     action = models.CharField(max_length=5, null=True)
     betAmount = models.IntegerField(null=True)
@@ -202,9 +202,11 @@ class Player(models.Model):
                 game.turns.order.remove(str(self.pk))
             elif self.action == "check" and self.canCheck:
                 game.turns.order.rotate(-1)
-            else:
+            elif self.action == "fold" and self.canFold:
                 game.turns.order.remove(str(self.pk))
                 game.turns.order.rotate(-1)
+            else:
+                return False
             self.save()
             pot.save()
             game.save()
@@ -218,6 +220,8 @@ class Player(models.Model):
         self.canAllIn = True
         if game.currentBetAmount > 0:
             self.canCheck = False
+        else:
+            self.canCheck = True
         if self.money > game.currentBetAmount:
             self.canRaise = True
             self.canCall = True
