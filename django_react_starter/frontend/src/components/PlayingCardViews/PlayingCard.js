@@ -7,7 +7,7 @@ class PlayingCard extends React.Component {
         //modulus card id by 52
         //map to array
 
-        cards = []
+        const cards = [];
         
     }
 

@@ -11,6 +11,8 @@ import TableCard from '../components/TableCard';
 import axios from "axios";
 import GameSetup from '../components/GameSetup';
 import PlayingCard from '../components/PlayingCardViews/PlayingCard';
+import Grid from '@mui/material/Grid';
+import SmallUserCard from '../components/UserCards/SmallUserCard';
 
 class GamePage extends React.Component {
 
@@ -62,13 +64,24 @@ componentDidMount() {
           height: '100vh', //view heigh
           margin: 0,
           padding: 0 }}>
-          
-          <Stack justifyContent='space-between' direction='row' spacing={2} sx={{ border: '1px solid'}}>
 
-            <Box sx={{backgroundColor: '#ccc', height:'100px', width:'100px'}}/>
-            <Box sx={{backgroundColor: '#ccc', height:'100px', width:'100px'}}/>
-            <Box sx={{backgroundColor: '#ccc', height:'100px', width:'100px'}}/>
-          </Stack>
+          <Grid container justifyContent="center" alignItems="flex-start" spacing={2} style={{ height: '100%', marginLeft:'125px'}}>
+
+            <Grid item md={4}>
+              <Avatar  sx = {{width: 50, height: 50,}}/>
+            </Grid>
+
+            <Grid item md={4}>
+              <Avatar  sx = {{width: 50, height: 50,}}/>
+            </Grid>
+
+            <Grid item md={4}>
+              <Avatar  sx = {{width: 50, height: 50,}}/>
+            </Grid>
+
+            </Grid>
+
+
 
           <PlayingCard cardSrc="2H" w='100px' h='200px'/>
 
