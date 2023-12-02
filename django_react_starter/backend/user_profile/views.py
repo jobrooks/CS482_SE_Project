@@ -332,5 +332,27 @@ class AvatarColor(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
+class GuestAvatarColor(APIView):
+        
+    def get(self, request, username, *args, **kwargs):
+        guest = GuestUser.objects.get(username=username)
+        serializer = GuestSerializer(guest)
+        return Response(serializer.data["avatar_color"])
+    
+    def patch(self, request, username, *args, **kwargs):
+        guest = GuestUser.objects.get(username=username)
+        
+        # Cleaning request very important while using patch since partial=True allows any field to be changed
+        # without requiring the username and password. Here we use a dictionary comprehention to ignore any 
+        # other fields besides "avatar_color".
+        cleaned_request = request.data.copy()
+        cleaned_request = {key:value for (key, value) in cleaned_request.items() if key == "avatar_color"}
+        
+        serializer = GuestSerializer(guest, data=cleaned_request, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
 def edit_profile(request):
     return render(request, 'editProfile.html')

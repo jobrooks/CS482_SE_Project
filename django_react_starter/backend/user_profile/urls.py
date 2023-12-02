@@ -15,6 +15,7 @@ urlpatterns = [
     path('profile/guesttabletheme/<str:username>/', views.GuestTableTheme.as_view(), name='guest_table_theme'),
     path('profile/guestcardbacking/<str:username>/', views.GuestCardBacking.as_view(), name='guest_card_backing'),
     path('profile/avatarcolor/<str:token>/', views.AvatarColor.as_view(), name='avatar_color'),
+    path('profile/guestavatarcolor/<str:username>/', views.GuestAvatarColor.as_view(), name='guest_avatar_color'),
     path('profile/leaderboard', views.Leaderboard.as_view(), name='leaderboard'),
     path('profile/isadmin/<str:token>/', views.IsAdmin.as_view(), name='is_admin'),
     path('profile/usermanager/<str:token>/<int:page>/', views.Adminpage.as_view(), name='admin_page'),

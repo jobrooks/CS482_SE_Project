@@ -174,14 +174,27 @@ class LargeUserCard extends React.Component {
         const data = {
             "avatar_color": color
         }
-        let token = this.state.token;
-        axios.patch(`http://localhost:8000/user_profile/profile/avatarcolor/${token}/`, data)
+        
+        if (this.state.token) {
+           axios.patch(`http://localhost:8000/user_profile/profile/avatarcolor/${this.state.token}/`, data)
+        .then((response) => {
+            return response.data;
+        }).catch((response) => {
+            console.log("Error patching avatar color")
+            console.log(response);
+        }); 
+        } if (this.state.guestUsername) {
+            axios.patch(`http://localhost:8000/user_profile/profile/guestavatarcolor/${this.state.guestUsername}/`, data)
         .then((response) => {
             return response.data;
         }).catch((response) => {
             console.log("Error patching avatar color")
             console.log(response);
         });
+        }else {
+            console.log("No token or username specified");
+            return null;
+        }
     }
 
     render() {
