@@ -8,26 +8,26 @@ DECK_SIZE = 52
 MAX_HAND_SIZE = 5
 
 SUIT_CHOICES = (
-        ('H', 'Hearts')
-        ('D', 'Diamonds')
-        ('C', 'Clubs')
-        ('S', 'Spades')
+        ('H', 'Hearts'),
+        ('D', 'Diamonds'),
+        ('C', 'Clubs'),
+        ('S', 'Spades'),
     )
 
 RANK_CHOICES = (
-    ('02', 'Two')
-    ('03', 'Three')
-    ('04', 'Four')
-    ('05', 'Five')
-    ('06', 'Six')
-    ('07', 'Seven')
-    ('08', 'Eight')
-    ('09', 'Nine')
-    ('10', 'Ten')
-    ('11', 'Jack')
-    ('12', 'Queen')
-    ('13', 'King')
-    ('14', 'Ace')
+    ('02', 'Two'),
+    ('03', 'Three'),
+    ('04', 'Four'),
+    ('05', 'Five'),
+    ('06', 'Six'),
+    ('07', 'Seven'),
+    ('08', 'Eight'),
+    ('09', 'Nine'),
+    ('10', 'Ten'),
+    ('11', 'Jack'),
+    ('12', 'Queen'),
+    ('13', 'King'),
+    ('14', 'Ace'),
 )
 
 class Deck(models.Model):
