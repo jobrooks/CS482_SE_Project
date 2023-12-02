@@ -217,7 +217,7 @@ class TableTheme(APIView):
     def get(self, request, token, *args, **kwargs):
         user = self.get_user(token)
         serializer = UserSerializer(user)
-        return Response(serializer.data["table_theme"])
+        return Response(serializer.data["table_theme"], status=status.HTTP_200_OK)
     
     def patch(self, request, token, *args, **kwargs):
         user = self.get_user(token)
@@ -239,22 +239,25 @@ class GuestTableTheme(APIView):
     def get(self, request, username, *args, **kwargs):
         guest = GuestUser.objects.get(username=username)
         serializer = GuestSerializer(guest)
-        return Response(serializer.data["table_theme"])
+        return Response(serializer.data["table_theme"],status=status.HTTP_200_OK)
     
     def patch(self, request, username, *args, **kwargs):
-        guest = GuestUser.objects.get(username=username)
-        
-        # Cleaning request very important while using patch since partial=True allows any field to be changed
-        # without requiring the username and password. Here we use a dictionary comprehention to ignore any 
-        # other fields besides "table_theme".
-        cleaned_request = request.data.copy()
-        cleaned_request = {key:value for (key, value) in cleaned_request.items() if key == "table_theme"}
-        
-        serializer = GuestSerializer(guest, data=cleaned_request, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            guest = GuestUser.objects.get(username=username)
+            
+            # Cleaning request very important while using patch since partial=True allows any field to be changed
+            # without requiring the username and password. Here we use a dictionary comprehention to ignore any 
+            # other fields besides "table_theme".
+            cleaned_request = request.data.copy()
+            cleaned_request = {key:value for (key, value) in cleaned_request.items() if key == "table_theme"}
+            
+            serializer = GuestSerializer(guest, data=cleaned_request, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except GuestUser.DoesNotExist:
+            return Response({"error":"Guest Not found"}, status=status.HTTP_404_NOT_FOUND)
 
 class CardBacking(APIView):
     def get_user(self, token):
@@ -266,7 +269,7 @@ class CardBacking(APIView):
     def get(self, request, token, *args, **kwargs):
         user = self.get_user(token)
         serializer = UserSerializer(user)
-        return Response(serializer.data["card_backing"])
+        return Response(serializer.data["card_backing"], status=status.HTTP_200_OK)
     
     def patch(self, request, token, *args, **kwargs):
         user = self.get_user(token)
@@ -288,7 +291,7 @@ class GuestCardBacking(APIView):
     def get(self, request, username, *args, **kwargs):
         guest = GuestUser.objects.get(username=username)
         serializer = GuestSerializer(guest)
-        return Response(serializer.data["card_backing"])
+        return Response(serializer.data["card_backing"], status=status.HTTP_200_OK)
     
     def patch(self, request, username, *args, **kwargs):
         guest = GuestUser.objects.get(username=username)
@@ -315,7 +318,7 @@ class AvatarColor(APIView):
     def get(self, request, token, *args, **kwargs):
         user = self.get_user(token)
         serializer = UserSerializer(user)
-        return Response(serializer.data["avatar_color"])
+        return Response(serializer.data["avatar_color"], status=status.HTTP_200_OK)
     
     def patch(self, request, token, *args, **kwargs):
         user = self.get_user(token)
@@ -337,7 +340,7 @@ class GuestAvatarColor(APIView):
     def get(self, request, username, *args, **kwargs):
         guest = GuestUser.objects.get(username=username)
         serializer = GuestSerializer(guest)
-        return Response(serializer.data["avatar_color"])
+        return Response(serializer.data["avatar_color"], status=status.HTTP_200_OK)
     
     def patch(self, request, username, *args, **kwargs):
         guest = GuestUser.objects.get(username=username)

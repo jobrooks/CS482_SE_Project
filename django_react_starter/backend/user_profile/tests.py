@@ -1,6 +1,6 @@
 from rest_framework.test import APITestCase
 from rest_framework.authtoken.models import Token
-from user_api.models import User
+from user_api.models import User, GuestUser
 from rest_framework import status
 from django.urls import reverse
 
@@ -238,4 +238,57 @@ class UpdateUserPasswordAPITest(APITestCase):
 
         # Check that the 'error' field is present in the response
         self.assertIn('error', response.json())
+
+class GetGuestProfileTests(APITestCase):
+    def setUp(self):
+        self.username = 'test_guest'
+        self.url = reverse('get_guest_profile', args=[self.username])
+
+    def test_get_guest_profile_success(self):
+        guest = GuestUser.objects.create(username=self.username)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_get_guest_profile_not_found(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.json(), {"error": "Guest not found"})
+
+class TableThemeTests(APITestCase):
+    def setUp(self):
+        self.user = User.objects.create(username='testuser', security_question='Sample question')
+        self.token = Token.objects.create(user=self.user)
+
+        self.url = reverse('table_question', args=[self.token.key])
+
+#     def test_get_table_theme_success(self):
+        
+#         pass
+
+#     def test_patch_table_theme_success(self):
+        
+#         pass
+
+#     def test_patch_table_theme_bad_request(self):
+        
+#         pass
+
+class GuestTableThemeTests(APITestCase):
+    def setUp(self):
+        self.username = 'test_guest'
+        self.url = reverse('guest_table_theme', args=[self.username]) 
+
+    def test_get_table_theme_success_guest(self):
+        guest = GuestUser.objects.create(username=self.username)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_patch_table_theme_success_guest(self):
+        guest = GuestUser.objects.create(username=self.username)
+        response = self.client.patch(self.url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_patch_table_theme_bad_request_guest(self):
+        response = self.client.patch(self.url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
