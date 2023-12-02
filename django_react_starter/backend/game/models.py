@@ -30,7 +30,7 @@ RANK_CHOICES = (
 )
 
 class Deck(models.Model):
-    name = models.CharField(max_length=10, null=True)
+    name = models.CharField(max_length=50, null=True)
 
     def create_deck(deckserializer):
         for x in SUIT_CHOICES:
@@ -39,7 +39,7 @@ class Deck(models.Model):
                 card.save()
 
 class Hand(models.Model):
-    name = models.CharField(max_length=10, null=True)
+    name = models.CharField(max_length=50, null=True)
 
 class Card(models.Model):
     suit = models.CharField(max_length=1, choices=SUIT_CHOICES)
