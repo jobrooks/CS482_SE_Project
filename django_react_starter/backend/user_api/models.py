@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-import hashlib
 # Create your models here.
 
 class User(AbstractUser):
@@ -24,13 +23,6 @@ class User(AbstractUser):
     card_backing = models.TextField(max_length=500, choices=CARD_BACKING_CHOICES, null=True, blank=True)
     security_question = models.CharField(max_length=255, null=False,default='')
     security_answer = models.CharField(max_length=128, null=False,default='')
-
-    def save(self, *args, **kwargs):
-        # Hash the security answer before saving
-        if self.security_answer:
-            self.security_answer_hashed = hashlib.sha256(self.security_answer.encode()).hexdigest()
-
-        super().save(*args, **kwargs)
 
     class Meta:
         db_table = 'auth_user'
