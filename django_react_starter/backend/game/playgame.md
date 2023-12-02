@@ -96,3 +96,52 @@ To raise, make a PUT call to this API endpoint:
 ```"/taketurn/<int:playerID>"```
 
 In the 'action' attribute of the PUT request, put "raise", and in the 'betAmount' attribute, include the amount the player wishes to raise.
+
+## **D.4 Calling**
+
+To call, make a PUT call to this API endpoint:
+
+```"/taketurn/<int:playerID>"```
+
+In the 'action' attribute of the PUT request, put "call".
+
+## **D.4 Checking**
+
+To check, make a PUT call to this API endpoint:
+
+```"/taketurn/<int:playerID>"```
+
+In the 'action' attribute of the PUT request, put "check".
+
+## **D.5 AllIn**
+
+To go allIn, make a PUT call to this API endpoint:
+
+```"/taketurn/<int:playerID>"```
+
+In the 'action' attribute of the PUT request, put "allIn".
+
+## **E.1 Drawing Round**
+
+The drawing round will commence after the first betting round. During this period, players may discard up to 5 cards, and draw until they have replenished their discarded cards.
+
+To draw/discard, use the following endpoints appropriately:
+
+```"drawcard/<int:playerID>/"```
+```"discardcard/<int:playerID>/<int:cardID>/"```
+
+Once you are done drawing/discarding, please make a PUT request to this endpoint, changing the value of 'doneDrawing' to True.
+
+```"player/<int:pk>/"```
+
+Then, make an empty PUT request to the taketurn endpoint to check the status of all players. It will list how many have finished drawing/discarding.
+
+```"/taketurn/<int:playerID>"```
+
+Once enough players have finished, it will automatically move into the second betting round.
+
+## **F.1 Second Betting Round**
+
+The second betting round is the exact same as the first, except for the evaluation at the end.
+
+Please refer to documentation Letter D for instructions on how to properly make bets.

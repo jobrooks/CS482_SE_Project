@@ -1,32 +1,33 @@
 from django.db import models
 from user_api.models import User
 from collections import deque
-import random
+import numpy as np
+import random 
 
 DECK_SIZE = 52
 MAX_HAND_SIZE = 5
 
 SUIT_CHOICES = (
-        ('H', 'Hearts'),
-        ('D', 'Diamonds'),
-        ('C', 'Clubs'),
-        ('S', 'Spades'),
+        ('H', 'Hearts')
+        ('D', 'Diamonds')
+        ('C', 'Clubs')
+        ('S', 'Spades')
     )
 
 RANK_CHOICES = (
-    ('02', '2'),
-    ('03', '3'),
-    ('04', '4'),
-    ('05', '5'),
-    ('06', '6'),
-    ('07', '7'),
-    ('08', '8'),
-    ('09', '9'),
-    ('10', '10'),
-    ('11', 'Jack'),
-    ('12', 'Queen'),
-    ('13', 'King'),
-    ('14', 'Ace'),
+    ('02', 'Two')
+    ('03', 'Three')
+    ('04', 'Four')
+    ('05', 'Five')
+    ('06', 'Six')
+    ('07', 'Seven')
+    ('08', 'Eight')
+    ('09', 'Nine')
+    ('10', 'Ten')
+    ('11', 'Jack')
+    ('12', 'Queen')
+    ('13', 'King')
+    ('14', 'Ace')
 )
 
 class Deck(models.Model):
@@ -58,8 +59,143 @@ class Hand(models.Model):
         self.rating = (0,0)
     
     def isRoyalFlush(self):
+        ace = False
+        jack = False
+        queen = False
+        king = False
+        ten = False
+        suit = None
         for card in Card.objects.filter(hand=self.pk):
-            print(card)
+            if suit == None:
+                suit = card.suit
+            if suit != card.suit:
+                return False
+            if card.rank == '14':
+                ace = True
+            elif card.rank == '13':
+                king = True
+            elif card.rank == '12':
+                queen = True
+            elif card.rank == '11':
+                jack = True
+            elif card.rank == '10':
+                ten = True
+        return True if ace and jack and queen and king and ten else False
+    
+    def isStraightFlush(self):
+        suit = None
+        for card in Card.objects.filter(hand=self.pk):
+            if suit == None:
+                suit = card.suit
+            if suit != card.suit:
+                return False
+        intArray = []
+        for card in Card.objects.filter(hand=self.pk):
+            intArray.append(int(card.rank[1:4]))
+        distanceArray = np.diff(intArray)
+        element = None
+        for num in distanceArray:
+            if element == None:
+                element = num
+            if element != num:
+                return False
+        return True
+    
+    def isFourOfAKind(self):
+        cardrank = None
+        sameCount = 0
+        for card in Card.objects.filter(hand=self.pk):
+            if cardrank == None:
+                cardrank = card.rank
+            if cardrank == card.rank:
+                sameCount += 1
+        return True if sameCount == 4 else False
+
+    def isFullHouse(self):
+        cardrank = None
+        nonMatching = []
+        sameCount = 0
+        for card in Card.objects.filter(hand=self.pk):
+            if cardrank == None:
+                cardrank = card.rank
+            if cardrank == card.rank:
+                sameCount += 1
+            else:
+                nonMatching.append(card)
+        if sameCount == 3:
+            cardrank = None
+            sameCount = 0
+            for card in nonMatching:
+                if cardrank == None:
+                    cardrank = card.rank
+                if cardrank == card.rank:
+                    sameCount += 1
+            return True if sameCount == 2 else False
+        return False
+
+    def isFlush(self):
+        suit = None
+        for card in Card.objects.filter(hand=self.pk):
+            if suit == None:
+                suit = card.suit
+            if suit != card.suit:
+                return False
+        return True
+    
+    def isStraight(self):
+        intArray = []
+        for card in Card.objects.filter(hand=self.pk):
+            intArray.append(int(card.rank[1:4]))
+        distanceArray = np.diff(intArray)
+        element = None
+        for num in distanceArray:
+            if element == None:
+                element = num
+            if element != num:
+                return False
+        return True
+
+    def isThreeOfAKind(self):
+        cardrank = None
+        sameCount = 0
+        for card in Card.objects.filter(hand=self.pk):
+            if cardrank == None:
+                cardrank = card.rank
+            if cardrank == card.rank:
+                sameCount += 1
+        return True if sameCount == 3 else False
+
+    def isTwoPair(self):
+        cardrank = None
+        nonMatching = []
+        sameCount = 0
+        for card in Card.objects.filter(hand=self.pk):
+            if cardrank == None:
+                cardrank = card.rank
+            if cardrank == card.rank:
+                sameCount += 1
+            else:
+                nonMatching.append(card)
+        if sameCount == 2:
+            cardrank = None
+            sameCount = 0
+            for card in nonMatching:
+                if cardrank == None:
+                    cardrank = card.rank
+                if cardrank == card.rank:
+                    sameCount += 1
+            return True if sameCount == 2 else False
+        return False
+    
+    def isPair(self):
+        cardrank = None
+        sameCount = 0
+        for card in Card.objects.filter(hand=self.pk):
+            if cardrank == None:
+                cardrank = card.rank
+            if cardrank == card.rank:
+                sameCount += 1
+        return True if sameCount == 2 else False
 
 class Card(models.Model):
     suit = models.CharField(max_length=1, choices=SUIT_CHOICES)
@@ -164,8 +300,9 @@ class Game(models.Model):
             return True 
         
     def checkSecondRoundOver(self):
+        players = Player.objects.filter(game=self.pk)
         if self.isSecondBetRound == True:
-            return True if self.turns.order == 0 else False
+            return True if len(self.turns.order) == 0 or (self.playersPassed >= len(players) and len(self.turns.order) == 1) or (self.playersPassed >= len(players) and self.checkBetAmount()) else False
         else:
             return True 
 
