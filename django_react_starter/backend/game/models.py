@@ -8,30 +8,30 @@ DECK_SIZE = 52
 MAX_HAND_SIZE = 5
 
 SUIT_CHOICES = (
-        ('H', 'Hearts')
-        ('D', 'Diamonds')
-        ('C', 'Clubs')
-        ('S', 'Spades')
+        ('H', 'Hearts'),
+        ('D', 'Diamonds'),
+        ('C', 'Clubs'),
+        ('S', 'Spades'),
     )
 
 RANK_CHOICES = (
-    ('02', 'Two')
-    ('03', 'Three')
-    ('04', 'Four')
-    ('05', 'Five')
-    ('06', 'Six')
-    ('07', 'Seven')
-    ('08', 'Eight')
-    ('09', 'Nine')
-    ('10', 'Ten')
-    ('11', 'Jack')
-    ('12', 'Queen')
-    ('13', 'King')
-    ('14', 'Ace')
+    ('02', 'Two'),
+    ('03', 'Three'),
+    ('04', 'Four'),
+    ('05', 'Five'),
+    ('06', 'Six'),
+    ('07', 'Seven'),
+    ('08', 'Eight'),
+    ('09', 'Nine'),
+    ('10', 'Ten'),
+    ('11', 'Jack'),
+    ('12', 'Queen'),
+    ('13', 'King'),
+    ('14', 'Ace'),
 )
 
 class Deck(models.Model):
-    name = models.CharField(max_length=10, null=True)
+    name = models.CharField(max_length=50, null=True)
 
     def create_deck(self):
         for x in SUIT_CHOICES:
@@ -47,7 +47,7 @@ class Deck(models.Model):
                 card.save()
 
 class Hand(models.Model):
-    name = models.CharField(max_length=10, null=True)
+    name = models.CharField(max_length=50, null=True)
     score = models.IntegerField(default=0)
     ratingOut = models.CharField(max_length=30, default=0)
     rating = ()
@@ -222,7 +222,7 @@ class TurnOrder():
 
 class Game(models.Model):
     turns = TurnOrder()
-    name = models.CharField(max_length=10, null=True)
+    name = models.CharField(max_length=50, null=True)
     deck = models.OneToOneField(Deck(), null=True, on_delete=models.CASCADE)
     pot = models.OneToOneField(Pot(), null=True, on_delete=models.CASCADE)
     winner = models.CharField(max_length=500, null=True)
