@@ -3,7 +3,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from user_api.serializers import UserSerializer
+from user_api.serializers import UserSerializer, UserUpdateSerializer, UpdatePasswordSerializer
 from rest_framework.views import APIView
 from django.http import Http404
 from django.http import JsonResponse
@@ -39,6 +39,77 @@ class GetUserProfile(APIView):
         except Token.DoesNotExist:
             return JsonResponse({"error": "User not found"}, status=404)
         
+class GetSecurityQuestion(APIView):
+    def get(self, request, username, *args, **kwargs):
+        try:
+            user = User.objects.get(username=username)
+            serializer = UserSerializer(user)
+            
+            # Extract the security question from the serialized data
+            security_question = serializer.data.get('security_question', None)
+            
+            if security_question is not None:
+                return JsonResponse({"security_question": security_question})
+            else:
+                return JsonResponse({"error": "Security question not found"}, status=404)
+        
+        except User.DoesNotExist:
+            return JsonResponse({"error": "User not found"}, status=404)
+        
+class CheckUserExists(APIView):
+    def get(self, request, username, *args, **kwargs):
+        try:
+            user = User.objects.get(username=username)
+            if user:
+                return JsonResponse({"user_exist": True}, status=200)
+        except User.DoesNotExist:
+            return JsonResponse({"user_exist": False}, status=404)
+        
+class VerifyAnswer(APIView):
+    def post(self, request, *args, **kwargs):
+        try:
+            user = User.objects.get(username=request.data['username'])
+            serializer = UserSerializer(user)
+
+            security_answer = serializer.data.get('security_answer', None)
+            if request.data['security_answer'] == security_answer:
+                return JsonResponse({"is_answer_correct": True})
+            else:
+                return JsonResponse({"is_answer_correct": False})
+        except User.DoesNotExist:
+            return JsonResponse({"error": "User not found"}, status=404)
+        
+class UpdateUserPassword(APIView):
+    def put(self, request, *args, **kwargs):
+        try:
+            user = User.objects.get(username=request.data['username'])
+            new_password = request.data['newPassword']
+            if(new_password == ''):
+                return JsonResponse({"error": "Cannot update with empty password"}, status=status.HTTP_400_BAD_REQUEST) 
+            # Use set_password to hash the new password
+            user.set_password(new_password)
+            user.save()
+
+            # Delete the existing token
+            Token.objects.filter(user=user).delete()
+
+            # Create a new token
+            new_token = Token.objects.create(user=user)
+
+            serializer_data = {
+                'token': new_token.key,
+                'username': user.username,
+                # Add other fields you want to include in the response
+            }
+
+            return JsonResponse(serializer_data)
+        except User.DoesNotExist:
+            return JsonResponse({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            print(e)
+            return JsonResponse({"error": "Failed to update password"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            
+        
 class UpdateUserProfile(APIView):
     parser_classes = (MultiPartParser, FormParser)
     
@@ -46,7 +117,7 @@ class UpdateUserProfile(APIView):
         try:
             token_object = Token.objects.get(key=token)
             user = token_object.user
-            serializer = UserSerializer(user, data=request.data)
+            serializer = UserUpdateSerializer(user, data=request.data)
             
             if serializer.is_valid():
                 serializer.save()
