@@ -12,6 +12,8 @@ class CardBackingCard extends React.Component {
         this.toggleBackingPicker = this.toggleBackingPicker.bind(this);
         this.changeBacking = this.changeBacking.bind(this);
         this.state = {
+            token: this.props.token,
+            guestUsername: this.props.guestUsername,
             backingPickerOpen: false,
             cardBacking: "red",
             cardBackingImage: this.mapBackingToImage(this.cardBacking),

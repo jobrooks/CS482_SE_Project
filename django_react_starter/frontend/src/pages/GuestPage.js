@@ -32,7 +32,7 @@ class GuestPage extends Component{
                 this.state.credentials
             );
             console.log(res.data);
-            localStorage.setItem("Guest", JSON.stringify(res.data.username))
+            localStorage.setItem("guestUsername", JSON.stringify(res.data.username))
             
             this.props.navigate("/");
         } catch (error) {

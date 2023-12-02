@@ -15,6 +15,7 @@ import {
   IconButton,
   Avatar,
 } from "@mui/material";
+import GuestRedirector from "../components/GuestRedirector";
 
 class ProfilePage extends Component {
   constructor(props) {
@@ -61,6 +62,7 @@ class ProfilePage extends Component {
 
     return (
       <div>
+        <GuestRedirector />
         <LoginRedirector />
         <NavBar />
         <h1>User Profile</h1>

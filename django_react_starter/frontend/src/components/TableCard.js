@@ -12,6 +12,8 @@ class TableCard extends React.Component {
         this.toggleTableThemePicker = this.toggleTableThemePicker.bind(this);
         this.changeTheme = this.changeTheme.bind(this);
         this.state = {
+            token: this.props.token,
+            guestUsername: this.props.guestUsername,
             themePickerOpen: false,
             tableTheme: "blue",
             tableImage: this.mapThemeToImage(this.tableTheme),

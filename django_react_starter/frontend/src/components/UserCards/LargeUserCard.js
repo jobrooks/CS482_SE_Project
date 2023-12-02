@@ -34,6 +34,7 @@ class LargeUserCard extends React.Component {
             // Information
             username: this.props.username,
             token: this.props.token,
+            guestUsername: this.props.guestUsername,
             // Component state
             userdata: null,
             isLoading: true,
@@ -59,7 +60,7 @@ class LargeUserCard extends React.Component {
                 return response.data;
             })
             .catch((response) => {
-                console.log("Error getting user data");
+                console.log("Error getting user data via token");
                 return response;
             })
         } else if (this.state.username) {
@@ -70,7 +71,18 @@ class LargeUserCard extends React.Component {
                 return response.data;
             })
             .catch((response) => {
-                console.log("Error getting user data");
+                console.log("Error getting user data via username");
+                return response;
+            })
+        } else if (this.state.guestUsername) {
+            axios.get(`http://localhost:8000/user_profile/profile/getguestprofile/${this.state.guestUsername}`)
+            .then((response) => {
+                this.setState({ userdata: response.data, isLoading: false });
+                console.log(this.state.userdata);
+                return response.data;
+            })
+            .catch((response) =>{
+                console.log("Error getting guest data");
                 return response;
             })
         } else {

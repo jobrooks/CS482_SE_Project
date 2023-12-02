@@ -1,9 +1,10 @@
 from user_api.models import User
+from user_api.models import GuestUser
 from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from user_api.serializers import UserSerializer, UserUpdateSerializer, UpdatePasswordSerializer
+from user_api.serializers import UserSerializer, UserUpdateSerializer, UpdatePasswordSerializer, GuestSerializer
 from rest_framework.views import APIView
 from django.http import Http404
 from django.http import JsonResponse
@@ -38,6 +39,16 @@ class GetUserProfile(APIView):
             return JsonResponse(user_data)
         except Token.DoesNotExist:
             return JsonResponse({"error": "User not found"}, status=404)
+        
+class GetGuestProfile(APIView):
+    def get(self, request, username, *args, **kwargs):
+        try:
+            guest = GuestUser.objects.get(username=username)
+            guest_serializer = GuestSerializer(guest)
+            guest_serializer_data = guest_serializer.data
+            return JsonResponse(guest_serializer_data)
+        except GuestUser.DoesNotExist:
+            return JsonResponse({"error": "Guest not found"}, status=404)
         
 class GetSecurityQuestion(APIView):
     def get(self, request, username, *args, **kwargs):
@@ -99,7 +110,6 @@ class UpdateUserPassword(APIView):
             serializer_data = {
                 'token': new_token.key,
                 'username': user.username,
-                # Add other fields you want to include in the response
             }
 
             return JsonResponse(serializer_data)
@@ -108,8 +118,7 @@ class UpdateUserPassword(APIView):
         except Exception as e:
             print(e)
             return JsonResponse({"error": "Failed to update password"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-            
-        
+                
 class UpdateUserProfile(APIView):
     parser_classes = (MultiPartParser, FormParser)
     
@@ -139,8 +148,6 @@ class UpdateUserProfile(APIView):
             return JsonResponse({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
         except IntegrityError:
             return JsonResponse({"error": "Token creation failed"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
         
 class GetOtherUserProfile(APIView):
     def get_user(self, username):
@@ -227,6 +234,28 @@ class TableTheme(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class GuestTableTheme(APIView):
+        
+    def get(self, request, username, *args, **kwargs):
+        guest = GuestUser.objects.get(username=username)
+        serializer = GuestSerializer(guest)
+        return Response(serializer.data["table_theme"])
+    
+    def patch(self, request, username, *args, **kwargs):
+        guest = GuestUser.objects.get(username=username)
+        
+        # Cleaning request very important while using patch since partial=True allows any field to be changed
+        # without requiring the username and password. Here we use a dictionary comprehention to ignore any 
+        # other fields besides "table_theme".
+        cleaned_request = request.data.copy()
+        cleaned_request = {key:value for (key, value) in cleaned_request.items() if key == "table_theme"}
+        
+        serializer = GuestSerializer(guest, data=cleaned_request, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 class CardBacking(APIView):
     def get_user(self, token):
         try:
@@ -249,6 +278,28 @@ class CardBacking(APIView):
         cleaned_request = {key:value for (key, value) in cleaned_request.items() if key == "card_backing"}
         
         serializer = UserSerializer(user, data=cleaned_request, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class GuestCardBacking(APIView):
+        
+    def get(self, request, username, *args, **kwargs):
+        guest = GuestUser.objects.get(username=username)
+        serializer = GuestSerializer(guest)
+        return Response(serializer.data["card_backing"])
+    
+    def patch(self, request, username, *args, **kwargs):
+        guest = GuestUser.objects.get(username=username)
+        
+        # Cleaning request very important while using patch since partial=True allows any field to be changed
+        # without requiring the username and password. Here we use a dictionary comprehention to ignore any 
+        # other fields besides "table_theme".
+        cleaned_request = request.data.copy()
+        cleaned_request = {key:value for (key, value) in cleaned_request.items() if key == "card_backing"}
+        
+        serializer = GuestSerializer(guest, data=cleaned_request, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -281,6 +332,5 @@ class AvatarColor(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-
 def edit_profile(request):
     return render(request, 'editProfile.html')
