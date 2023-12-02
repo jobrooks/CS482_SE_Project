@@ -256,22 +256,34 @@ class GetGuestProfileTests(APITestCase):
 
 class TableThemeTests(APITestCase):
     def setUp(self):
-        self.user = User.objects.create(username='testuser', security_question='Sample question')
+        self.user = User.objects.create(username='test_user')
         self.token = Token.objects.create(user=self.user)
+        self.url = reverse('table_theme', args=[self.token.key])
 
-        self.url = reverse('table_question', args=[self.token.key])
+    def test_get_table_theme_success(self):
+        user = User.objects.get(auth_token=self.token.key)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-#     def test_get_table_theme_success(self):
-        
-#         pass
+    def test_patch_table_theme_success(self):
+        data = {"table_theme": "new_table_theme"}
+        response = self.client.patch(self.url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(User.objects.get(id=self.user.id).table_theme, "new_table_theme")
 
-#     def test_patch_table_theme_success(self):
-        
-#         pass
+    def test_patch_table_theme_bad_request(self):
+        # Test with invalid data (missing card_backing)
+        data = {"invalid_field": "value"}
+        response = self.client.patch(self.url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-#     def test_patch_table_theme_bad_request(self):
-        
-#         pass
+    def test_patch_table_theme_user_not_found(self):
+        # Test when the user is not found
+        invalid_url = reverse('table_theme', args=['invalid_token'])
+        data = {"table_theme": "new_table_theme"}
+        response = self.client.patch(invalid_url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.json(), {"error": "User Not found"})
 
 class GuestTableThemeTests(APITestCase):
     def setUp(self):
@@ -291,4 +303,62 @@ class GuestTableThemeTests(APITestCase):
     def test_patch_table_theme_bad_request_guest(self):
         response = self.client.patch(self.url)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+class CardBackingTests(APITestCase):
+    def setUp(self):
+        self.user = User.objects.create(username='testuser', security_question='Sample question')
+        self.token = Token.objects.create(user=self.user)
+
+        self.url = reverse('card_backing', args=[self.token.key])
+
+    def test_get_card_backing_success(self):
+        user = User.objects.get(auth_token=self.token.key)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_patch_card_backing_success(self):
+        data = {"card_backing": "new_card_backing"}
+        response = self.client.patch(self.url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(User.objects.get(id=self.user.id).card_backing, "new_card_backing")
+
+    def test_patch_card_backing_bad_request(self):
+        # Test with invalid data (missing card_backing)
+        data = {"invalid_field": "value"}
+        response = self.client.patch(self.url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_patch_card_backing_user_not_found(self):
+        # Test when the user is not found
+        invalid_url = reverse('card_backing', args=['invalid_token'])
+        data = {"card_backing": "new_card_backing"}
+        response = self.client.patch(invalid_url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.json(), {"error": "User Not found"})
+
+
+class GuestCardBackingTests(APITestCase):
+    def setUp(self):
+        self.username = 'test_guest'
+        self.url = reverse('guest_card_backing', args=[self.username]) 
+
+    def test_get_card_backing_success_guest(self):
+        guest = GuestUser.objects.create(username=self.username)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_patch_card_backing_bad_request_guest(self):
+        guest = GuestUser.objects.create(username=self.username)
+        # Test with invalid data (missing card_backing)
+        data = {"invalid_field": "value"}
+        response = self.client.patch(self.url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_patch_card_backing_guest_not_found(self):
+        # Test when the user is not found
+        invalid_url = reverse('guest_card_backing', args=['invalid_user'])
+        data = {"card_backing": "new_card_backing"}
+        response = self.client.patch(invalid_url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.json(), {"error": "Guest Not found"})
 

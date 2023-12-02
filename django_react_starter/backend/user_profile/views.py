@@ -212,7 +212,7 @@ class TableTheme(APIView):
         try:
             return User.objects.get(auth_token=token)
         except:
-            raise Http404
+            raise User.DoesNotExist
         
     def get(self, request, token, *args, **kwargs):
         user = self.get_user(token)
@@ -220,19 +220,25 @@ class TableTheme(APIView):
         return Response(serializer.data["table_theme"], status=status.HTTP_200_OK)
     
     def patch(self, request, token, *args, **kwargs):
-        user = self.get_user(token)
-        
-        # Cleaning request very important while using patch since partial=True allows any field to be changed
-        # without requiring the username and password. Here we use a dictionary comprehention to ignore any 
-        # other fields besides "table_theme".
-        cleaned_request = request.data.copy()
-        cleaned_request = {key:value for (key, value) in cleaned_request.items() if key == "table_theme"}
-        
-        serializer = UserSerializer(user, data=cleaned_request, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            user = self.get_user(token)
+            
+            # Cleaning request very important while using patch since partial=True allows any field to be changed
+            # without requiring the username and password. Here we use a dictionary comprehention to ignore any 
+            # other fields besides "table_theme".
+            cleaned_request = request.data.copy()
+            cleaned_request = {key:value for (key, value) in cleaned_request.items() if key == "table_theme"}
+
+            if "table_theme" not in cleaned_request:
+                return Response({"error": "table_theme is required"}, status=status.HTTP_400_BAD_REQUEST)
+            
+            serializer = UserSerializer(user, data=cleaned_request, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except User.DoesNotExist:
+            return Response({"error":"User Not found"}, status=status.HTTP_404_NOT_FOUND)
 
 class GuestTableTheme(APIView):
         
@@ -264,7 +270,7 @@ class CardBacking(APIView):
         try:
             return User.objects.get(auth_token=token)
         except:
-            raise Http404
+            raise User.DoesNotExist
         
     def get(self, request, token, *args, **kwargs):
         user = self.get_user(token)
@@ -272,19 +278,24 @@ class CardBacking(APIView):
         return Response(serializer.data["card_backing"], status=status.HTTP_200_OK)
     
     def patch(self, request, token, *args, **kwargs):
-        user = self.get_user(token)
-        
-        # Cleaning request very important while using patch since partial=True allows any field to be changed
-        # without requiring the username and password. Here we use a dictionary comprehention to ignore any 
-        # other fields besides "table_theme".
-        cleaned_request = request.data.copy()
-        cleaned_request = {key:value for (key, value) in cleaned_request.items() if key == "card_backing"}
-        
-        serializer = UserSerializer(user, data=cleaned_request, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            user = self.get_user(token)
+            
+            # Cleaning request very important while using patch since partial=True allows any field to be changed
+            # without requiring the username and password. Here we use a dictionary comprehention to ignore any 
+            # other fields besides "table_theme".
+            cleaned_request = request.data.copy()
+            cleaned_request = {key:value for (key, value) in cleaned_request.items() if key == "card_backing"}
+            if "card_backing" not in cleaned_request:
+                return Response({"error": "card_backing is required"}, status=status.HTTP_400_BAD_REQUEST)
+            
+            serializer = UserSerializer(user, data=cleaned_request, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except User.DoesNotExist:
+            return Response({"error":"User Not found"}, status=status.HTTP_404_NOT_FOUND)
     
 class GuestCardBacking(APIView):
         
@@ -294,20 +305,25 @@ class GuestCardBacking(APIView):
         return Response(serializer.data["card_backing"], status=status.HTTP_200_OK)
     
     def patch(self, request, username, *args, **kwargs):
-        guest = GuestUser.objects.get(username=username)
+        try:
+            guest = GuestUser.objects.get(username=username)
+            
+            # Cleaning request very important while using patch since partial=True allows any field to be changed
+            # without requiring the username and password. Here we use a dictionary comprehention to ignore any 
+            # other fields besides "table_theme".
+            cleaned_request = {"card_backing": request.data.get("card_backing")}
+            if not cleaned_request["card_backing"]:
+                return Response({"error": "card_backing is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+            
+            serializer = GuestSerializer(guest, data=cleaned_request, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except GuestUser.DoesNotExist:
+            return Response({"error":"Guest Not found"}, status=status.HTTP_404_NOT_FOUND)
         
-        # Cleaning request very important while using patch since partial=True allows any field to be changed
-        # without requiring the username and password. Here we use a dictionary comprehention to ignore any 
-        # other fields besides "table_theme".
-        cleaned_request = request.data.copy()
-        cleaned_request = {key:value for (key, value) in cleaned_request.items() if key == "card_backing"}
-        
-        serializer = GuestSerializer(guest, data=cleaned_request, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
 class AvatarColor(APIView):
     def get_user(self, token):
         try:
@@ -321,19 +337,22 @@ class AvatarColor(APIView):
         return Response(serializer.data["avatar_color"], status=status.HTTP_200_OK)
     
     def patch(self, request, token, *args, **kwargs):
-        user = self.get_user(token)
-        
-        # Cleaning request very important while using patch since partial=True allows any field to be changed
-        # without requiring the username and password. Here we use a dictionary comprehention to ignore any 
-        # other fields besides "avatar_color".
-        cleaned_request = request.data.copy()
-        cleaned_request = {key:value for (key, value) in cleaned_request.items() if key == "avatar_color"}
-        
-        serializer = UserSerializer(user, data=cleaned_request, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            user = self.get_user(token)
+            
+            # Cleaning request very important while using patch since partial=True allows any field to be changed
+            # without requiring the username and password. Here we use a dictionary comprehention to ignore any 
+            # other fields besides "avatar_color".
+            cleaned_request = request.data.copy()
+            cleaned_request = {key:value for (key, value) in cleaned_request.items() if key == "avatar_color"}
+            
+            serializer = UserSerializer(user, data=cleaned_request, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except User.DoesNotExist:
+            return Response({"error":"Guest Not found"}, status=status.HTTP_404_NOT_FOUND)
     
 class GuestAvatarColor(APIView):
         
@@ -343,19 +362,22 @@ class GuestAvatarColor(APIView):
         return Response(serializer.data["avatar_color"], status=status.HTTP_200_OK)
     
     def patch(self, request, username, *args, **kwargs):
-        guest = GuestUser.objects.get(username=username)
-        
-        # Cleaning request very important while using patch since partial=True allows any field to be changed
-        # without requiring the username and password. Here we use a dictionary comprehention to ignore any 
-        # other fields besides "avatar_color".
-        cleaned_request = request.data.copy()
-        cleaned_request = {key:value for (key, value) in cleaned_request.items() if key == "avatar_color"}
-        
-        serializer = GuestSerializer(guest, data=cleaned_request, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            guest = GuestUser.objects.get(username=username)
+            
+            # Cleaning request very important while using patch since partial=True allows any field to be changed
+            # without requiring the username and password. Here we use a dictionary comprehention to ignore any 
+            # other fields besides "avatar_color".
+            cleaned_request = request.data.copy()
+            cleaned_request = {key:value for (key, value) in cleaned_request.items() if key == "avatar_color"}
+            
+            serializer = GuestSerializer(guest, data=cleaned_request, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except GuestUser.DoesNotExist:
+            return Response({"error":"Guest Not found"}, status=status.HTTP_404_NOT_FOUND)
     
 def edit_profile(request):
     return render(request, 'editProfile.html')
