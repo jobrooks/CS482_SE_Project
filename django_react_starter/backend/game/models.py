@@ -89,6 +89,7 @@ class Game(models.Model):
     name = models.CharField(max_length=10, null=True)
     deck = models.OneToOneField(Deck(), null=True, on_delete=models.CASCADE)
     pot = models.OneToOneField(Pot(), null=True, on_delete=models.CASCADE)
+    winner = models.CharField(max_length=500, null=True)
     turnOrder = models.CharField(max_length=5000, null=True)
     playersPassed = models.IntegerField(default=0)
     currentBetAmount = models.IntegerField(default=0)
@@ -96,6 +97,17 @@ class Game(models.Model):
     isDrawingRound = models.BooleanField(default=False)
     isSecondBetRound = models.BooleanField(default=False)
     isFinished = models.BooleanField(default=False)
+
+    def determineWinner(self, players):
+        maxRating = 0
+        winningPlayer = None
+        for player in players:
+            hand = Hand.objects.get(pk=player.hand.pk)
+            if hand.ratingOut > maxRating:
+                maxRating = hand.ratingOut
+                winningPlayer = player
+        return winningPlayer
+
 
     def resetToDefault(self):
         self.turnOrder = ""
@@ -151,8 +163,7 @@ class Game(models.Model):
         else:
             return True 
         
-    def checkSecondRoundOver(self, game):
-        game.pullTurnOrder()
+    def checkSecondRoundOver(self):
         if self.isSecondBetRound == True:
             return True if self.turns.order == 0 else False
         else:

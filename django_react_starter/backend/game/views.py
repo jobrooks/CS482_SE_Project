@@ -405,17 +405,23 @@ class TakeTurn(APIView):
             #
             #
             # Second Betting Round:
-            if not game.checkSecondRoundOver(game=game) and game.checkDrawingRoundOver():
+            game.resetToDefault()
+            game.createTurnOrder()
+            game.updateTurnOrder()
+            game.pullTurnOrder()
+            if not game.checkSecondRoundOver() and game.checkDrawingRoundOver():
                 if int(game.turns.order[0]) == player.pk:
                     player.checkActions(game=game)
                     turnResponse = Response({"Turn Successful": player.takeAction(game=game, pot=pot), "Player": PlayerSerializer(player).data, "Game": GameSerializer(game).data, "Pot": PotSerializer(pot).data})
                     game.incrementPlayer()
                     if game.checkSecondRoundOver():
+                        winner = game.determineWinner()
+                        game.resetToDefault()
                         game.isSecondBetRound = False
                         game.isFinished = True
-                        game.turns.order.clear()
-                        game.updateTurnOrder()
-                        return Response("First Round Finished. Proceeding to Drawing.")
+                        game.winner = winner.name
+                        game.save()
+                        return Response({"Winner": PlayerSerializer(winner).data, "Player": PlayerSerializer(player).data, "Game": GameSerializer(game).data, "Pot": PotSerializer(pot).data})
                     game.updateTurnOrder()
                     return turnResponse
                 else:
