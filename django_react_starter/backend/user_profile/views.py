@@ -53,7 +53,7 @@ class GetSecurityQuestion(APIView):
             else:
                 return JsonResponse({"error": "Security question not found"}, status=404)
         
-        except Token.DoesNotExist:
+        except User.DoesNotExist:
             return JsonResponse({"error": "User not found"}, status=404)
         
 class CheckUserExists(APIView):
@@ -61,9 +61,9 @@ class CheckUserExists(APIView):
         try:
             user = User.objects.get(username=username)
             if user:
-                return JsonResponse({"user_exist": True})
+                return JsonResponse({"user_exist": True}, status=200)
         except User.DoesNotExist:
-            return JsonResponse({"user_exist": False})
+            return JsonResponse({"user_exist": False}, status=404)
         
 class VerifyAnswer(APIView):
     def post(self, request, *args, **kwargs):
@@ -84,7 +84,8 @@ class UpdateUserPassword(APIView):
         try:
             user = User.objects.get(username=request.data['username'])
             new_password = request.data['newPassword']
-
+            if(new_password == ''):
+                return JsonResponse({"error": "Cannot update with empty password"}, status=status.HTTP_400_BAD_REQUEST) 
             # Use set_password to hash the new password
             user.set_password(new_password)
             user.save()

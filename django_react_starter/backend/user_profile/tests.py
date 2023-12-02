@@ -48,7 +48,6 @@ class UpdateUserProfileAPITest(APITestCase):
         self.update_profile_url = reverse('update_user_profile', args=[self.token.key])
 
     def test_update_user_profile_valid_token(self):
-        # Assume you have a valid payload for the update
         valid_payload = {
             'username': 'new_username',
             'email': 'new_email@example.com',
@@ -82,4 +81,161 @@ class UpdateUserProfileAPITest(APITestCase):
         # Check that the error message is present in the response
         self.assertIn('error', response.json())
         self.assertEqual(response.json()['error'], 'User not found')
+
+class SecurityQuestionAPITest(APITestCase):
+    def setUp(self):
+        # Create a user with a security question
+        self.user = User.objects.create(username='testuser', security_question='Sample question')
+        self.token = Token.objects.create(user=self.user)
+
+        # URL for the get_security_question view
+        self.security_question_url = reverse('get_security_question', args=[self.user.username])
+
+    def test_get_security_question_valid_user(self):
+        response = self.client.get(self.security_question_url)
+
+        # Check that the response has a status code of 200 (HTTP OK)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Check that the returned data contains the security question
+        self.assertIn('security_question', response.json())
+
+    def test_get_security_question_invalid_user(self):
+        # Make a GET request with an invalid token
+        response = self.client.get(reverse('get_security_question', args=['notUsername']))
+
+        # Check that the response has a status code of 404 (HTTP Not Found)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+        # Check that the error message is present in the response
+        self.assertIn('error', response.json())
+        self.assertEqual(response.json()['error'], 'User not found')
+
+class CheckUserExistsAPITest(APITestCase):
+    def setUp(self):
+        # Create a user
+        self.user = User.objects.create(username='testuser')
+        self.token = Token.objects.create(user=self.user)
+
+        # URL for the check_user_exists view
+        self.check_user_exists_url = reverse('check_user', args=[self.user.username])
+
+    def test_check_user_exists_valid_user(self):
+        response = self.client.get(self.check_user_exists_url)
+
+        # Check that the response has a status code of 200 (HTTP OK)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Check that the returned data contains the 'user_exist' field
+        self.assertIn('user_exist', response.json())
+        self.assertTrue(response.json()['user_exist'])
+
+    def test_check_user_exists_invalid_user(self):
+        # Make a GET request with an invalid token
+        response = self.client.get(reverse('check_user', args=['notUsername']))
+
+        # Check that the response has a status code of 404 (HTTP Not Found)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+        # Check that the 'user_exist' field is False in the response
+        self.assertIn('user_exist', response.json())
+        self.assertFalse(response.json()['user_exist'])
+
+class VerifyAnswerAPITest(APITestCase):
+    def setUp(self):
+        # Create a user with a security answer
+        self.user = User.objects.create(username='testuser', security_answer='Sample answer')
+        self.token = Token.objects.create(user=self.user)
+
+        # URL for the verify_answer view
+        self.verify_answer_url = reverse('verify_security_answer')
+
+    def test_verify_answer_correct_answer(self):
+        payload = {
+            'username': 'testuser',
+            'security_answer': 'Sample answer'
+        }
+        response = self.client.post(self.verify_answer_url, data=payload)
+
+        # Check that the response has a status code of 200 (HTTP OK)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Check that the returned data contains 'is_answer_correct' as True
+        self.assertIn('is_answer_correct', response.json())
+        self.assertTrue(response.json()['is_answer_correct'])
+
+    def test_verify_answer_incorrect_answer(self):
+        payload = {
+            'username': 'testuser',
+            'security_answer': 'Incorrect answer'
+        }
+        response = self.client.post(self.verify_answer_url, data=payload)
+
+        # Check that the response has a status code of 200 (HTTP OK)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Check that the returned data contains 'is_answer_correct' as False
+        self.assertIn('is_answer_correct', response.json())
+        self.assertFalse(response.json()['is_answer_correct'])
+
+    def test_verify_answer_invalid_user(self):
+        payload = {
+            'username': 'nonexistentuser',
+            'security_answer': 'Sample answer'
+        }
+        response = self.client.post(self.verify_answer_url, data=payload)
+
+        # Check that the response has a status code of 404 (HTTP Not Found)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+        # Check that the 'error' field is present in the response
+        self.assertIn('error', response.json())
+
+class UpdateUserPasswordAPITest(APITestCase):
+    def setUp(self):
+        # Create a user
+        self.user = User.objects.create(username='testuser', password='password')
+        self.token = Token.objects.create(user=self.user)
+
+        # URL for the update_user_password view
+        self.update_user_password_url = reverse('reset_password')
+
+    def test_update_user_password_valid_user(self):
+        payload = {
+            'username': 'testuser',
+            'newPassword': 'newpassword'
+        }
+        response = self.client.put(self.update_user_password_url, data=payload)
+
+        # Check that the response has a status code of 200 (HTTP OK)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Check that the returned data contains the 'token' field
+        self.assertIn('token', response.json())
+
+    def test_update_user_password_invalid_user(self):
+        payload = {
+            'username': 'nonexistentuser',
+            'newPassword': 'newpassword'
+        }
+        response = self.client.put(self.update_user_password_url, data=payload)
+
+        # Check that the response has a status code of 404 (HTTP Not Found)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+        # Check that the 'error' field is present in the response
+        self.assertIn('error', response.json())
+
+    def test_update_user_password_missing_password(self):
+        payload = {
+            'username': 'testuser',
+            'newPassword': ''
+        }
+        response = self.client.put(self.update_user_password_url, data=payload)
+
+        # Check that the response has a status code of 400 (HTTP Bad Request)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        # Check that the 'error' field is present in the response
+        self.assertIn('error', response.json())
 
