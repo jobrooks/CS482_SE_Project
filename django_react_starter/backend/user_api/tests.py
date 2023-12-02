@@ -16,7 +16,9 @@ class UserApitest(APITestCase):
         data = {
             'username': 'foobar',
             'email':'foobar@example.com',
-            'password':'somepassword'
+            'password':'somepassword',
+            'security_question': 'What is your favorite color?',
+            'security_answer': 'Blue',
         }
 
         response = self.client.post(self.create_url, data, format='json')

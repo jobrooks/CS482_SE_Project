@@ -313,7 +313,7 @@ class LargeUserCard extends React.Component {
                                                     Date Joined
                                                 </Typography>
                                                 <Typography variant="subtitle" noWrap={false}>
-                                                    {this.state.userdata.date_joined}
+                                                    {new Date(this.state.userdata.date_joined).toLocaleDateString()}
                                                 </Typography>
                                             </Stack>
                                         </Grid>

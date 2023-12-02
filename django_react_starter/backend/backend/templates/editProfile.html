@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Edit User profile</title>
+    </head>
+    <body>
+        <form id="updateForm" action="{% url 'update_user_profile' token='2c77f2e9f15b1b7a4978b6109228df1cf45b367f' %}" method="post">
+            {% csrf_token %}
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required><br>
+        
+            <label for="email">Email:</label>
+            <input type="text" id="email" name="email" required><br>
+        
+            <label for="first_name">First Name:</label>
+            <input type="text" id="first_name" name="first_name"><br>
+        
+            <label for="last_name">Last Name:</label>
+            <input type="text" id="last_name" name="last_name"><br>
+        
+            <label for="bio">Bio:</label>
+            <input type="text" id="bio" name="bio"><br>
+        
+            <button type="button" onclick="updateUser()">Update User</button>
+        </form>
+        
+    </body>
+</html>

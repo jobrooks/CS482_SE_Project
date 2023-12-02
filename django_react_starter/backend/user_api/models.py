@@ -22,6 +22,9 @@ class User(AbstractUser):
     avatar_color = models.TextField(max_length=500, null=True, blank=True)
     table_theme = models.TextField(max_length=500, choices=TABLE_THEME_CHOICES, null=True, blank=True)
     card_backing = models.TextField(max_length=500, choices=CARD_BACKING_CHOICES, null=True, blank=True)
+    security_question = models.CharField(max_length=255, null=False,default='')
+    security_answer = models.CharField(max_length=128, null=False,default='')
+
     class Meta:
         db_table = 'auth_user'
 
