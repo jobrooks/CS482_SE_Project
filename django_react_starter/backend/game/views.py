@@ -155,7 +155,7 @@ class DeckDetail(APIView):
             raise Http404
         
     def get(self, request, pk):
-        deck = self.get_hand(pk)
+        deck = self.get_deck(pk)
         serializer = CardSerializer(deck, many=True)
         return Response(serializer.data)
     

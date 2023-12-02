@@ -79,11 +79,12 @@ class GameSetup extends React.Component {
       }
 
     //make game, post to db, return gameID
-    postGame = async () => {
+    postGame = async (deckID) => {
       try {
         const gameName = this.state.username + "'s game";
         const gameData = {
-          "name": gameName
+          "name": gameName,
+          "deck": deckID
         };
     
         const response = await axios.post(`http://localhost:8000/game/`, gameData);
@@ -96,10 +97,45 @@ class GameSetup extends React.Component {
       }
     }
 
-    //parse selected players and add player to db
+    postDeck = async () => {
+      try {
+        const deckName = this.state.username + "'s deck";
+        const deckData = {
+          "name": deckName
+        };
+    
+        const response = await axios.post(`http://localhost:8000/deck/`, deckData);
+        console.log(response.data["id"]);
+
+        return response.data["id"];
+      } catch (error) {
+        console.log("deck not made", error);
+        throw error;
+      }
+    }
+
+    postHand = async (playerName) => {
+      try {
+        const handName = playerName + "'s deck";
+        const handData = {
+          "name": handName
+        };
+    
+        const response = await axios.post(`http://localhost:8000/hand/`, handData);
+        console.log(response.data["id"]);
+
+        return response.data["id"];
+      } catch (error) {
+        console.log("hand not made", error);
+        throw error;
+      }
+    }
+    //parse selected players and add player to db, also post hands for each player
     postPlayers(gameID) {
 
+      //now make each player with their hand
       this.state.selectedPlayers.forEach( (player) => {
+        const handID = this.postHand(player.username);
         const playerData = {
           "money": player.money,
           "name": player.username,
@@ -110,7 +146,7 @@ class GameSetup extends React.Component {
           "action": null,
           "betAmount": null,
           "game": gameID,
-          "hand": null
+          "hand": handID
         }
 
         axios.post(`http://localhost:8000/player/`, playerData)
@@ -151,11 +187,18 @@ class GameSetup extends React.Component {
       
     }
 
+    addDeckHandtoGame(gameID) {
+      const gamedata = {
+        "name":0
+      };
+    }
+
 
     createGame = async () => {
       try {
         // Make sure game is only created once, and if there are selected players
         if(this.state.selectedPlayers.length > 0) {
+          const deckID = await this.postDeck();
           const gameID = await this.postGame();
           this.postPlayers(gameID);
           this.postSelf(gameID);

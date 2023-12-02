@@ -13,7 +13,7 @@ import CreateAccountPage from './pages/CreateAccountPage';
 import ProfilePage from './pages/ProfilePage';
 import SearchPage from './pages/SearchPage';
 import FriendPage from './pages/FriendPage';
-import CreateGamePage from './pages/CreateGamePage';
+import GamePage from './pages/GamePage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import PlayPage from './pages/PlayPage';
 import PlayPage2 from './pages/PlayPage2';
@@ -126,7 +126,7 @@ class App extends React.Component {
               <Route path='/friends' element={<FriendPage />} />
               <Route path='/playpage' element={<PlayPage />} />
               <Route path='/playpage2' element={<PlayPage2 />} />
-              <Route path='/creategame' element={<CreateGamePage />} />
+              <Route path='/game' element={<GamePage />} />
               <Route path='/playpage3' element={<PlayPage3 />} />
               <Route path='/playpage4' element={<PlayPage4 />} />
               <Route path='/playpage5' element={<PlayPage5 />} />
