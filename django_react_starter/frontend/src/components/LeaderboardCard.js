@@ -1,7 +1,8 @@
-import { List, Card, Button, ListItem } from "@mui/material";
+import { List, Card, Button, ListItem, Stack, CardHeader, Typography } from "@mui/material";
 import axios from "axios";
 import React from "react";
 import SmallUserCard from "./UserCards/SmallUserCard";
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 
 class LeaderboardCard extends React.Component {
 
@@ -35,9 +36,16 @@ class LeaderboardCard extends React.Component {
         }
         return (
             <div id="leaderboardTable">
-                <List>
+                <Stack direction="column"
+                    alignItems="center"
+                    sx={{
+                        width: "auto",
+                        maxHeight: "100%",
+                        overflow: "auto",
+                    }}
+                >
                     { listBuffer }
-                </List>
+                </Stack>
             </div>
         );
     }
@@ -59,11 +67,15 @@ class LeaderboardCard extends React.Component {
             <div id="leaderboard">
                 <Card elevation={3}
                     sx={{
-                        width: 430,
-                        height: "auto",
-                        m: 2
+                        width: 450,
+                        height: "100%",
+                        m: 2,
+                        p: 1,
                     }}
                 >
+                    <CardHeader
+                        title={"Leaderboard"}
+                    />
                     { this.makeLeaderboardTable() }
                 </Card>
             </div>
