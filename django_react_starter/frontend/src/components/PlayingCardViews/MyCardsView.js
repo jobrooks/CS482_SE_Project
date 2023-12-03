@@ -1,5 +1,5 @@
 import React from "react";
-import {Grid} from "@mui/material";
+import { Grid } from "@mui/material";
 import PlayingCard from "./PlayingCard";
 import axios from 'axios';
 
@@ -9,49 +9,60 @@ class MyCardsView extends React.Component {
         super(props)
         this.state = {
             myHandID: this.props.myHandID,
-            myCards: [] //array of strings "2H, 4D, etc"
+            myCards: [] // array of strings "2H, 4D, etc"
         }
     }
 
-    //get my cards from hand
-    getMyCards = async() => {
+    // get my cards from hand
+    getMyCards = async () => {
         try {
             const response = await axios.get(`http://127.0.0.1:8000/hand/${this.state.myHandID}`);
-            this.parseJson(response.data)
-            this.removeLeadingZeros()
-        }
-        catch (error) {
+            this.parseJson(response.data);
+        } catch (error) {
             console.log("unable to fetch hand", error);
         }
-
     }
 
     parseJson = (cardJSON) => {
         const myCards = cardJSON.map(item => {
-          const rankNumber = item.rank.match(/\d+/)[0];
-          const suitFirstLetter = item.suit.match(/\b\w/g)[0].toUpperCase();
-    
-          return rankNumber + suitFirstLetter;
-        });
-    
-        this.setState({ myCards });
-      }
+            const rankNumber = item.rank.match(/\d+/)[0];
+            const suitFirstLetter = item.suit.match(/\b\w/g)[0].toUpperCase();
 
-      removeLeadingZeros = () => {
+            return rankNumber + suitFirstLetter;
+        });
+
+        this.setState({ myCards }, () => {
+            // Callback function to ensure that removeLeadingZeros is called after the state is updated
+            this.removeLeadingZeros();
+        });
+    }
+
+    removeLeadingZeros = () => {
         console.log(this.state.myCards)
         const modifiedArray = this.state.myCards.map(card => {
-          const rank = parseInt(card.slice(0, -1), 10).toString();
-          const suit = card.slice(-1);
-          return rank + suit;
+            let rank = parseInt(card.slice(0, -1), 10).toString();
+            console.log(rank)
+            // Convert numeric ranks to letters
+            if (rank === '11') {
+                rank = 'J';
+            } else if (rank === '12') {
+                rank = 'Q';
+            } else if (rank === '13') {
+                rank = 'K';
+            } else if (rank === '14') {
+                rank = 'A';
+            }
+            const suit = card.slice(-1);
+            return rank + suit;
         });
         console.log(modifiedArray)
-    
-        this.setState({ myCards: modifiedArray });
-      }
 
-    //method to get the correct abreviation for the card so the right filename is accessed
+        this.setState({ myCards: modifiedArray });
+    }
+
+    // method to get the correct abbreviation for the card so the right filename is accessed
     parseCardJSONS(cardJSONS) {
-        //assumes 5 cards from response.
+        // assumes 5 cards from response.
 
         const temp = cardJSONS.map((element) => {
             return {
@@ -60,12 +71,10 @@ class MyCardsView extends React.Component {
             };
         });
 
-
         const fnames = [];
         console.log(temp)
         temp.forEach((card) => {
             console.log("running")
-            //console.log(cardJSONS)
             const rankNumber = Number(card.rank.match(/\('([^']*)', '([^']*)'\)/)[1]);
             const rank = String(rankNumber);
             const suitLetter = card.suit.match(/\('([^']*)', '([^']*)'\)/)[1];
@@ -78,19 +87,20 @@ class MyCardsView extends React.Component {
 
     async componentDidMount() {
         await this.getMyCards(); // Wait for the cards to be fetched before rendering
-      }
+    }
+
 
     render() {
         console.log(this.state.myCards)
-        return(
+        return (
             <div>
-            {this.state.myCards.map((card) => (
-                <PlayingCard cardSrc={card} w='100px' h='200px'/>
-            ))}
+                {this.state.myCards.map((card, index) => (
+                    <PlayingCard key={index} cardSrc={card} w='100px' h='200px' />
+                ))}
             </div>
         );
     }
 
-};
+}
 
 export default MyCardsView;
