@@ -14,6 +14,7 @@ import ProfilePage from './pages/ProfilePage';
 import SearchPage from './pages/SearchPage';
 import FriendPage from './pages/FriendPage';
 import CreateGamePage from './pages/CreateGamePage';
+import GuestPage from './pages/GuestPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import PlayPage from './pages/PlayPage';
 import PlayPage2 from './pages/PlayPage2';
@@ -121,6 +122,7 @@ class App extends React.Component {
               <Route path='/login' element={<LoginPage />} />
               <Route path='/reset-password' element={<ResetPasswordPage />} />
               <Route path='/register' element={<CreateAccountPage />} />
+              <Route path='/guest' element={<GuestPage />} />
               <Route path='/profile' element={<ProfilePage />} />
               <Route path='/search' element={<SearchPage />} />
               <Route path='/friends' element={<FriendPage />} />
