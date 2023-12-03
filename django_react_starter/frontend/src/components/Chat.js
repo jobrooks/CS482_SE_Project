@@ -10,7 +10,7 @@ import SmallUserCard from "./UserCards/SmallUserCard";
  * "pal" is the prefix for the other person a user is chatting with.
  * I derrived the name from "penpal."
  */
-const roomName = "chat1";
+const roomName = "global";
 
 class Chat extends React.Component {
 
@@ -19,7 +19,10 @@ class Chat extends React.Component {
         this.handleMessageChange = this.handleMessageChange.bind(this);
         this.handleSend = this.handleSend.bind(this);
         this.handleEnterPressed = this.handleEnterPressed.bind(this);
-        this.getChatData = this.getChatData.bind(this);
+        this.getChatHistory = this.getChatHistory.bind(this);
+        this.getFriendChatList = this.getFriendChatList.bind(this);
+        this.getFriends = this.getFriends.bind(this);
+        this.getWebsocketConnection = this.getWebsocketConnection.bind(this);
         this.bottomRef = null;
         // this.onIncomingMessage = this.onIncomingMessage.bind(this);
         this.state = {
@@ -35,7 +38,7 @@ class Chat extends React.Component {
             // Internal State
             mode: this.props.mode, // [ friend, global, game ]
             gameId: this.props.gameId, // pass this as well if mode is game
-            chattable: false,
+            chattable: false, // Could use this to determine if user should be able to chat
             isLoading: true,
             textFieldData: "",
             chatData: [],
@@ -48,13 +51,11 @@ class Chat extends React.Component {
             chattable: prevState.mode !== "friend"
         }));
         this.bottomRef = React.createRef();
-        this.getUserDatas();
-        if (this.state.mode === "friend") {
-            this.getFriends();
-        }
-        this.setState({ chatSocket: new WebSocket(`ws://localhost:8000/ws/chat/${roomName}/`) }, () => {
-            this.state.chatSocket.addEventListener("message", this.onIncomingMessage.bind(this));
-        });
+        // Synchronously runs getting data stuff
+        this.getUserDatas()
+        .then(this.getFriends)
+        .then(this.getWebsocketConnection)
+        .then(this.getChatHistory);
     }
 
     componentDidUpdate() {
@@ -70,24 +71,39 @@ class Chat extends React.Component {
         this.scrollToBottom();
     }
 
+    getWebsocketConnection() {
+        return new Promise((resolve, reject) => {
+            this.setState({ chatSocket: new WebSocket(`ws://localhost:8000/ws/chat/${roomName}/`) }, () => {
+                this.state.chatSocket.addEventListener("message", this.onIncomingMessage.bind(this));
+                resolve("Finished getting websocket connection");
+            });
+        });
+    }
+
     getUserDatas() {
-        // Get my user data
-        axios.get(`http://localhost:8000/user_profile/profile/${JSON.parse(localStorage.getItem("sessionToken"))}`)
-        .then((response) => {
-            this.setState({ myUserdata: response.data, isLoading: false });
-            this.setState({ myUsername: response.data.username });
-        })
-        .catch((response) => {
-            console.log("Error getting my user data");
-        })
-        // Get pals user data
-        axios.get(`http://localhost:8000/user_profile/profile/getuserprofile/${this.state.palUsername}`)
-        .then((response) => {
-            this.setState({ palUserData: response.data, isLoading: false });
-        })
-        .catch((response) => {
-            console.log("Error getting pal user data");
-        })
+        return new Promise((resolve, reject) => {
+            Promise.all([ // Array of two promises that resolves the outer promise when they're finished
+                // Get my user data
+                axios.get(`http://localhost:8000/user_profile/profile/${JSON.parse(localStorage.getItem("sessionToken"))}`)
+                .then((response) => {
+                    this.setState({ myUserdata: response.data });
+                    this.setState({ myUsername: response.data.username });
+                })
+                .catch((response) => {
+                    console.log("Error getting my user data");
+                }),
+                // Get pals user data
+                axios.get(`http://localhost:8000/user_profile/profile/getuserprofile/${this.state.palUsername}`)
+                .then((response) => {
+                    this.setState({ palUserData: response.data });
+                })
+                .catch((response) => {
+                    console.log("Error getting pal user data");
+                }),
+            ]).finally(() => {
+                resolve("Finished getting user data");
+            })
+        });
     }
 
     handleMessageChange(event) {
@@ -108,8 +124,19 @@ class Chat extends React.Component {
         }
     }
 
-    getChatData() {
-        // Handle request to backend
+    getChatHistory() {
+        return new Promise((resolve, reject) => {
+            axios.get(`http://localhost:8000/chat/get_chat_history/${roomName}`)
+            .then((response) => {
+                this.setState({ chatData: response.data.messages });
+            })
+            .catch((response) => {
+                console.log("Error getting my user data");
+            })
+            .finally(() => {
+                resolve("Finished getting chat history");
+            });
+        });
     }
 
     scrollToBottom() {
@@ -150,23 +177,70 @@ class Chat extends React.Component {
     }
 
     getFriends() {
-        let token = JSON.parse(localStorage.getItem("sessionToken"));
+        return new Promise((resolve, reject) => {
+            if (this.state.mode === "friend") {
+                let token = JSON.parse(localStorage.getItem("sessionToken"));
 
-        let config = {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        };
+                let config = {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                };
 
-        axios.get("http://localhost:8000/friend/get_friends/", config)
-        .then((response) => {
-            console.log(response.data.friends);
-            this.setState({ friends: response.data.friends });
-        })
-        .catch((response) => {
-            console.log("Error getting friends");
-            console.error(response);
+                axios.get("http://localhost:8000/friend/get_friends/", config)
+                .then((response) => {
+                    console.log(response.data.friends);
+                    this.setState({ friends: response.data.friends });
+                })
+                .catch((response) => {
+                    console.log("Error getting friends");
+                    console.error(response);
+                })
+                .finally(() => {
+                    resolve("Finished getting friends");
+                });
+            } else {
+                resolve("Finished getting friends: not in friend mode");
+            }
         });
+    }
+
+    getFriendChatList() {
+        let listBuffer = [];
+        for (let i in this.state.friends) {
+            let friend = this.state.friends[i];
+            listBuffer.push(
+                <SmallUserCard
+                    username={friend.username}
+                    wins={friend.wins}
+                    is_active={friend.is_active}
+                    avatarColor={friend.avatar_color}
+                    info={false}
+                    friendable={false}
+                    inviteable={false}
+                    messageable={true}
+                    handleMessage={(friendUsername) => this.handleOpenFriendChat(friendUsername)}
+                />
+            );
+        }
+        return (
+            <div id="friendTable">
+                <Stack direction="column"
+                    alignItems="center"
+                    sx={{
+                        width: "auto",
+                        maxHeight: "100%",
+                        overflow: "auto",
+                    }}
+                >
+                    { listBuffer }
+                </Stack>
+            </div>
+        );
+    }
+
+    handleOpenFriendChat(username) {
+        
     }
 
     render() {
@@ -210,7 +284,7 @@ class Chat extends React.Component {
         );
         let friendInterface = (
             <div id="friendInterface">
-                <Typography>This doesn't work yet since get_friends doesn't work</Typography>
+                { this.getFriendChatList() }
             </div>
         );
         return (

@@ -32,7 +32,7 @@ class HomePage extends React.Component {
                             messageable={false}
                             inviteable={false}
                         />
-                        <Chat palUsername="smelly" mode="friend" />
+                        <Chat palUsername="smelly" mode="global" />
                         <TableCard 
                             token={JSON.parse(localStorage.getItem("sessionToken"))}
                             guestUsername={JSON.parse(localStorage.getItem("guestUsername"))}

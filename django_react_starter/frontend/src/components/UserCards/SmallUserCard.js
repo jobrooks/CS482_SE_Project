@@ -32,6 +32,8 @@ class SmallUserCard extends React.Component {
         this.handleInfoClick = this.handleInfoClick.bind(this);
         this.handleInfoDialogClose = this.handleInfoDialogClose.bind(this);
         this.handleAddFriend = this.handleAddFriend.bind(this);
+        this.handleInvite = this.handleInvite.bind(this);
+        this.handleMessage = this.handleMessage.bind(this);
         this.state = {
             // Info displayed
             avatarColor: this.props.avatarColor,
@@ -72,15 +74,24 @@ class SmallUserCard extends React.Component {
         this.setState({ infoDialogOpen: true });
     }
 
-    handleAddFriend() {
+    handleAddFriend() { // Pass what the function should execute in props
+        if (this.props.handleAddFriend) {
+            this.props.handleAddFriend();
+        }
         console.log("Add Friend");
     }
 
     handleMessage() {
+        if (this.props.handleMessage) {
+            this.props.handleMessage(this.state.username);
+        }
         console.log("Open Chat");
     }
 
     handleInvite() {
+        if (this.props.handleInvite) {
+            this.props.handleInvite();
+        }
         console.log("Invited");
     }
 
