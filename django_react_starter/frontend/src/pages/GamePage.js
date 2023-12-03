@@ -13,6 +13,7 @@ import GameSetup from '../components/GameSetup';
 import PlayingCard from '../components/PlayingCardViews/PlayingCard';
 import Grid from '@mui/material/Grid';
 import SmallUserCard from '../components/UserCards/SmallUserCard';
+import GameActions from '../components/GameActions';
 
 class GamePage extends React.Component {
 
@@ -21,7 +22,9 @@ class GamePage extends React.Component {
     this.state = {
         tableTheme: "",
         tableImage: "/images/Table_Themes/table_",
-        selectedPlayers: []
+        selectedPlayers: [],
+        gameID: null,
+        pot: 0
     }
 }
 
@@ -36,6 +39,13 @@ class GamePage extends React.Component {
         console.log("Error getting table theme")
         console.log(response);
     });
+}
+
+runGame() {
+  //make sure it is your turn
+  //if it is, game action buttons become active
+
+
 }
 
 componentDidMount() {
@@ -84,6 +94,7 @@ componentDidMount() {
 
 
           <PlayingCard cardSrc="2H" w='100px' h='200px'/>
+          <GameActions></GameActions>
 
 
 
