@@ -31,7 +31,7 @@ class HomePage extends React.Component {
                             messageable={false}
                             inviteable={false}
                         />
-                        <Chat palUsername="smelly" mode="global" />
+                        <Chat palUsername="smelly" mode="friend" />
                         <TableCard />
                         <CardBackingCard />
                     </Grid>
