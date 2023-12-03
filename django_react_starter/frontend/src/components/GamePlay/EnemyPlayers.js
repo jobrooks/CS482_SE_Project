@@ -8,11 +8,11 @@ class EnemyPlayers extends React.Component {
         super(props)
         this.state = {
             gameID: this.props.gameID,
-            myCards: [] // array of strings "2H, 4D, etc"
+            enemies: []
         }
     }
 
-    
+
 
 render() {
     return (
