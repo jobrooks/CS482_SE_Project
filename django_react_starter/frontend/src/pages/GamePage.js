@@ -14,6 +14,7 @@ import PlayingCard from '../components/PlayingCardViews/PlayingCard';
 import Grid from '@mui/material/Grid';
 import SmallUserCard from '../components/UserCards/SmallUserCard';
 import GameActions from '../components/GameActions';
+import MyCardsView from '../components/PlayingCardViews/MyCardsView';
 
 class GamePage extends React.Component {
 
@@ -26,7 +27,8 @@ class GamePage extends React.Component {
         gameID: 3,
         pot: 0,
         currentBet: 15,
-        myPlayerID: 51
+        myPlayerID: 51,
+        myHandID: 16
     }
 }
 
@@ -96,7 +98,10 @@ componentDidMount() {
 
 
 
-          <PlayingCard cardSrc="2H" w='100px' h='200px'/>
+          {/* <PlayingCard cardSrc="2H" w='100px' h='200px'/> */}
+          <MyCardsView
+            myHandID = {this.state.myHandID}>
+          </MyCardsView>
           <GameActions
             gameID = {this.state.gameID}
             playerID = {this.state.myPlayerID}
