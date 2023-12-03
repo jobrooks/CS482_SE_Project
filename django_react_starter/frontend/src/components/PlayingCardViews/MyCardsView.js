@@ -1,5 +1,5 @@
 import React from "react";
-import { Grid } from "@mui/material";
+import { Stack } from "@mui/material";
 import PlayingCard from "./PlayingCard";
 import axios from 'axios';
 
@@ -38,10 +38,8 @@ class MyCardsView extends React.Component {
     }
 
     removeLeadingZeros = () => {
-        console.log(this.state.myCards)
         const modifiedArray = this.state.myCards.map(card => {
             let rank = parseInt(card.slice(0, -1), 10).toString();
-            console.log(rank)
             // Convert numeric ranks to letters
             if (rank === '11') {
                 rank = 'J';
@@ -55,36 +53,11 @@ class MyCardsView extends React.Component {
             const suit = card.slice(-1);
             return rank + suit;
         });
-        console.log(modifiedArray)
 
         this.setState({ myCards: modifiedArray });
     }
 
-    // method to get the correct abbreviation for the card so the right filename is accessed
-    parseCardJSONS(cardJSONS) {
-        // assumes 5 cards from response.
-
-        const temp = cardJSONS.map((element) => {
-            return {
-                suit: element.suit,
-                rank: element.rank
-            };
-        });
-
-        const fnames = [];
-        console.log(temp)
-        temp.forEach((card) => {
-            console.log("running")
-            const rankNumber = Number(card.rank.match(/\('([^']*)', '([^']*)'\)/)[1]);
-            const rank = String(rankNumber);
-            const suitLetter = card.suit.match(/\('([^']*)', '([^']*)'\)/)[1];
-            const fname = rank + suitLetter;
-            fnames.push(fname);
-        });
-
-        this.state.myCards = fnames;
-    }
-
+   
     async componentDidMount() {
         await this.getMyCards(); // Wait for the cards to be fetched before rendering
     }
@@ -93,11 +66,11 @@ class MyCardsView extends React.Component {
     render() {
         console.log(this.state.myCards)
         return (
-            <div>
+            <Stack direction="row" spacing={2}>
                 {this.state.myCards.map((card, index) => (
                     <PlayingCard key={index} cardSrc={card} w='100px' h='200px' />
                 ))}
-            </div>
+            </Stack>
         );
     }
 

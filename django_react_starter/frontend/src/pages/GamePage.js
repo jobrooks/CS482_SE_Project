@@ -13,8 +13,9 @@ import GameSetup from '../components/GameSetup';
 import PlayingCard from '../components/PlayingCardViews/PlayingCard';
 import Grid from '@mui/material/Grid';
 import SmallUserCard from '../components/UserCards/SmallUserCard';
-import GameActions from '../components/GameActions';
+import GameActions from '../components/GamePlay/GameActions';
 import MyCardsView from '../components/PlayingCardViews/MyCardsView';
+import EnemyPlayers from '../components/GamePlay/EnemyPlayers';
 
 class GamePage extends React.Component {
 
@@ -79,30 +80,17 @@ componentDidMount() {
           width: '100%',
           height: '100vh', //view heigh
           margin: 0,
-          padding: 0 }}>
+          padding: 0 }} 
+          alignItems={"center"}>
 
-          <Grid container justifyContent="center" alignItems="flex-start" spacing={2} style={{ height: '100%', marginLeft:'125px'}}>
-
-            <Grid item md={4}>
-              <Avatar  sx = {{width: 50, height: 50,}}/>
-            </Grid>
-
-            <Grid item md={4}>
-              <Avatar  sx = {{width: 50, height: 50,}}/>
-            </Grid>
-
-            <Grid item md={4}>
-              <Avatar  sx = {{width: 50, height: 50,}}/>
-            </Grid>
-
-            </Grid>
-
-
-
-          {/* <PlayingCard cardSrc="2H" w='100px' h='200px'/> */}
+          
+          <EnemyPlayers/>
+          
           <MyCardsView
             myHandID = {this.state.myHandID}>
           </MyCardsView>
+
+
           <GameActions
             gameID = {this.state.gameID}
             playerID = {this.state.myPlayerID}
