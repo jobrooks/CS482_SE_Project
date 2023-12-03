@@ -3,12 +3,9 @@ import React from "react";
 class PlayingCard extends React.Component {
 
     mapIDToCard() {
-
         //modulus card id by 52
         //map to array
-
         const cards = [];
-        
     }
 
     render(){
