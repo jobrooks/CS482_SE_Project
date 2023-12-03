@@ -431,14 +431,24 @@ class TakeTurn(APIView):
                 return Response(status.HTTP429_TOO_MANY_REQUESTS)
             
 
+# give the players in a given game
 class PlayerListforGame(APIView):  
     def get(self, request, pk, format=None):
         players = Player.objects.filter(game=pk)
         serializer = PlayerSerializer(players, many=True)
         return Response(serializer.data)
     
+# give the enemies of a game given a player
 class EnemiesforGame(APIView):  
     def get(self, request, gameID, playerID, format=None):
         players = Player.objects.filter(game=gameID).exclude(id=playerID)
         serializer = PlayerSerializer(players, many=True)
+        return Response(serializer.data)
+    
+# give the player of a username
+# Note: need to modify based on if player is created twice
+class PlayerfromUsername(APIView):
+    def get(self, request, username, format=None):
+        player = Player.objects.filter(name=username)
+        serializer = PlayerSerializer(player, many=True)
         return Response(serializer.data)

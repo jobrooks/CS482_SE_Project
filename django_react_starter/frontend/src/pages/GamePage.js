@@ -28,7 +28,7 @@ class GamePage extends React.Component {
       gameID: 1,
       pot: 0,
       currentBet: 15,
-      myPlayerID: 2,
+      myPlayerID: 0,
       myHandID: 2,
       username: ""
     }
@@ -47,6 +47,12 @@ class GamePage extends React.Component {
 
   //get the playerID for the logged in user
   getPlayerID = async () => {
+    try {
+      const response = await axios.get(`http://localhost:8000/player/username/${this.state.username}]`)
+      this.setState({ myPlayerID: response.data['id'] });
+    } catch (error) {
+      console.log("unable to fetch username", error);
+    }
     
   }
 
@@ -74,6 +80,7 @@ class GamePage extends React.Component {
   async componentDidMount() {
     await this.setTableTheme();
     await this.getUsername();
+    await this.getPlayerID();
   }
 
 
