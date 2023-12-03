@@ -429,3 +429,10 @@ class TakeTurn(APIView):
                     return Response(status.HTTP_429_TOO_MANY_REQUESTS)
             else:
                 return Response(status.HTTP429_TOO_MANY_REQUESTS)
+            
+
+class PlayerListforGame(APIView):  
+    def get(self, request, pk, format=None):
+        players = Player.objects.filter(game=pk)
+        serializer = PlayerSerializer(players, many=True)
+        return Response(serializer.data)
