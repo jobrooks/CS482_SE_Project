@@ -39,6 +39,8 @@ class EditProfilePage extends React.Component {
         avatar_color: "",
         table_theme: "",
         card_backing: "",
+        security_question: "",
+        security_answer: "",
       },
       error: null,
     };
@@ -82,47 +84,14 @@ class EditProfilePage extends React.Component {
     console.log(token);
 
     try {
-      const {
-        username,
-        email,
-        password,
-        first_name,
-        last_name,
-        bio,
-        id,
-        is_staff,
-        wins,
-        games_played,
-        money,
-        is_active,
-        date_joined,
-        avatar_color,
-        table_theme,
-        card_backing,
-      } = this.state.userData;
-
-      const updateData = {
-        table_theme: table_theme === "null" ? null : table_theme,
-        card_backing: card_backing === "null" ? null : card_backing,
-      };
-
       const formData = new FormData();
-      formData.append("username", username);
-      formData.append("email", email);
-      formData.append("password", password);
-      formData.append("first_name", first_name);
-      formData.append("last_name", last_name);
-      formData.append("bio", bio);
-      formData.append("id", id);
-      formData.append("is_staff", is_staff);
-      formData.append("wins", wins);
-      formData.append("games_played", games_played);
-      formData.append("money", money);
-      formData.append("is_active", is_active);
-      formData.append("date_joined", date_joined);
-      formData.append("avatar_color", avatar_color);
-      formData.append("table_theme", updateData.table_theme);
-      formData.append("card_backing", updateData.card_backing);
+      const userData = this.state.userData;
+
+      Object.keys(userData).forEach((key) => {
+        if (userData[key] !== undefined) {
+          formData.append(key, userData[key]);
+        }
+      });
 
       // Append the avatar file if it exists
       if (this.state.userData.avatar) {

@@ -26,14 +26,21 @@ class HomePage extends React.Component {
                     <Grid item xs={6}> {/* Left Column */}
                         <LargeUserCard
                             token={JSON.parse(localStorage.getItem("sessionToken"))}
+                            guestUsername={JSON.parse(localStorage.getItem("guestUsername"))}
                             friendable={false}
                             editable={true}
                             messageable={false}
                             inviteable={false}
                         />
                         <Chat palUsername="smelly" mode="friend" />
-                        <TableCard />
-                        <CardBackingCard />
+                        <TableCard 
+                            token={JSON.parse(localStorage.getItem("sessionToken"))}
+                            guestUsername={JSON.parse(localStorage.getItem("guestUsername"))}
+                        />
+                        <CardBackingCard 
+                            token={JSON.parse(localStorage.getItem("sessionToken"))}
+                            guestUsername={JSON.parse(localStorage.getItem("guestUsername"))}
+                        />
                     </Grid>
                     <Grid item xs={6}> {/* Right Column */}
                         <LeaderboardCard />

@@ -6,6 +6,7 @@ import { Grid } from "@mui/material";
 import LoginRedirector from "../components/LoginRedirector";
 import FriendRequest from "../components/FriendRequest";
 import FriendList from "../components/FriendList";
+import GuestRedirector from "../components/GuestRedirector";
 
 
 class FriendPage extends React.Component {
@@ -14,6 +15,7 @@ class FriendPage extends React.Component {
         return (
             <div>
                 <LoginRedirector />
+                <GuestRedirector />
                 <NavBar />
                 <FriendRequest />
                 <FriendList />

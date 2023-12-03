@@ -32,6 +32,7 @@ class NavBar extends React.Component {
 
     handleLogout = () => {
         localStorage.setItem("sessionToken", "null");
+        localStorage.setItem("guestUsername", "null");
         this.props.navigate("/login");
     }
 

@@ -49,7 +49,6 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework.authtoken",
     "coverage",
-    "guest_user",
     "user_login",
     "user_profile",
     "user_api",

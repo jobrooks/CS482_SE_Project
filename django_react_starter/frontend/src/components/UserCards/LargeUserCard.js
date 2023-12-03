@@ -34,6 +34,7 @@ class LargeUserCard extends React.Component {
             // Information
             username: this.props.username,
             token: this.props.token,
+            guestUsername: this.props.guestUsername,
             // Component state
             userdata: null,
             isLoading: true,
@@ -59,7 +60,7 @@ class LargeUserCard extends React.Component {
                 return response.data;
             })
             .catch((response) => {
-                console.log("Error getting user data");
+                console.log("Error getting user data via token");
                 return response;
             })
         } else if (this.state.username) {
@@ -70,7 +71,18 @@ class LargeUserCard extends React.Component {
                 return response.data;
             })
             .catch((response) => {
-                console.log("Error getting user data");
+                console.log("Error getting user data via username");
+                return response;
+            })
+        } else if (this.state.guestUsername) {
+            axios.get(`http://localhost:8000/user_profile/profile/getguestprofile/${this.state.guestUsername}`)
+            .then((response) => {
+                this.setState({ userdata: response.data, isLoading: false });
+                console.log(this.state.userdata);
+                return response.data;
+            })
+            .catch((response) =>{
+                console.log("Error getting guest data");
                 return response;
             })
         } else {
@@ -162,14 +174,27 @@ class LargeUserCard extends React.Component {
         const data = {
             "avatar_color": color
         }
-        let token = this.state.token;
-        axios.patch(`http://localhost:8000/user_profile/profile/avatarcolor/${token}/`, data)
+        
+        if (this.state.token) {
+           axios.patch(`http://localhost:8000/user_profile/profile/avatarcolor/${this.state.token}/`, data)
+        .then((response) => {
+            return response.data;
+        }).catch((response) => {
+            console.log("Error patching avatar color")
+            console.log(response);
+        }); 
+        } if (this.state.guestUsername) {
+            axios.patch(`http://localhost:8000/user_profile/profile/guestavatarcolor/${this.state.guestUsername}/`, data)
         .then((response) => {
             return response.data;
         }).catch((response) => {
             console.log("Error patching avatar color")
             console.log(response);
         });
+        }else {
+            console.log("No token or username specified");
+            return null;
+        }
     }
 
     render() {
