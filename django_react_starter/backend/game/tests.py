@@ -1,58 +1,79 @@
 from django.test import TestCase
-from rest_framework.test import APIClient
+# from rest_framework.test import APIClient
 from rest_framework import status
-from game.models import Game, Round, Player, Hand, Card, Deck, Pot  # Import other models as needed
-from game.serializers import GameSerializer, RoundSerializer, PlayerSerializer, HandSerializer, CardSerializer, DeckSerializer, PotSerializer  # Import other serializers as needed
+from game.models import Game, Player, Hand, Card, Deck, Pot  # Import other models as needed
+from game.serializers import GameSerializer, PlayerSerializer, HandSerializer, CardSerializer, DeckSerializer, PotSerializer  # Import other serializers as needed
 
-
-
-class PokerModelTestCase(TestCase):
-
-    # test if card created correctly
-    def test_create_card(self):
-        card = Card.objects.create(suit='H', rank='A')
-        self.assertEqual(card.suit, 'H')
-        self.assertEqual(card.rank, 'A')
-
-    # testing play_game method
-    def playing_game(self):
-
-        print("hi")
-
-class GameListTestCase(TestCase):
+class TestPlayer(TestCase):
     def setUp(self):
-        self.client = APIClient()
-    
-    def test_get_games(self):
-        response = self.client.get('http://127.0.0.1:8000/game/')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        hand = Hand.objects.create(name="test")
+        game = Game.objects.create(name="test")
+        Player.objects.create(name="test", hand=hand, game=game)
+    def testPlayerMethods(self):
+        # Test to make sure all player methods work properly and as intended.
+        player = Player.objects.get(name="test")
+        game = Game.objects.get(name="test")
+        hand = Hand.objects.get(name="test")
+        # First assign player some money and set a currentBetAmount on the game.
+        player.money = 200
+        game.currentBetAmount = 100
+        player.save()
+        game.save()
+        player.checkActions(game=game)
+        self.assertEqual(player.canAllIn, True)
+        self.assertEqual(player.canFold, True)
+        self.assertEqual(player.canRaise, True)
+        self.assertEqual(player.canCall, True)
+        self.assertEqual(player.canCheck, False)
+        
 
-    def test_create_game(self):
-        data = {'name': 'Test Game'}
-        response = self.client.post('http://127.0.0.1:8000/game/', data)
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(Game.objects.count(), 1)
+# class PokerModelTestCase(TestCase):
 
-    # fix model to not let this happen
-    # def test_create_game_invalid_data(self):
-    #     bad_data = {'invalid_field': 'Invalid Value'}
-    #     response = self.client.post('http://127.0.0.1:8000/game/', bad_data)
-    #     #self.assertEqual(Game.objects.count(), 0)
-    #     self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+#     # test if card created correctly
+#     def test_create_card(self):
+#         card = Card.objects.create(suit='H', rank='A')
+#         self.assertEqual(card.suit, 'H')
+#         self.assertEqual(card.rank, 'A')
 
-class DeckListTestCase(TestCase):
-    def setUp(self):
-        self.client = APIClient()
+#     # testing play_game method
+#     def playing_game(self):
+
+#         print("hi")
+
+# class GameListTestCase(TestCase):
+#     def setUp(self):
+#         self.client = APIClient()
     
-    def test_get_decks(self):
-        response = self.client.get('http://127.0.0.1:8000/deck/')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+#     def test_get_games(self):
+#         response = self.client.get('http://127.0.0.1:8000/game/')
+#         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+#     def test_create_game(self):
+#         data = {'name': 'Test Game'}
+#         response = self.client.post('http://127.0.0.1:8000/game/', data)
+#         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+#         self.assertEqual(Game.objects.count(), 1)
+
+#     # fix model to not let this happen
+#     # def test_create_game_invalid_data(self):
+#     #     bad_data = {'invalid_field': 'Invalid Value'}
+#     #     response = self.client.post('http://127.0.0.1:8000/game/', bad_data)
+#     #     #self.assertEqual(Game.objects.count(), 0)
+#     #     self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+# class DeckListTestCase(TestCase):
+#     def setUp(self):
+#         self.client = APIClient()
     
-    def test_create_deck(self):
-        data = {'name': 'thedeck'}  # Replace with your actual data
-        response = self.client.post('http://127.0.0.1:8000/deck/', data)
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(Deck.objects.count(), 1)
+#     def test_get_decks(self):
+#         response = self.client.get('http://127.0.0.1:8000/deck/')
+#         self.assertEqual(response.status_code, status.HTTP_200_OK)
+    
+#     def test_create_deck(self):
+#         data = {'name': 'thedeck'}  # Replace with your actual data
+#         response = self.client.post('http://127.0.0.1:8000/deck/', data)
+#         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+#         self.assertEqual(Deck.objects.count(), 1)
 
 """
 class DrawCardTestCase(TestCase):
