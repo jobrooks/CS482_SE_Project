@@ -23,8 +23,10 @@ class GamePage extends React.Component {
         tableTheme: "",
         tableImage: "/images/Table_Themes/table_",
         selectedPlayers: [],
-        gameID: null,
-        pot: 0
+        gameID: 3,
+        pot: 0,
+        currentBet: 15,
+        myPlayerID: 51
     }
 }
 
@@ -55,6 +57,7 @@ componentDidMount() {
   render() {
     //const {players, selectedPlayers} = this.state;
     const backImgPath = this.state.tableImage + this.state.tableTheme + ".png";
+    // const gameID = this.state.gameID;
     return (
       // outside stuff
       <div className='CreateGamePage'>
@@ -94,7 +97,11 @@ componentDidMount() {
 
 
           <PlayingCard cardSrc="2H" w='100px' h='200px'/>
-          <GameActions></GameActions>
+          <GameActions
+            gameID = {this.state.gameID}
+            playerID = {this.state.myPlayerID}
+            currentBet = {this.state.currentBet}>
+          </GameActions>
 
 
 

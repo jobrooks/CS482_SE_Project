@@ -10,6 +10,7 @@ class GameActions extends React.Component {
         this.state = {
             gameID: null,
             playerID: null,
+            currentBet: this.props.currentBet,
             isVisible: true
         }
     }
@@ -83,7 +84,7 @@ class GameActions extends React.Component {
                     <Fab onClick={this.handleFold} variant="extended" color="primary"> Fold </Fab>
                 </Grid>
                 <Grid item>
-                    <Fab onClick={this.handleCall} variant="extended" color="primary"> Call </Fab>
+                    <Fab onClick={this.handleCall} variant="extended" color="primary"> Call ${this.state.currentBet} </Fab>
                 </Grid>
                 <Grid item>
                     <Fab onClick={this.handleAllIn} variant="extended" color="primary"> All In </Fab>
