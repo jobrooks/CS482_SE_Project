@@ -9,15 +9,27 @@ import LoginRedirector from "../components/LoginRedirector";
 import { Link } from 'react-router-dom';
 import TableCard from '../components/TableCard';
 import axios from "axios";
-import CreateGame from '../components/CreateGame';
+import GameSetup from '../components/GameSetup';
+import PlayingCard from '../components/PlayingCardViews/PlayingCard';
+import Grid from '@mui/material/Grid';
+import SmallUserCard from '../components/UserCards/SmallUserCard';
+import GameActions from '../components/GamePlay/GameActions';
+import MyCardsView from '../components/PlayingCardViews/MyCardsView';
+import EnemyPlayers from '../components/GamePlay/EnemyPlayers';
 
-class CreateGamePage extends React.Component {
+class GamePage extends React.Component {
 
   constructor(props) {
     super(props)
     this.state = {
         tableTheme: "",
-        tableImage: "/images/Table_Themes/table_"
+        tableImage: "/images/Table_Themes/table_",
+        selectedPlayers: [],
+        gameID: 1,
+        pot: 0,
+        currentBet: 15,
+        myPlayerID: 2,
+        myHandID: 2
     }
 }
 
@@ -34,6 +46,14 @@ class CreateGamePage extends React.Component {
     });
 }
 
+//figure out how to get the correct gameid in here
+runGame(gameID) {
+  //make sure it is your turn
+  //if it is, game action buttons become active
+
+
+}
+
 componentDidMount() {
   this.setTableTheme()
 }
@@ -41,12 +61,18 @@ componentDidMount() {
   render() {
     //const {players, selectedPlayers} = this.state;
     const backImgPath = this.state.tableImage + this.state.tableTheme + ".png";
+    // const gameID = this.state.gameID;
     return (
       // outside stuff
       <div className='CreateGamePage'>
         <LoginRedirector />
         <NavBar />
-        {/* box holding create game stuff */}
+        {/* box holding game setup stuff */}
+        <Box>
+          <GameSetup />
+        </Box>
+
+        {/* box holding game itself*/}
         <Box 
           style={{backgroundImage:`url(${backImgPath})`,
           backgroundSize: 'cover',
@@ -54,19 +80,32 @@ componentDidMount() {
           width: '100%',
           height: '100vh', //view heigh
           margin: 0,
-          padding: 0
-        }}>
+          padding: 0 }} 
+          alignItems={"center"}>
 
-          {/* box holding create game stuff */}
-          <Box>
-            <CreateGame />
-          </Box>
+          
+          <EnemyPlayers/>
+          
+          <MyCardsView
+            myHandID = {this.state.myHandID}>
+          </MyCardsView>
+
+
+          <GameActions
+            gameID = {this.state.gameID}
+            playerID = {this.state.myPlayerID}
+            currentBet = {this.state.currentBet}>
+          </GameActions>
+
 
 
         </Box>
+
+
+
       </div>
     );
   }
 };
 
-export default CreateGamePage;
+export default GamePage;
