@@ -17,13 +17,37 @@ class MyCardsView extends React.Component {
     getMyCards = async() => {
         try {
             const response = await axios.get(`http://127.0.0.1:8000/hand/${this.state.myHandID}`);
-            this.parseCardJSONS(response.data); 
+            this.parseJson(response.data)
+            this.removeLeadingZeros()
         }
         catch (error) {
             console.log("unable to fetch hand", error);
         }
 
     }
+
+    parseJson = (cardJSON) => {
+        const myCards = cardJSON.map(item => {
+          const rankNumber = item.rank.match(/\d+/)[0];
+          const suitFirstLetter = item.suit.match(/\b\w/g)[0].toUpperCase();
+    
+          return rankNumber + suitFirstLetter;
+        });
+    
+        this.setState({ myCards });
+      }
+
+      removeLeadingZeros = () => {
+        console.log(this.state.myCards)
+        const modifiedArray = this.state.myCards.map(card => {
+          const rank = parseInt(card.slice(0, -1), 10).toString();
+          const suit = card.slice(-1);
+          return rank + suit;
+        });
+        console.log(modifiedArray)
+    
+        this.setState({ myCards: modifiedArray });
+      }
 
     //method to get the correct abreviation for the card so the right filename is accessed
     parseCardJSONS(cardJSONS) {
@@ -57,7 +81,7 @@ class MyCardsView extends React.Component {
       }
 
     render() {
-        //console.log(this.state.myCards)
+        console.log(this.state.myCards)
         return(
             <div>
             {this.state.myCards.map((card) => (

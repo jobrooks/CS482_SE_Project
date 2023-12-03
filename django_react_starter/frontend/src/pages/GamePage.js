@@ -24,11 +24,11 @@ class GamePage extends React.Component {
         tableTheme: "",
         tableImage: "/images/Table_Themes/table_",
         selectedPlayers: [],
-        gameID: 3,
+        gameID: 1,
         pot: 0,
         currentBet: 15,
-        myPlayerID: 51,
-        myHandID: 16
+        myPlayerID: 2,
+        myHandID: 2
     }
 }
 
@@ -45,7 +45,8 @@ class GamePage extends React.Component {
     });
 }
 
-runGame() {
+//figure out how to get the correct gameid in here
+runGame(gameID) {
   //make sure it is your turn
   //if it is, game action buttons become active
 
