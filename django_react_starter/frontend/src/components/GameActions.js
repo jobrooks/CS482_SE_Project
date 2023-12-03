@@ -1,5 +1,5 @@
 import React from 'react';
-import { Fab, Grid } from '@mui/material';
+import { Fab, Grid, TextField, Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
 import NavigationIcon from '@mui/icons-material/Navigation';
 import axios from 'axios';
 
@@ -11,11 +11,13 @@ class GameActions extends React.Component {
             gameID: null,
             playerID: null,
             currentBet: this.props.currentBet,
-            isVisible: true
+            isVisible: true,
+            betDialogOpen: false,
+            betAmountInput: ''
         }
     }
 
-    //class assumes it is players turn
+    // class assumes it is players turn
 
     handleFold = async () => {
         try {
@@ -52,6 +54,31 @@ class GameActions extends React.Component {
             console.log("ID: " + this.state.playerID + "allIn turn not taken")
         }
     }
+
+    handleRaiseClick = () => {
+        this.setState({ betDialogOpen: true });
+    }
+
+    handleRaiseConfirm = async () => {
+        const { betAmountInput } = this.state;
+
+        if (!betAmountInput.trim() || isNaN(betAmountInput)) {
+            alert('Invalid bet amount. Please enter a valid number.');
+            return;
+        }
+
+        await this.handleRaise(betAmountInput);
+
+        this.setState({
+            betDialogOpen: false,
+            betAmountInput: ''
+        });
+    }
+
+    handleRaiseCancel = () => {
+        this.setState({ betDialogOpen: false, betAmountInput: '' });
+    }
+
     handleRaise = async (bet) => {
         try {
             const raiseData = {
@@ -64,6 +91,7 @@ class GameActions extends React.Component {
             console.log("ID: " + this.state.playerID + "raise turn not taken")
         }
     }
+
     handleCheck = async () => {
         try {
             const checkData = {
@@ -78,7 +106,6 @@ class GameActions extends React.Component {
 
     render() {
         return (
-
             <Grid container justifyContent="center" alignItems="flex-start" spacing={2}>
                 <Grid item>
                     <Fab onClick={this.handleFold} variant="extended" color="primary"> Fold </Fab>
@@ -90,15 +117,33 @@ class GameActions extends React.Component {
                     <Fab onClick={this.handleAllIn} variant="extended" color="primary"> All In </Fab>
                 </Grid>
                 <Grid item>
-                    <Fab onClick={this.handleRaise} variant="extended" color="primary"> Raise </Fab>
+                    <Fab onClick={this.handleRaiseClick} variant="extended" color="primary"> Raise </Fab>
+                    <Dialog open={this.state.betDialogOpen} onClose={this.handleRaiseCancel}>
+                        <DialogTitle>Enter Bet Amount</DialogTitle>
+                        <DialogContent>
+                            <TextField
+                                label="Bet Amount"
+                                type="number"
+                                value={this.state.betAmountInput}
+                                onChange={(e) => this.setState({ betAmountInput: e.target.value })}
+                            />
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={this.handleRaiseCancel} color="primary">
+                                Cancel
+                            </Button>
+                            <Button onClick={this.handleRaiseConfirm} color="primary">
+                                Confirm
+                            </Button>
+                        </DialogActions>
+                    </Dialog>
                 </Grid>
                 <Grid item>
                     <Fab onClick={this.handleCheck} variant="extended" color="primary"> Check </Fab>
                 </Grid>
-
             </Grid>
-
         )
     }
 };
+
 export default GameActions;
