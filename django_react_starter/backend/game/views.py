@@ -227,7 +227,7 @@ class DeckDetail(APIView):
             raise Http404
         
     def get(self, request, pk):
-        deck = self.get_hand(pk)
+        deck = self.get_deck(pk)
         serializer = CardSerializer(deck, many=True)
         return Response(serializer.data)
     
@@ -429,3 +429,10 @@ class TakeTurn(APIView):
                     return Response(status.HTTP_429_TOO_MANY_REQUESTS)
             else:
                 return Response(status.HTTP429_TOO_MANY_REQUESTS)
+            
+
+class PlayerListforGame(APIView):  
+    def get(self, request, pk, format=None):
+        players = Player.objects.filter(game=pk)
+        serializer = PlayerSerializer(players, many=True)
+        return Response(serializer.data)
