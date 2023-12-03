@@ -11,23 +11,18 @@ class EnemyPlayers extends React.Component {
         this.state = {
             gameID: this.props.gameID,
             enemies: [],
-            username: this.props.username
+            myPlayerID: this.props.myPlayerID
         }
-    }
-
-    //remove self from enemies
-    removeSelf() {
-        const updatedEnemies = this.state.enemies.filter(player => player.name !== this.state.username);
-        this.setState({enemies: updatedEnemies});
     }
 
 
     // get my cards from hand
     getEnemies = async () => {
         try {
-            const response = await axios.get(`http://127.0.0.1:8000/player/game/${this.state.gameID}`);
+            const response = await axios.get(`http://127.0.0.1:8000/game/${this.state.gameID}/enemies/${this.state.myPlayerID}`);
+            //console.log("enemies", response.data)
             this.setState({enemies: response.data});
-            this.removeSelf();
+            console.log("enemies", this.state.enemies)
         } catch (error) {
             console.log("unable to fetch enemies", error);
         }

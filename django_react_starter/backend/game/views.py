@@ -436,3 +436,9 @@ class PlayerListforGame(APIView):
         players = Player.objects.filter(game=pk)
         serializer = PlayerSerializer(players, many=True)
         return Response(serializer.data)
+    
+class EnemiesforGame(APIView):  
+    def get(self, request, gameID, playerID, format=None):
+        players = Player.objects.filter(game=gameID).exclude(id=playerID)
+        serializer = PlayerSerializer(players, many=True)
+        return Response(serializer.data)

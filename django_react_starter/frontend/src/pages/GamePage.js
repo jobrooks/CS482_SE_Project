@@ -45,6 +45,11 @@ class GamePage extends React.Component {
     }
   }
 
+  //get the playerID for the logged in user
+  getPlayerID = async () => {
+    
+  }
+
   setTableTheme = async () => {
     let token = JSON.parse(localStorage.getItem("sessionToken"));
     axios.get(`http://localhost:8000/user_profile/profile/tabletheme/${token}/`)
