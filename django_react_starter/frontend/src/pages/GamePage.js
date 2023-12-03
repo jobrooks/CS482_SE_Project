@@ -22,41 +22,55 @@ class GamePage extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-        tableTheme: "",
-        tableImage: "/images/Table_Themes/table_",
-        selectedPlayers: [],
-        gameID: 1,
-        pot: 0,
-        currentBet: 15,
-        myPlayerID: 2,
-        myHandID: 2
+      tableTheme: "",
+      tableImage: "/images/Table_Themes/table_",
+      selectedPlayers: [],
+      gameID: 1,
+      pot: 0,
+      currentBet: 15,
+      myPlayerID: 2,
+      myHandID: 2,
+      username: ""
     }
-}
+  }
 
-  setTableTheme() {
+  //get username for logged in user
+  getUsername = async () => {
+    let token = JSON.parse(localStorage.getItem("sessionToken"));
+    try {
+      const response = await axios.get(`http://localhost:8000/user_profile/profile/${token}/`)
+      this.setState({ username: response.data['username'] });
+    } catch (error) {
+      console.log("unable to fetch username", error);
+    }
+  }
+
+  setTableTheme = async () => {
     let token = JSON.parse(localStorage.getItem("sessionToken"));
     axios.get(`http://localhost:8000/user_profile/profile/tabletheme/${token}/`)
-    .then((response) => {
-      console.log("theme is " + response);
-        this.setState({ tableTheme: response.data});
-    })
-    .catch((response) => {
+      .then((response) => {
+        console.log("theme is " + response);
+        this.setState({ tableTheme: response.data });
+      })
+      .catch((response) => {
         console.log("Error getting table theme")
         console.log(response);
-    });
-}
+      });
+  }
 
-//figure out how to get the correct gameid in here
-runGame(gameID) {
-  //make sure it is your turn
-  //if it is, game action buttons become active
+  //figure out how to get the correct gameid in here
+  runGame(gameID) {
+    //make sure it is your turn
+    //if it is, game action buttons become active
 
 
-}
+  }
 
-componentDidMount() {
-  this.setTableTheme()
-}
+  async componentDidMount() {
+    await this.setTableTheme();
+    await this.getUsername();
+  }
+
 
   render() {
     //const {players, selectedPlayers} = this.state;
@@ -73,28 +87,30 @@ componentDidMount() {
         </Box>
 
         {/* box holding game itself*/}
-        <Box 
-          style={{backgroundImage:`url(${backImgPath})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          width: '100%',
-          height: '100vh', //view heigh
-          margin: 0,
-          padding: 0 }} 
+        <Box
+          style={{
+            backgroundImage: `url(${backImgPath})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            width: '100%',
+            height: '100vh', //view heigh
+            margin: 0,
+            padding: 0
+          }}
           alignItems={"center"}>
 
-          
-          <EnemyPlayers/>
-          
+
+          <EnemyPlayers gameID={this.state.gameID} username={this.state.username} />
+
           <MyCardsView
-            myHandID = {this.state.myHandID}>
+            myHandID={this.state.myHandID}>
           </MyCardsView>
 
 
           <GameActions
-            gameID = {this.state.gameID}
-            playerID = {this.state.myPlayerID}
-            currentBet = {this.state.currentBet}>
+            gameID={this.state.gameID}
+            playerID={this.state.myPlayerID}
+            currentBet={this.state.currentBet}>
           </GameActions>
 
 
