@@ -52,8 +52,7 @@ class LoginPage extends React.Component {
     );
 
     if (loginType == "guest") {
-      localStorage.setItem("sessionToken", JSON.stringify("guest"));
-      this.props.navigate("/");
+      this.props.navigate("/guest");
     } else {
       // Handle login from backend
       axios

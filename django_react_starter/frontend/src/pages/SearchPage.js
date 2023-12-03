@@ -5,6 +5,7 @@ import TableCard from "../components/TableCard";
 import { Grid } from "@mui/material";
 import LoginRedirector from "../components/LoginRedirector";
 import SearchUser from "../components/SearchUser";
+import GuestRedirector from "../components/GuestRedirector";
 
 
 class SearchPage extends React.Component {
@@ -13,6 +14,7 @@ class SearchPage extends React.Component {
         return (
             <div>
                 <LoginRedirector />
+                <GuestRedirector />
                 <NavBar />
                 <SearchUser />
             </div>
