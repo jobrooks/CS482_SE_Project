@@ -28,32 +28,40 @@ class GamePage extends React.Component {
       gameID: 1,
       pot: 0,
       currentBet: 15,
+      username: "",
       myPlayerID: 0,
       myHandID: 2,
-      username: ""
+    
     }
   }
 
   //get username for logged in user
   getUsername = async () => {
-    let token = JSON.parse(localStorage.getItem("sessionToken"));
-    try {
-      const response = await axios.get(`http://localhost:8000/user_profile/profile/${token}/`)
-      this.setState({ username: response.data['username'] });
-    } catch (error) {
-      console.log("unable to fetch username", error);
-    }
+  let token = JSON.parse(localStorage.getItem("sessionToken"));
+  try {
+    const response = await axios.get(`http://localhost:8000/user_profile/profile/${token}/`);
+    this.setState({ username: response.data['username'] });
+    return response.data['username']; // Return the username
+  } catch (error) {
+    console.log("Error getting username", error);
+    throw error; // Rethrow the error
   }
+}
 
   //get the playerID for the logged in user
-  getPlayerID = async () => {
-    try {
-      const response = await axios.get(`http://localhost:8000/player/username/${this.state.username}]`)
-      this.setState({ myPlayerID: response.data['id'] });
-    } catch (error) {
-      console.log("unable to fetch username", error);
-    }
-    
+  getPlayerID = async (usr) => {
+    axios.get(`http://localhost:8000/player/username/${usr}/`)
+      .then((response) => {
+        console.log("playerid: ", response.data);
+        this.setState({ myPlayerID: response.data['id'] });
+        console.log("playerid: ", response.data['id']);
+      })
+      .catch((response) => {
+        console.log(this.state.username)
+        console.log("player response", response)
+        console.log("Error getting playerID")
+      });
+
   }
 
   setTableTheme = async () => {
@@ -79,8 +87,8 @@ class GamePage extends React.Component {
 
   async componentDidMount() {
     await this.setTableTheme();
-    await this.getUsername();
-    await this.getPlayerID();
+    const usr = await this.getUsername();
+    this.getPlayerID(usr);
   }
 
 
@@ -112,7 +120,7 @@ class GamePage extends React.Component {
           alignItems={"center"}>
 
 
-          <EnemyPlayers gameID={this.state.gameID} username={this.state.username} />
+          <EnemyPlayers gameID={this.state.gameID} playerID={this.state.myPlayerID} />
 
           <MyCardsView
             myHandID={this.state.myHandID}>

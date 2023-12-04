@@ -449,6 +449,6 @@ class EnemiesforGame(APIView):
 # Note: need to modify based on if player is created twice
 class PlayerfromUsername(APIView):
     def get(self, request, username, format=None):
-        player = Player.objects.filter(name=username)
-        serializer = PlayerSerializer(player, many=True)
+        player = Player.objects.get(name=username)
+        serializer = PlayerSerializer(player)
         return Response(serializer.data)
