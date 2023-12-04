@@ -21,6 +21,8 @@ import LargeUserCard from "./LargeUserCard";
  * - friendable: whether or not the add friend icon appears
  * - inviteable: whether or not the invite icon appears
  * - messageable: whether or not the message icon appears
+ * - isButton: the component will appear as a button icon with just an avatar
+ * - isThin: the component will appear as much more compact
  * Notes:
  * - If you don't specify username, avatar color, wins, and is_active, the component will automatically make a
  * request to the backend to retrieve the rest of the user data based on the username
@@ -47,6 +49,7 @@ class SmallUserCard extends React.Component {
             // Governs how component is displayed
             info: this.props.info,
             isButton: this.props.isButton,
+            isThin: this.props.isThin,
             friendable: this.props.friendable,
             inviteable: this.props.inviteable,
             messageable: this.props.messageable,
@@ -221,6 +224,63 @@ class SmallUserCard extends React.Component {
                 </CardActionArea>
             </Card>
         );
+        let thinComponent = (
+            <Card elevation={3}
+                sx={{
+                    width: 350,
+                    height: "auto",
+                    m: 0
+                }}
+            >
+                <CardContent
+                    sx={{
+                        py: "5px"
+                    }}
+                >
+                    <Stack
+                        direction="row"
+                        divider={<Divider orientation="vertical" flexItem />}
+                        spacing={0}
+                        alignItems="center"
+                        justifyContent="space-between"
+                    >
+                        <Badge
+                            color={this.state.is_active ? "success" : "error"}
+                            badgeContent=" "
+                            overlap="circular"
+                            variant="dot"
+                            anchorOrigin={{
+                                vertical: 'bottom',
+                                horizontal: 'right',
+                            }}
+                        >
+                            <Avatar
+                                sx = {{
+                                    bgcolor: this.state.avatarColor,
+                                    width: 50,
+                                    height: 50,
+                                }}
+                            />
+                        </Badge>
+                        <Stack direction="column"
+                            alignItems="flex-start"
+                        >
+                            <Typography variant="subtitle" noWrap={false}>
+                                {this.state.username}
+                            </Typography>
+                        </Stack>
+                        { this.getButtonGroup() }
+                    </Stack>
+                </CardContent>
+                <CardActionArea>
+                    {/*
+                        Empty CardActionArea is necessary to center cardcontent
+                        Card gives last item in card an extra padding idk why
+                        ^ just default mui formatting
+                    */}
+                </CardActionArea>
+            </Card>
+        );
         let largeCardDialog = (
             <Dialog open={this.state.infoDialogOpen} onClose={this.handleInfoDialogClose}>
                 <LargeUserCard
@@ -274,7 +334,7 @@ class SmallUserCard extends React.Component {
                                         textTransform: "none",
                                     }}
                                 >
-                                    { mainComponent }
+                                    { this.state.isThin ? thinComponent : mainComponent }
                                 </CardActionArea>
                                 { largeCardDialog }
                             </Box>
@@ -289,7 +349,7 @@ class SmallUserCard extends React.Component {
                                 textTransform: "none",
                             }}
                         >
-                            { mainComponent }
+                            { this.state.isThin ? thinComponent : mainComponent }
                         </Box>
                     )
                 }
