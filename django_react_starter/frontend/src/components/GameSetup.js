@@ -26,6 +26,11 @@ class GameSetup extends React.Component {
 
     };
 
+    sendDataToGamePage = (gameID) => {
+      // Call the callback function from props
+      this.props.gameID(gameID);
+    };    
+
     getFriends() {
         let token = JSON.parse(localStorage.getItem("sessionToken"));
 
@@ -148,6 +153,7 @@ class GameSetup extends React.Component {
           const gameID = await this.postGame();
           this.postPlayers(gameID);
           this.postSelf(gameID);
+          this.sendDataToGamePage(gameID);
           this.setState({ isVisible: false });
         }
         else {

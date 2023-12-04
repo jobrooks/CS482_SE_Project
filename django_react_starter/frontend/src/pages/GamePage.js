@@ -31,7 +31,8 @@ class GamePage extends React.Component {
       username: "",
       myPlayerID: 0,
       myHandID: 2,
-    
+      gameIDObtained: false,
+      tableAppear: false,
     }
   }
 
@@ -85,6 +86,19 @@ class GamePage extends React.Component {
 
   }
 
+  handleGameSetupData = (gameID) => {
+    console.log("gameID received from GameSetup:", gameID);
+    // Process the data or update the state as needed
+    this.setState({gameID: gameID})
+  };
+
+  componentDidUpdate(prevProps, prevState) {
+    // Check if gameID has been obtained
+    if (prevState.gameID !== this.state.gameID) {
+      this.setState({ gameIDObtained: true, tableAppear: true });
+    }
+  }
+
   async componentDidMount() {
     await this.setTableTheme();
     const usr = await this.getUsername();
@@ -103,11 +117,11 @@ class GamePage extends React.Component {
         <NavBar />
         {/* box holding game setup stuff */}
         <Box>
-          <GameSetup />
+          <GameSetup onGameSetupData={this.handleGameSetupData} />
         </Box>
 
         {/* box holding game itself*/}
-        <Box
+        {this.state.tableAppear && (<Box
           style={{
             backgroundImage: `url(${backImgPath})`,
             backgroundSize: 'cover',
@@ -119,9 +133,8 @@ class GamePage extends React.Component {
           }}
           alignItems={"center"}>
 
-
-          <EnemyPlayers gameID={this.state.gameID} playerID={this.state.myPlayerID} />
-
+          {this.state.gameIDObtained && (<EnemyPlayers gameID={this.state.gameID} playerID={this.state.myPlayerID} />)}
+          
           <MyCardsView
             myHandID={this.state.myHandID}>
           </MyCardsView>
@@ -135,9 +148,7 @@ class GamePage extends React.Component {
 
 
 
-        </Box>
-
-
+        </Box> )}
 
       </div>
     );
