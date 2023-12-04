@@ -18,7 +18,7 @@ class ChatRoom(models.Model):
             return None
     
     def get_chat_history(self):
-        messages = Message.objects.filter(chat_room=ChatRoom.objects.get(group_name=self.group_name))
+        messages = Message.objects.filter(chat_room=ChatRoom.objects.get(group_name=self.group_name)) # Probably needs some restriction on how many are returned
         return messages
     
     def send_message(self, serialized_text_data):
@@ -32,11 +32,6 @@ class ChatRoom(models.Model):
             chat_room = ChatRoom(group_name=group_name, chat_type=chat_type)
             chat_room.save()
             return chat_room
-            
-    # def __init__(self, group_name, chat_type):
-    #     self.group_name = group_name
-    #     self.chat_type = chat_type
-    #     self.save()
     
     def __str__(self):
         return "group_name: " + self.group_name + " type: " + self.chat_type
@@ -44,7 +39,7 @@ class ChatRoom(models.Model):
 
 class Chatter(models.Model):
     
-    user = models.OneToOneField(User(), on_delete=models.CASCADE)
+    user = models.ForeignKey(User(), on_delete=models.CASCADE)
     chat_room = models.ForeignKey(ChatRoom(), on_delete=models.CASCADE)
     
     def get_Chatter(user, chat_room):
