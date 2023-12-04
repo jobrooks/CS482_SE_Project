@@ -25,7 +25,7 @@ class GamePage extends React.Component {
       tableTheme: "",
       tableImage: "/images/Table_Themes/table_",
       selectedPlayers: [],
-      gameID: 1,
+      gameID: 0,
       pot: 0,
       currentBet: 15,
       username: "",
@@ -36,34 +36,58 @@ class GamePage extends React.Component {
     }
   }
 
-  //get username for logged in user
-  getUsername = async () => {
-  let token = JSON.parse(localStorage.getItem("sessionToken"));
-  try {
-    const response = await axios.get(`http://localhost:8000/user_profile/profile/${token}/`);
-    this.setState({ username: response.data['username'] });
-    return response.data['username']; // Return the username
-  } catch (error) {
-    console.log("Error getting username", error);
-    throw error; // Rethrow the error
-  }
-}
+  //order of stuff
+  //create game happens, get gameID and username from there
+  handleGameSetupData = (gameStuff) => {
+    console.log("gameStuff received from GameSetup:", gameStuff);
+    // Process the data or update the state as needed
+    this.setState({gameID: gameStuff["gameID"], username: gameStuff["username"], myPlayerID: gameStuff["myPlayerID"]})
+  };
 
-  //get the playerID for the logged in user
-  getPlayerID = async (usr) => {
-    axios.get(`http://localhost:8000/player/username/${usr}/`)
-      .then((response) => {
-        console.log("playerid: ", response.data);
-        this.setState({ myPlayerID: response.data['id'] });
-        console.log("playerid: ", response.data['id']);
-      })
-      .catch((response) => {
-        console.log(this.state.username)
-        console.log("player response", response)
-        console.log("Error getting playerID")
-      });
-
+  //if gameID in state changes, the pokertable can appear
+  //enemy players component wil appear too
+  componentDidUpdate(prevProps, prevState) {
+    // Check if gameID has been obtained
+    if (prevState.gameID !== this.state.gameID) {
+      this.setState({ gameIDObtained: true, tableAppear: true });
+    }
   }
+
+  //now that the poker table appers, we can call methods to update the table
+  async componentDidMount() {
+    await this.setTableTheme();
+    //this.getPlayerID();
+  }
+
+
+//   //get username for logged in user
+//   getUsername = async () => {
+//   let token = JSON.parse(localStorage.getItem("sessionToken"));
+//   try {
+//     const response = await axios.get(`http://localhost:8000/user_profile/profile/${token}/`);
+//     this.setState({ username: response.data['username'] });
+//     return response.data['username']; // Return the username
+//   } catch (error) {
+//     console.log("Error getting username", error);
+//     throw error; // Rethrow the error
+//   }
+// }
+
+  // //get the playerID for the logged in user
+  // getPlayerID = async (usr) => {
+  //   axios.get(`http://localhost:8000/player/username/${usr}/`)
+  //     .then((response) => {
+  //       console.log("playerid: ", response.data);
+  //       this.setState({ myPlayerID: response.data['id'] });
+  //       console.log("playerid: ", response.data['id']);
+  //     })
+  //     .catch((response) => {
+  //       console.log(this.state.username)
+  //       console.log("player response", response)
+  //       console.log("Error getting playerID")
+  //     });
+
+  // }
 
   setTableTheme = async () => {
     let token = JSON.parse(localStorage.getItem("sessionToken"));
@@ -82,28 +106,8 @@ class GamePage extends React.Component {
   runGame(gameID) {
     //make sure it is your turn
     //if it is, game action buttons become active
-
-
   }
 
-  handleGameSetupData = (gameID) => {
-    console.log("gameID received from GameSetup:", gameID);
-    // Process the data or update the state as needed
-    this.setState({gameID: gameID})
-  };
-
-  componentDidUpdate(prevProps, prevState) {
-    // Check if gameID has been obtained
-    if (prevState.gameID !== this.state.gameID) {
-      this.setState({ gameIDObtained: true, tableAppear: true });
-    }
-  }
-
-  async componentDidMount() {
-    await this.setTableTheme();
-    const usr = await this.getUsername();
-    this.getPlayerID(usr);
-  }
 
 
   render() {

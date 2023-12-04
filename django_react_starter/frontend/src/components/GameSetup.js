@@ -13,6 +13,7 @@ class GameSetup extends React.Component {
             friends: [],
             selectedPlayers: [],
             myMoney: "",
+            myPlayerID: 0,
             isVisible: true
         }
         this.postGame = this.postGame.bind(this)
@@ -28,7 +29,8 @@ class GameSetup extends React.Component {
 
     sendDataToGamePage = (gameID) => {
       // Call the callback function from props
-      this.props.gameID(gameID);
+      const gameData = [{"gameID":gameID}, {"username":this.state.username}, {"myPlayerID":this.state.myPlayerID} ]
+      this.props.gameStuff(gameData);
     };    
 
     getFriends() {
@@ -115,7 +117,7 @@ class GameSetup extends React.Component {
 
         axios.post(`http://localhost:8000/player/`, playerData)
         .then((response) => {
-          console.log(response.data);
+          //console.log(response.data);
         })
         .catch((response) => {
           console.log("idk player not made")
@@ -145,6 +147,17 @@ class GameSetup extends React.Component {
       
     }
 
+    getPlayerID (usr) {
+      axios.get(`http://localhost:8000/player/username/${usr}/`)
+        .then((response) => {
+          this.setState({ myPlayerID: response.data['id'] });
+        })
+        .catch((response) => {
+          console.log("Error getting playerID")
+        });
+  
+    }
+
 
     createGame = async () => {
       try {
@@ -153,6 +166,7 @@ class GameSetup extends React.Component {
           const gameID = await this.postGame();
           this.postPlayers(gameID);
           this.postSelf(gameID);
+          this.getPlayerID(this.state.username)
           this.sendDataToGamePage(gameID);
           this.setState({ isVisible: false });
         }
