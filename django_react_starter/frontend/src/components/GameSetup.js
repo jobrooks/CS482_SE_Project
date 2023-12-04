@@ -27,10 +27,10 @@ class GameSetup extends React.Component {
 
     };
 
-    sendDataToGamePage = (gameID) => {
+    sendDataToGamePage = (gameID, playerID) => {
       // Call the callback function from props
-      const gameData = [{"gameID":gameID}, {"username":this.state.username}, {"myPlayerID":this.state.myPlayerID} ]
-      this.props.gameStuff(gameData);
+      const gameData = [{"gameID":gameID}, {"username":this.state.username}, {"myPlayerID":playerID} ]
+      this.props.onGameSetupData(gameData);
     };    
 
     getFriends() {
@@ -127,36 +127,36 @@ class GameSetup extends React.Component {
 
     }
 
-    postSelf(gameID) {
-      //also add yourself to the game
-      //with a hand
-      const myData = {
-        "money": this.state.myMoney,
-        "name": this.state.username,
-        "game": gameID,
-      }
+    postSelf = async (gameID) => {
+      try{
+        const myData = {
+          "money": this.state.myMoney,
+          "name": this.state.username,
+          "game": gameID,
+        }
 
-      axios.post(`http://localhost:8000/player/`, myData)
-      .then((response) => {
+        const response = await axios.post(`http://localhost:8000/player/`, myData)
         console.log(response.data);
-      })
-      .catch((response) => {
-        console.log("you were not added to game")
-      })
-
+        return response.data['id'];
+      }
+      catch (error) {
+        console.log("you were not added to the game")
+        throw error;
+      }
       
     }
 
-    getPlayerID (usr) {
-      axios.get(`http://localhost:8000/player/username/${usr}/`)
-        .then((response) => {
-          this.setState({ myPlayerID: response.data['id'] });
-        })
-        .catch((response) => {
-          console.log("Error getting playerID")
-        });
+    //fuck this stupid ass method man
+    // getPlayerID (usr) {
+    //   axios.get(`http://localhost:8000/player/username/${usr}/`)
+    //     .then((response) => {
+    //       this.setState({ myPlayerID: response.data['id'] });
+    //     })
+    //     .catch((response) => {
+    //       console.log("Error getting playerID")
+    //     });
   
-    }
+    // }
 
 
     createGame = async () => {
@@ -164,10 +164,10 @@ class GameSetup extends React.Component {
         // Make sure game is only created once, and if there are selected players
         if(this.state.selectedPlayers.length > 0) {
           const gameID = await this.postGame();
+          const playerID = await this.postSelf(gameID);
           this.postPlayers(gameID);
-          this.postSelf(gameID);
-          this.getPlayerID(this.state.username)
-          this.sendDataToGamePage(gameID);
+          //this.getPlayerID(this.state.username)
+          this.sendDataToGamePage(gameID, playerID);
           this.setState({ isVisible: false });
         }
         else {

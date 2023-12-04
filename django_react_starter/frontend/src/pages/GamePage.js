@@ -48,7 +48,7 @@ class GamePage extends React.Component {
   //enemy players component wil appear too
   componentDidUpdate(prevProps, prevState) {
     // Check if gameID has been obtained
-    if (prevState.gameID !== this.state.gameID) {
+    if (prevState.gameID !== this.state.gameID && prevState.myPlayerID !== this.state.myPlayerID) {
       this.setState({ gameIDObtained: true, tableAppear: true });
     }
   }
