@@ -452,3 +452,15 @@ class PlayerfromUsername(APIView):
         player = Player.objects.get(name=username)
         serializer = PlayerSerializer(player)
         return Response(serializer.data)
+    
+class DeletePlayersFromGame(APIView):
+    def get(self, request, gameID, format=None):
+        try:
+            players = Player.objects.filter(game=gameID)
+            for player in players:
+                player.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Player.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        
