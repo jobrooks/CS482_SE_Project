@@ -27,6 +27,7 @@ urlpatterns = [
     path("friend/", include('friend.urls')),
     path("", views.home, name="home"),
     path("store/", views.store, name="store"),
+    path("chat/", include("chat.urls")),
     path("user_login/", include('user_login.urls')),
     path("convert/", include("guest_user.urls")),
     path("", include('game.urls')),
