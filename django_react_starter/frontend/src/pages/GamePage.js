@@ -66,6 +66,10 @@ class GamePage extends React.Component {
         this.setState({ myPlayerID: value }, () => {
           console.log("state updated", this.state.gameID, this.state.myPlayerID, this.state.username);
         });
+      } else if (key === 'myHandID') {
+        this.setState({ myHandID: value }, () => {
+          console.log("state updated", this.state.gameID, this.state.myPlayerID, this.state.username);
+        });
       }
     });
   };
@@ -126,7 +130,7 @@ class GamePage extends React.Component {
     // const gameID = this.state.gameID;
     return (
       // outside stuff
-      <div className='CreateGamePage'>
+      <div className='GamePage'>
         <LoginRedirector />
         <NavBar />
         {/* box holding game setup stuff */}
@@ -152,11 +156,10 @@ class GamePage extends React.Component {
           {this.state.renderGameComponents && (
             <div>
               <EnemyPlayers gameID={this.state.gameID} playerID={this.state.myPlayerID} />
-              
-              {/** not ready yet */}
-              {/* <MyCardsView
-                myHandID={this.state.myHandID}>
-              </MyCardsView> */}
+            
+                <MyCardsView
+                  myHandID={this.state.myHandID}>
+                </MyCardsView>
 
 
               <GameActions

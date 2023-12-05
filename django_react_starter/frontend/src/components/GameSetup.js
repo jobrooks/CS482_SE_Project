@@ -14,7 +14,8 @@ class GameSetup extends React.Component {
             selectedPlayers: [],
             myMoney: "",
             myPlayerID: 0,
-            isVisible: true
+            isVisible: true,
+            myHandID: 0,
         }
         this.postGame = this.postGame.bind(this)
         this.postPlayers = this.postPlayers.bind(this)
@@ -29,7 +30,7 @@ class GameSetup extends React.Component {
 
     sendDataToGamePage = (gameID, playerID) => {
       // Call the callback function from props
-      const gameData = [{"gameID":gameID}, {"username":this.state.username}, {"myPlayerID":playerID} ]
+      const gameData = [{"gameID":gameID}, {"username":this.state.username}, {"myPlayerID":playerID}, {"myHandID": this.state.myHandID} ]
       this.props.onGameSetupData(gameData);
     };    
 
@@ -137,6 +138,7 @@ class GameSetup extends React.Component {
 
         const response = await axios.post(`http://localhost:8000/player/`, myData)
         console.log(response.data);
+        this.setState({myHandID: response.data['hand']})
         return response.data['id'];
       }
       catch (error) {
