@@ -72,6 +72,7 @@ class GamePage extends React.Component {
         });
       }
     });
+  
   };
   
 
@@ -79,6 +80,7 @@ class GamePage extends React.Component {
     console.log("start game button clicked");
     if (this.state.tableAppear) {
       console.log("table appeared");
+
       this.setState({ renderGameComponents: true, startButtonAppear: false}, () => {
         console.log("render components");
       });
@@ -92,6 +94,7 @@ class GamePage extends React.Component {
     // Check if gameID has been obtained
     if (prevState.gameID !== this.state.gameID && prevState.myPlayerID !== this.state.myPlayerID) {
       this.setState({ tableAppear: true , startButtonAppear: true});
+      this.startGame()
       console.log("table appeared from did update method")
     }
   }
@@ -100,6 +103,16 @@ class GamePage extends React.Component {
   async componentDidMount() {
     await this.setTableTheme();
     //this.getPlayerID();
+  }
+
+  startGame() {
+    axios.get(`http://localhost:8000/startgame/${this.state.gameID}/`)
+    .then((response) => {
+      console.log("game started, cards drawn")
+    })
+    .catch((response) => {
+      console.log("error starting game")
+    })
   }
 
 

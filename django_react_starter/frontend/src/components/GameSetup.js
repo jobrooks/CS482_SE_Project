@@ -28,9 +28,9 @@ class GameSetup extends React.Component {
 
     };
 
-    sendDataToGamePage = (gameID, playerID) => {
+    sendDataToGamePage = (gameID, playerID, handID) => {
       // Call the callback function from props
-      const gameData = [{"gameID":gameID}, {"username":this.state.username}, {"myPlayerID":playerID}, {"myHandID": this.state.myHandID} ]
+      const gameData = [{"gameID":gameID}, {"username":this.state.username}, {"myPlayerID":playerID}, {"myHandID": handID} ]
       this.props.onGameSetupData(gameData);
     };    
 
@@ -140,12 +140,30 @@ class GameSetup extends React.Component {
         console.log(response.data);
         const playerID = response.data['id']
         const handID = response.data['hand']
+        console.log("this your hand id mf", handID)
+        console.log("this your player id mf", playerID)
         //this.setState({myHandID: response.data['hand']})
-        const arr = [player, handID]
-        return response.data['id'];
+        const arr = [playerID, handID]
+        return arr;
       }
       catch (error) {
         console.log("you were not added to the game")
+        throw error;
+      }
+      
+    }
+
+    getMyHandID = async (playerID) => {
+      try{
+
+        const response = await axios.get(`http://localhost:8000/player/${playerID}`)
+        console.log(response.data);
+        const handID = response.data['hand']
+        console.log("this your hand id mf", handID)
+        return handID;
+      }
+      catch (error) {
+        console.log("your hand was not properly pulled")
         throw error;
       }
       
@@ -169,10 +187,12 @@ class GameSetup extends React.Component {
         // Make sure game is only created once, and if there are selected players
         if(this.state.selectedPlayers.length > 0) {
           const gameID = await this.postGame();
-          const playerID = await this.postSelf(gameID);
+          const IDarr = await this.postSelf(gameID);
+          const playerID = IDarr[0]
           this.postPlayers(gameID);
           //this.getPlayerID(this.state.username)
-          this.sendDataToGamePage(gameID, playerID);
+          const handID = await this.getMyHandID(playerID)
+          this.sendDataToGamePage(gameID, playerID, handID);
           this.setState({ isVisible: false });
         }
         else {
