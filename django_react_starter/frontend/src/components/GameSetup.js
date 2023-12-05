@@ -138,7 +138,10 @@ class GameSetup extends React.Component {
 
         const response = await axios.post(`http://localhost:8000/player/`, myData)
         console.log(response.data);
-        this.setState({myHandID: response.data['hand']})
+        const playerID = response.data['id']
+        const handID = response.data['hand']
+        //this.setState({myHandID: response.data['hand']})
+        const arr = [player, handID]
         return response.data['id'];
       }
       catch (error) {
