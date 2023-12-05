@@ -64,7 +64,6 @@ class MyCardsView extends React.Component {
 
 
     render() {
-        console.log(this.state.myCards)
         return (
             <Stack direction="row" spacing={2}>
                 {this.state.myCards.map((card, index) => (

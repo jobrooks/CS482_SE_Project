@@ -19,4 +19,7 @@ urlpatterns = [
     path("resetgame/<int:gameID>/", views.ResetGame.as_view()),
     path("gamestate/<int:playerID>/", views.GameState.as_view()),
     path("player/game/<int:pk>/", views.PlayerListforGame.as_view()),
+    path("game/<int:gameID>/enemies/<int:playerID>/", views.EnemiesforGame.as_view()),
+    path("player/username/<str:username>/", views.PlayerfromUsername.as_view()),
+    path("game/<int:gameID>/deletePlayers/", views.DeletePlayersFromGame.as_view()),
 ]
