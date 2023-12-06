@@ -5,6 +5,7 @@ import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import ChatIcon from '@mui/icons-material/Chat';
 import QueueIcon from '@mui/icons-material/Queue';
+import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import PersonIcon from '@mui/icons-material/Person';
 import { blue, grey, red } from "@mui/material/colors";
 import LargeUserCard from "./LargeUserCard";
@@ -23,6 +24,7 @@ import LargeUserCard from "./LargeUserCard";
  * - messageable: whether or not the message icon appears
  * - isButton: the component will appear as a button icon with just an avatar
  * - isThin: the component will appear as much more compact
+ * - invited: a Boolean, indicates whether or not the player has been invited
  * Notes:
  * - If you don't specify username, avatar color, wins, and is_active, the component will automatically make a
  * request to the backend to retrieve the rest of the user data based on the username
@@ -46,6 +48,7 @@ class SmallUserCard extends React.Component {
             infoDialogOpen: false,
             isLoading: true,
             userdata: null,
+            invited: false,
             // Governs how component is displayed
             info: this.props.info,
             isButton: this.props.isButton,
@@ -93,7 +96,9 @@ class SmallUserCard extends React.Component {
 
     handleInvite() {
         if (this.props.handleInvite) {
-            this.props.handleInvite();
+            this.setState({ invited: !this.state.invited }, () => {
+                this.props.handleInvite(this.state.username, this.state.invited);
+            });
         }
         console.log("Invited");
     }
@@ -131,12 +136,22 @@ class SmallUserCard extends React.Component {
     getInviteIcon() {
         if (this.state.inviteable && !this.state.info) {
             return (
-                <IconButton
-                    aria-label="Invite to Game"
-                    onClick={this.handleInvite}
-                >
-                    <QueueIcon />
-                </IconButton>
+                (!this.state.invited ? 
+                        
+                    <IconButton
+                        aria-label="Invite to Game"
+                        onClick={this.handleInvite}
+                    >
+                        <QueueIcon />
+                    </IconButton>
+                :
+                    <IconButton
+                        aria-label="Invite to Game"
+                        onClick={this.handleInvite}
+                    >
+                        <CheckBoxIcon />
+                    </IconButton>
+                )
             );
         }
     }
