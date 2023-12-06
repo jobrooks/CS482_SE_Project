@@ -1,200 +1,207 @@
-import React, { useState } from 'react';
-import Box from '@mui/material/Box';
-import Stack from '@mui/material/Stack';
-import Avatar from '@mui/material/Avatar';
-import Typography from '@mui/material/Typography';
-import { Button, Checkbox } from '@mui/material';
-import NavBar from "../components/NavBar";
-import LoginRedirector from "../components/LoginRedirector";
-import { Link } from 'react-router-dom';
-import TableCard from '../components/TableCard';
+import React from "react";
 import axios from "axios";
-import GameSetup from '../components/GameSetup';
-import PlayingCard from '../components/PlayingCardViews/PlayingCard';
-import Grid from '@mui/material/Grid';
-import SmallUserCard from '../components/UserCards/SmallUserCard';
-import GameActions from '../components/GamePlay/GameActions';
-import MyCardsView from '../components/PlayingCardViews/MyCardsView';
-import EnemyPlayers from '../components/GamePlay/EnemyPlayers';
+
+import NavBar from "../components/NavBar";
+import SmallUserCard from "../components/UserCards/SmallUserCard";
+
+import {Box, Stack, Avatar, Typography, Checkbox, Card, Button} from "@mui/material";
 
 class GamePage extends React.Component {
 
   constructor(props) {
-    super(props)
-    this.handleGameSetupData = this.handleGameSetupData.bind(this);
-    this.startGame = this.startGame.bind(this);
-    this.setTableTheme = this.setTableTheme.bind(this);
-    this.runGame = this.runGame.bind(this);
-    this.handleStartGameButton = this.handleStartGameButton.bind(this);
+    super(props);
+    this.getSessionToken = this.getSessionToken.bind(this);
+    this.getMyUserData = this.getMyUserData.bind(this);
+    this.getFriends = this.getFriends.bind(this);
+    this.getFriendInviteList = this.getFriendInviteList.bind(this);
+    this.createGame = this.createGame.bind(this);
+    this.handleInvitePlayer = this.handleInvitePlayer.bind(this);
     this.state = {
-      tableTheme: "",
-      tableImage: "/images/Table_Themes/table_",
+      // Data
+      myUsername: null,
+      myUserData: null,
+      gameId: null,
+      // Internal State
+      sessionToken: null,
       selectedPlayers: [],
-      gameID: 0,
-      pot: 0,
-      currentBet: 15,
-      username: "",
-      myPlayerID: 0,
-      myHandID: 2,
-      startButtonAppear: false,
-      tableAppear: false,
-      renderGameComponents: false,
+      friends: [],
     }
   }
 
-  //order of stuff
-  //create game happens, get gameID and username from there
-  // handleGameSetupData = (gameStuff) => {
-  //   // Process the data or update the state as needed
-  //   console.log(gameStuff)
-  //   this.setState({ gameID: gameStuff["gameID"], username: gameStuff["username"], myPlayerID: gameStuff["myPlayerID"] })
-  //   console.log("state updated", this.state.gameID, this.state.playerID, this.state.username);
-  // };
-  handleGameSetupData(gameStuff) {
-    // Process the data or update the state as needed
-    console.log(gameStuff);
-  
-    gameStuff.forEach(item => {
-      const key = Object.keys(item)[0]; // Get the key of the object
-      const value = item[key]; // Get the value associated with the key
-  
-      // Update the state based on the key
-      if (key === 'gameID') {
-        this.setState({ gameID: value }, () => {
-          console.log("state updated", this.state.gameID, this.state.myPlayerID, this.state.username);
-        });
-      } else if (key === 'username') {
-        this.setState({ username: value }, () => {
-          console.log("state updated", this.state.gameID, this.state.myPlayerID, this.state.username);
-        });
-      } else if (key === 'myPlayerID') {
-        this.setState({ myPlayerID: value }, () => {
-          console.log("state updated", this.state.gameID, this.state.myPlayerID, this.state.username);
-        });
-      } else if (key === 'myHandID') {
-        this.setState({ myHandID: value }, () => {
-          console.log("state updated", this.state.gameID, this.state.myPlayerID, this.state.username);
-        });
-      }
-    });
-  
-  };
-  
-
-  handleStartGameButton() {
-    console.log("start game button clicked");
-    if (this.state.tableAppear) {
-      console.log("table appeared");
-
-      this.setState({ renderGameComponents: true, startButtonAppear: false}, () => {
-        console.log("render components");
-      });
-    }
-  };
-  
-
-
-  //if gameID in state changes, the pokertable can appear with start game button
-  componentDidUpdate(prevProps, prevState) {
-    // Check if gameID has been obtained
-    if (prevState.gameID !== this.state.gameID && prevState.myPlayerID !== this.state.myPlayerID) {
-      this.setState({ tableAppear: true , startButtonAppear: true});
-      this.startGame()
-      console.log(this.state);
-    }
+  componentDidMount() {
+    this.getSessionToken()
+    .then(this.getMyUserData)
+    .then(this.getFriends)
   }
 
-  //now that the poker table appers, we can call methods to update the table
-  async componentDidMount() {
-    await this.setTableTheme();
-    //this.getPlayerID();
-  }
+  createGame() {
+    return new Promise((resolve, reject) => {
+      const gameName = this.state.myUsername + "'s game";
+      const gameData = {
+        "name": gameName,
+      };
 
-  startGame() {
-    axios.get(`http://localhost:8000/startgame/${this.state.gameID}/`)
-    .then((response) => {
-      console.log("game started, cards drawn")
-    })
-    .catch((response) => {
-      console.log("error starting game")
-    })
-  }
-
-
-  setTableTheme = async () => {
-    let token = JSON.parse(localStorage.getItem("sessionToken"));
-    axios.get(`http://localhost:8000/user_profile/profile/tabletheme/${token}/`)
+      return axios.post(`http://localhost:8000/creategame/`, gameData) // Create game
       .then((response) => {
-        console.log("theme is " + response);
-        this.setState({ tableTheme: response.data });
+        console.log("Successfully created game with id: " + response.data.id);
+        this.setState({ gameId: response.data.id }, () => {
+          resolve("Created game with id: " + this.state.gameId);
+        });
       })
       .catch((response) => {
-        console.log("Error getting table theme")
         console.log(response);
       });
+    });
   }
 
-  //figure out how to get the correct gameid in here
-  runGame(gameID) {
-    //make sure it is your turn
-    //if it is, game action buttons become active
+  addPlayersToGame() {
+    return new Promise((resolve, reject) => {
+      let playersAdded = 0;
+      this.state.selectedPlayers.forEach( (username, index) => {
+        const playerData = {
+          "money": 100, // Likely needs to be changed, starting money should be an option
+          "name": username,
+          "game": this.state.gameId,
+        }
+  
+        axios.post(`http://localhost:8000/player/`, playerData)
+        .then((response) => {
+          console.log("added player: " + username);
+        })
+        .catch((response) => {
+          console.log("idk player not made")
+        }).finally((response) => {
+          playersAdded++;
+          if(playersAdded === this.state.selectedPlayers.length) {
+            resolve("Added all players to game");
+          }
+        });
+      });
+    });
   }
 
+  getSessionToken() {
+    return new Promise((resolve, reject) => {
+      let token = JSON.parse(localStorage.getItem("sessionToken"));
+      this.setState({ sessionToken: token }, () => {
+        resolve("Set session token in state");
+      })
+    })
+  }
 
+  getMyUserData() {
+    return new Promise((resolve, reject) => {
+      // Get my user data
+      axios.get(`http://localhost:8000/user_profile/profile/${this.state.sessionToken}`)
+      .then((response) => {
+          this.setState({ myUserdata: response.data });
+          this.setState({ myUsername: response.data.username });
+      })
+      .catch((response) => {
+          console.log("Error getting my user data");
+      })
+      .finally(() => {
+          resolve("Finished getting user data");
+      });
+  });
+  }
+
+  getFriends() {
+    return new Promise((resolve, reject) => {
+      let token = this.state.sessionToken;
+
+      let config = {
+          headers: {
+              Authorization: `Bearer ${token}`,
+          },
+      };
+
+      axios.get("http://localhost:8000/friend/get_friends/", config)
+      .then((response) => {
+          console.log(response.data.friends);
+          this.setState({ friends: response.data.friends });
+      })
+      .catch((response) => {
+          console.log("Error getting friends");
+          console.error(response);
+      })
+      .finally(() => {
+          resolve("Finished getting friends");
+      });
+    });
+  }
+
+  getFriendInviteList() {
+    let listBuffer = [];
+    for (let i in this.state.friends) {
+        let friend = this.state.friends[i];
+        listBuffer.push(
+            <SmallUserCard
+                username={friend.username}
+                wins={friend.wins}
+                is_active={friend.is_active}
+                avatarColor={friend.avatar_color}
+                info={false}
+                isThin={true}
+                friendable={false}
+                inviteable={true}
+                messageable={false}
+                handleInvite={(playerName, isInvited) => this.handleInvitePlayer(playerName, isInvited)}
+            />
+        );
+    }
+    return (
+        <div id="friendTable">
+            <Stack direction="column"
+                alignItems="center"
+                ref={ this.bottomRef }
+                sx={{
+                    width: "auto",
+                    maxHeight: "100%",
+                    overflow: "auto",
+                }}
+            >
+                { listBuffer }
+            </Stack>
+        </div>
+    );
+  }
+
+  handleInvitePlayer(invitedPlayerName, isInvited) {
+    return new Promise((resolve, reject) => {
+      if (isInvited) {
+        this.setState({ selectedPlayers: [ invitedPlayerName, ...this.state.selectedPlayers ] },
+        () => {
+          resolve("Added: " + invitedPlayerName);
+        });
+      } else {
+        this.setState({ selectedPlayers: this.state.selectedPlayers.filter(username => username !== invitedPlayerName) },
+        () => {
+          resolve("Removed: " + invitedPlayerName);
+        });
+      }
+    })
+    // .then(() => {
+    //   console.log(this.state.selectedPlayers);
+    // });
+  }
 
   render() {
-    //const {players, selectedPlayers} = this.state;
-    const backImgPath = this.state.tableImage + this.state.tableTheme + ".png";
-    // const gameID = this.state.gameID;
     return (
-      // outside stuff
-      <div className='GamePage'>
-        <LoginRedirector />
+      <div id="gamepage">
         <NavBar />
-        {/* box holding game setup stuff */}
-        <Box>
-          <GameSetup onGameSetupData={this.handleGameSetupData} />
-        </Box>
-
-        {/* box holding game itself*/}
-        {this.state.tableAppear && (<Box
-          style={{
-            backgroundImage: `url(${backImgPath})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            width: '100%',
-            height: '100vh', //view heigh
-            margin: 0,
-            padding: 0
-          }}
-          alignItems={"center"}>
-
-          {this.state.startButtonAppear && (<Button onClick={this.handleStartGameButton} variant="contained" size="large" style={{ marginTop: '16px' }}>Start Game</Button>)}
-
-          {this.state.renderGameComponents && (
-            <div>
-              <EnemyPlayers gameID={this.state.gameID} playerID={this.state.myPlayerID} />
-            
-                <MyCardsView
-                  myHandID={this.state.myHandID}>
-                </MyCardsView>
-
-
-              <GameActions
-                gameID={this.state.gameID}
-                playerID={this.state.myPlayerID}
-                currentBet={this.state.currentBet}>
-              </GameActions>
-
-            </div>
-          )}
-
-
-        </Box>)}
-
+        { this.getFriendInviteList() }
+        <Button
+          onClick={this.createGame}
+          variant="contained"
+          size="large"
+          sx={{ m: '16px' }}
+        >
+          Create Game
+        </Button>
       </div>
     );
   }
-};
+}
 
 export default GamePage;
