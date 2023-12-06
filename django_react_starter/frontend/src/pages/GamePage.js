@@ -21,6 +21,11 @@ class GamePage extends React.Component {
 
   constructor(props) {
     super(props)
+    this.handleGameSetupData = this.handleGameSetupData.bind(this);
+    this.startGame = this.startGame.bind(this);
+    this.setTableTheme = this.setTableTheme.bind(this);
+    this.runGame = this.runGame.bind(this);
+    this.handleStartGameButton = this.handleStartGameButton.bind(this);
     this.state = {
       tableTheme: "",
       tableImage: "/images/Table_Themes/table_",
@@ -45,7 +50,7 @@ class GamePage extends React.Component {
   //   this.setState({ gameID: gameStuff["gameID"], username: gameStuff["username"], myPlayerID: gameStuff["myPlayerID"] })
   //   console.log("state updated", this.state.gameID, this.state.playerID, this.state.username);
   // };
-  handleGameSetupData = (gameStuff) => {
+  handleGameSetupData(gameStuff) {
     // Process the data or update the state as needed
     console.log(gameStuff);
   
@@ -76,7 +81,7 @@ class GamePage extends React.Component {
   };
   
 
-  handleStartGameButton = () => {
+  handleStartGameButton() {
     console.log("start game button clicked");
     if (this.state.tableAppear) {
       console.log("table appeared");
@@ -95,7 +100,7 @@ class GamePage extends React.Component {
     if (prevState.gameID !== this.state.gameID && prevState.myPlayerID !== this.state.myPlayerID) {
       this.setState({ tableAppear: true , startButtonAppear: true});
       this.startGame()
-      console.log("table appeared from did update method")
+      console.log(this.state);
     }
   }
 

@@ -31,6 +31,7 @@ class GameSetup extends React.Component {
     sendDataToGamePage = (gameID, playerID, handID) => {
       // Call the callback function from props
       const gameData = [{"gameID":gameID}, {"username":this.state.username}, {"myPlayerID":playerID}, {"myHandID": handID} ]
+      console.log(gameData);
       this.props.onGameSetupData(gameData);
     };    
 
