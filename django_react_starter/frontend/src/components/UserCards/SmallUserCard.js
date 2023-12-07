@@ -96,11 +96,20 @@ class SmallUserCard extends React.Component {
 
     handleInvite() {
         if (this.props.handleInvite) {
-            this.setState({ invited: !this.state.invited }, () => {
-                this.props.handleInvite(this.state.username, this.state.invited);
-            });
+            if (this.state.userdata !== null) {
+                let returnedUserData = this.state.userdata;
+                // {
+                //     id: this.state.userdata.id,
+                //     username: this.state.username,
+                // }
+                this.setState({ invited: !this.state.invited }, () => {
+                    this.props.handleInvite(returnedUserData, this.state.invited);
+                });
+                console.log("Invited " + this.state.username + " id: " + this.state.userdata.id);
+            } else {
+                console.log("Could not invite player: " + this.state.username + " userdata is null");
+            }
         }
-        console.log("Invited");
     }
 
     handleInfoDialogClose() {
