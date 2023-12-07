@@ -3,8 +3,10 @@ import axios from "axios";
 
 import NavBar from "../components/NavBar";
 import SmallUserCard from "../components/UserCards/SmallUserCard";
+import GameActions from '../components/GamePlay/GameActions';
 
-import {Box, Stack, Avatar, Typography, Checkbox, Card, Button} from "@mui/material";
+import {Box, Stack, Avatar, Typography, Checkbox, Card, Button, CardMedia, Grid} from "@mui/material";
+import MyCardsView from "../components/PlayingCardViews/MyCardsView";
 
 class GamePage extends React.Component {
 
@@ -15,7 +17,14 @@ class GamePage extends React.Component {
     this.getFriends = this.getFriends.bind(this);
     this.getFriendInviteList = this.getFriendInviteList.bind(this);
     this.createGame = this.createGame.bind(this);
+    this.addPlayersToGame = this.addPlayersToGame.bind(this);
     this.handleInvitePlayer = this.handleInvitePlayer.bind(this);
+    this.createGameExecutor = this.createGameExecutor.bind(this);
+    this.startGame = this.startGame.bind(this);
+    this.startGameExecutor = this.startGameExecutor.bind(this);
+    this.getCreateGamePage = this.getCreateGamePage.bind(this);
+    this.getStartGamePage = this.getStartGamePage.bind(this);
+    this.getPlayGamePage = this.getPlayGamePage.bind(this);
     this.state = {
       // Data
       myUsername: null,
@@ -25,6 +34,10 @@ class GamePage extends React.Component {
       sessionToken: null,
       selectedPlayers: [],
       friends: [],
+      currentPage: "create", // [ "create", "start", "play" ]
+      // Game State
+      gameState: null,
+      players: [],
     }
   }
 
@@ -32,6 +45,17 @@ class GamePage extends React.Component {
     this.getSessionToken()
     .then(this.getMyUserData)
     .then(this.getFriends)
+  }
+
+  createGameExecutor() {
+    this.createGame()
+    .then(this.addPlayersToGame)
+    .then(this.setState({ currentPage: "start" })); // Do this last
+  }
+
+  startGameExecutor() {
+    this.startGame()
+    .then(this.setState({ currentPage: "play" })); // Execute last
   }
 
   createGame() {
@@ -54,22 +78,54 @@ class GamePage extends React.Component {
     });
   }
 
+  startGame() {
+    return new Promise((resolve, reject) => {
+      axios.get(`http://localhost:8000/startgame/${this.state.gameId}`)
+      .then((response) => {
+        this.getGameData();
+      })
+      .catch((response) => {
+        console.log("Error starting game");
+      })
+      .finally(() => {
+        resolve("Finished starting game");
+      });
+    });
+  }
+
+  getGameData() {
+    return new Promise((resolve, reject) => {
+      axios.get(`http://localhost:8000/game/${this.state.gameId}`)
+      .then((response) => {
+        this.setState({ gameData: response.data });
+      })
+      .catch((response) => {
+        console.log("Error getting game data");
+      })
+      .finally(() => {
+        resolve("Finished getting game data");
+      });
+    });
+  }
+
   addPlayersToGame() {
     return new Promise((resolve, reject) => {
       let playersAdded = 0;
-      this.state.selectedPlayers.forEach( (username, index) => {
+      this.state.selectedPlayers.forEach( (userData) => {
         const playerData = {
           "money": 100, // Likely needs to be changed, starting money should be an option
-          "name": username,
+          "name": userData.username,
+          "id": userData.id,
           "game": this.state.gameId,
         }
   
         axios.post(`http://localhost:8000/player/`, playerData)
         .then((response) => {
-          console.log("added player: " + username);
+          this.setState({ players: [ playerData, ...this.state.players ] });
+          console.log("added player: " + userData.username);
         })
         .catch((response) => {
-          console.log("idk player not made")
+          console.log("idk player not added")
         }).finally((response) => {
           playersAdded++;
           if(playersAdded === this.state.selectedPlayers.length) {
@@ -94,7 +150,7 @@ class GamePage extends React.Component {
       // Get my user data
       axios.get(`http://localhost:8000/user_profile/profile/${this.state.sessionToken}`)
       .then((response) => {
-          this.setState({ myUserdata: response.data });
+          this.setState({ myUserData: response.data });
           this.setState({ myUsername: response.data.username });
       })
       .catch((response) => {
@@ -138,9 +194,9 @@ class GamePage extends React.Component {
         listBuffer.push(
             <SmallUserCard
                 username={friend.username}
-                wins={friend.wins}
-                is_active={friend.is_active}
-                avatarColor={friend.avatar_color}
+                // wins={friend.wins}
+                // is_active={friend.is_active}
+                // avatarColor={friend.avatar_color}
                 info={false}
                 isThin={true}
                 friendable={false}
@@ -167,17 +223,17 @@ class GamePage extends React.Component {
     );
   }
 
-  handleInvitePlayer(invitedPlayerName, isInvited) {
+  handleInvitePlayer(invitedPlayerData, isInvited) {
     return new Promise((resolve, reject) => {
       if (isInvited) {
-        this.setState({ selectedPlayers: [ invitedPlayerName, ...this.state.selectedPlayers ] },
+        this.setState({ selectedPlayers: [ invitedPlayerData, ...this.state.selectedPlayers ] },
         () => {
-          resolve("Added: " + invitedPlayerName);
+          resolve("Added: " + invitedPlayerData);
         });
       } else {
-        this.setState({ selectedPlayers: this.state.selectedPlayers.filter(username => username !== invitedPlayerName) },
+        this.setState({ selectedPlayers: this.state.selectedPlayers.filter(userData => userData.id !== invitedPlayerData.id) },
         () => {
-          resolve("Removed: " + invitedPlayerName);
+          resolve("Removed: " + invitedPlayerData);
         });
       }
     })
@@ -186,13 +242,13 @@ class GamePage extends React.Component {
     // });
   }
 
-  render() {
-    return (
-      <div id="gamepage">
+  getCreateGamePage() {
+    let createGamePage = (
+      <div id="creategamepage">
         <NavBar />
         { this.getFriendInviteList() }
         <Button
-          onClick={this.createGame}
+          onClick={this.createGameExecutor}
           variant="contained"
           size="large"
           sx={{ m: '16px' }}
@@ -201,6 +257,72 @@ class GamePage extends React.Component {
         </Button>
       </div>
     );
+    return createGamePage;
+  }
+
+  getStartGamePage() {
+    let startGamePage = (
+      <div id="startgamepage">
+        <NavBar />
+        <Button
+          onClick={this.startGameExecutor}
+          variant="contained"
+          size="large"
+          sx={{ m: '16px' }}
+        >
+          Start Game
+        </Button>
+      </div>
+    );
+    return startGamePage;
+  }
+
+  getPlayGamePage() {
+    const sectionStyle = {
+      height: "92vh",
+    
+      backgroundImage: `url(${"/images/Table_Themes/table_" + this.state.myUserData.table_theme + ".png"})`,
+    
+      backgroundRepeat: "no-repeat",
+      backgroundSize: "cover"
+    };
+    let playGamePage = (
+      <div id="playgamepage">
+        <NavBar />
+          <Grid style={sectionStyle}
+            container
+            direction="column"
+            justify="space-evenly"
+            alignItems="center"
+          >
+            <Grid item>
+              <MyCardsView
+              
+              />
+              <GameActions
+                gameID={this.state.gameId}
+                playerID={this.state.myUserData.id}
+                currentBet={this.state.currentBet}
+              />
+            </Grid>
+          </Grid>
+      </div>
+    );
+    return playGamePage;
+  }
+
+  render() {
+    
+    switch (this.state.currentPage) {
+      case "create":
+        return this.getCreateGamePage();
+      case "start":
+        return this.getStartGamePage();
+      case "play":
+        return this.getPlayGamePage();
+      default:
+        return this.getCreateGamePage();
+    }
   }
 }
 
