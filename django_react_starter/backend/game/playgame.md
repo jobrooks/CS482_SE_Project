@@ -44,7 +44,7 @@ Make a call to the following endpoint and supply the gameID:
 
 Similar to **A.2**, check the following endpoint to make sure the turn order is properly initialized:
 
-```"/game/"```
+```"/game/<int:gameID>"```
 
 ## **D.1 Start First Betting Round**
 
