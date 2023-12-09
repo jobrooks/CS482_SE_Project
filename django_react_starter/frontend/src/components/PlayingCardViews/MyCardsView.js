@@ -6,11 +6,15 @@ import axios from 'axios';
 class MyCardsView extends React.Component {
 
     constructor(props) {
-        super(props)
+        super(props);
         this.state = {
             myHandID: this.props.myHandID,
             myCards: [] // array of strings "2H, 4D, etc"
         }
+    }
+
+    componentDidMount() {
+        this.getMyCards();
     }
 
     // get my cards from hand
@@ -31,14 +35,14 @@ class MyCardsView extends React.Component {
 
     parseJson(cardJSON) {
         return new Promise((resolve, reject) => {
-            const myCards = cardJSON.map(item => {
-                const rankNumber = item.rank.match(/\d+/)[0];
-                const suitFirstLetter = item.suit.match(/\b\w/g)[0].toUpperCase();
+            let myCards = cardJSON.map(item => {
+                let rankNumber = item.rank.match(/\d+/)[0];
+                let suitFirstLetter = item.suit.match(/\b\w/g)[0].toUpperCase();
 
                 return rankNumber + suitFirstLetter;
             });
 
-            this.setState({ myCards }, () => {
+            this.setState({ myCards: myCards }, () => {
                 // Callback function to ensure that removeLeadingZeros is called after the state is updated
                 this.removeLeadingZeros().then(() => {
                     resolve("done parsing json");
@@ -70,12 +74,6 @@ class MyCardsView extends React.Component {
             });
         })
     }
-
-   
-    async componentDidMount() {
-        await this.getMyCards(); // Wait for the cards to be fetched before rendering
-    }
-
 
     render() {
         return (

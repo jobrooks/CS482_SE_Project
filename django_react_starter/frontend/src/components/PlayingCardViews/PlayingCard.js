@@ -8,7 +8,7 @@ class PlayingCard extends React.Component {
         const cards = [];
     }
 
-    render(){
+    render() {
         const cardPath = "/images/Cards/"
         const extension = ".svg"
         const {cardSrc, altText, w, h} = this.props;
