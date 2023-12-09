@@ -20,7 +20,7 @@ from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.security.websocket import AllowedHostsOriginValidator
 
 import chat.routing
-import chat.consumers
+import invites.routing
 
 
 application = ProtocolTypeRouter(
@@ -29,7 +29,8 @@ application = ProtocolTypeRouter(
         "websocket": AllowedHostsOriginValidator(
             AuthMiddlewareStack(
                 URLRouter(
-                    chat.routing.websocket_urlpatterns
+                    chat.routing.websocket_urlpatterns +
+                    invites.routing.websocket_urlpatterns
                 )
             )
         ),
