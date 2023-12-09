@@ -29,6 +29,7 @@ class GamePage extends React.Component {
       // Data
       myUsername: null,
       myUserData: null,
+      myPlayerId: null,
       gameId: null,
       // Internal State
       sessionToken: null,
@@ -38,6 +39,8 @@ class GamePage extends React.Component {
       // Game State
       gameState: null,
       players: [],
+      // Game websocket
+      gameSocket: null,
     }
   }
 
@@ -112,26 +115,46 @@ class GamePage extends React.Component {
     return new Promise((resolve, reject) => {
       let playersAdded = 0;
       this.state.selectedPlayers.forEach( (userData) => {
-        const playerData = {
-          "money": 100, // Likely needs to be changed, starting money should be an option
-          "name": userData.username,
-          "id": userData.id,
-          "game": this.state.gameId,
-        }
-  
-        axios.post(`http://localhost:8000/player/`, playerData)
-        .then((response) => {
-          this.setState({ players: [ playerData, ...this.state.players ] });
-          console.log("added player: " + userData.username);
-        })
-        .catch((response) => {
-          console.log("idk player not added")
-        }).finally((response) => {
-          playersAdded++;
-          if(playersAdded === this.state.selectedPlayers.length) {
-            resolve("Added all players to game");
+        if (userData.username !== this.state.myUsername) {
+          // const playerData = {
+          //   "money": 100, // Likely needs to be changed, starting money should be an option
+          //   "name": userData.username,
+          //   "id": userData.id,
+          //   "game": this.state.gameId,
+          // }
+
+          let inviteData = {
+            game_id: this.state.gameId,
+            sender: this.state.myUsername,
           }
-        });
+
+          axios.post(`http://localhost:8000/invites/invite/${userData.username}`, inviteData) // Send invite
+          .then((response) => {
+            console.log("Invited player: " + userData.username);
+          })
+          .catch((response) => {
+            console.log("Failed to invite player: " + userData.username);
+          }).finally((response) => {
+            playersAdded++;
+            if(playersAdded === this.state.selectedPlayers.length) {
+              resolve("Added all invited to game");
+            }
+          });
+    
+          // axios.post(`http://localhost:8000/player/`, playerData)
+          // .then((response) => {
+          //   this.setState({ players: [ playerData, ...this.state.players ] });
+          //   console.log("added player: " + userData.username);
+          // })
+          // .catch((response) => {
+          //   console.log("idk player not added")
+          // }).finally((response) => {
+          //   playersAdded++;
+          //   if(playersAdded === this.state.selectedPlayers.length) {
+          //     resolve("Added all players to game");
+          //   }
+          // });
+        }
       });
     });
   }
@@ -152,6 +175,7 @@ class GamePage extends React.Component {
       .then((response) => {
           this.setState({ myUserData: response.data });
           this.setState({ myUsername: response.data.username });
+          this.setState({ selectedPlayers: [ response.data, ...this.state.selectedPlayers ] }); // Add myself to selected players
       })
       .catch((response) => {
           console.log("Error getting my user data");
@@ -159,7 +183,7 @@ class GamePage extends React.Component {
       .finally(() => {
           resolve("Finished getting user data");
       });
-  });
+    });
   }
 
   getFriends() {
@@ -242,6 +266,10 @@ class GamePage extends React.Component {
     // });
   }
 
+  getGameWebsocket() {
+    
+  }
+
   getCreateGamePage() {
     let createGamePage = (
       <div id="creategamepage">
@@ -297,7 +325,7 @@ class GamePage extends React.Component {
           >
             <Grid item>
               <MyCardsView
-              
+                myHandID={this.sate.myPlayerId}
               />
               <GameActions
                 gameID={this.state.gameId}
