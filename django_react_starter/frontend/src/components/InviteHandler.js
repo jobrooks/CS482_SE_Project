@@ -105,7 +105,7 @@ class InviteHandler extends React.Component {
     }
 
     acceptInvite(game_id) {
-        this.props.navigate("/game")
+        this.props.navigate("/game", { state: { gameId: game_id, joiningPlayerData: this.state.myUserData }})
         this.closeInvite(game_id);
     }
 

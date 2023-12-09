@@ -7,6 +7,7 @@ import GameActions from '../components/GamePlay/GameActions';
 
 import {Box, Stack, Avatar, Typography, Checkbox, Card, Button, CardMedia, Grid} from "@mui/material";
 import MyCardsView from "../components/PlayingCardViews/MyCardsView";
+import { useLocation } from "react-router-dom";
 
 class GamePage extends React.Component {
 
@@ -17,7 +18,7 @@ class GamePage extends React.Component {
     this.getFriends = this.getFriends.bind(this);
     this.getFriendInviteList = this.getFriendInviteList.bind(this);
     this.createGame = this.createGame.bind(this);
-    this.addPlayersToGame = this.addPlayersToGame.bind(this);
+    this.invitePlayersToGame = this.invitePlayersToGame.bind(this);
     this.handleInvitePlayer = this.handleInvitePlayer.bind(this);
     this.createGameExecutor = this.createGameExecutor.bind(this);
     this.startGame = this.startGame.bind(this);
@@ -25,6 +26,9 @@ class GamePage extends React.Component {
     this.getCreateGamePage = this.getCreateGamePage.bind(this);
     this.getStartGamePage = this.getStartGamePage.bind(this);
     this.getPlayGamePage = this.getPlayGamePage.bind(this);
+    this.getGameWebsocket = this.getGameWebsocket.bind(this);
+    this.getJoinedPlayersList = this.getJoinedPlayersList.bind(this);
+    this.joinGame = this.joinGame.bind(this);
     this.state = {
       // Data
       myUsername: null,
@@ -48,17 +52,30 @@ class GamePage extends React.Component {
     this.getSessionToken()
     .then(this.getMyUserData)
     .then(this.getFriends)
+    .then(() => {
+      let location = this.props.location; // Get location data that may have been passed if this was a join
+      if (location.state !== null) {
+        this.setState({ gameId: location.state.gameId }, () => { // use callback to execute after state change
+          this.getGameWebsocket()
+          .then(this.joinGame)
+          .then(this.setState({ currentPage: "start" }));
+          window.history.replaceState({}, document.title) // Clear location data from page
+        });     
+      }
+    })
   }
 
   createGameExecutor() {
     this.createGame()
-    .then(this.addPlayersToGame)
+    .then(this.getGameWebsocket)
+    .then(this.invitePlayersToGame)
+    .then(this.joinGame)
     .then(this.setState({ currentPage: "start" })); // Do this last
   }
 
   startGameExecutor() {
     this.startGame()
-    .then(this.setState({ currentPage: "play" })); // Execute last
+    // .then(this.setState({ currentPage: "play" })); // Execute last
   }
 
   createGame() {
@@ -81,6 +98,34 @@ class GamePage extends React.Component {
     });
   }
 
+  joinGame() {
+    return new Promise((resolve, reject) => {
+      console.log("Joining game " + this.state.myUsername)
+      const playerData = {
+        "money": 100, // Likely needs to be changed, starting money should be an option
+        "name": this.state.myUsername,
+        "id": this.state.myUserData.id,
+        "game": this.state.gameId,
+      }
+
+      axios.post(`http://localhost:8000/player/`, playerData)
+      .then((response) => {
+        // this.setState({ players: [ playerData, ...this.state.players ] });
+        console.log("added player: " + this.state.myUsername);
+      })
+      .catch((response) => {
+        console.log("idk player not added")
+      }).finally((response) => {
+        // playersAdded++;
+        // if(playersAdded === this.state.selectedPlayers.length) {
+        this.state.gameSocket.send(JSON.stringify({event: "player_join", username: this.state.myUsername}));
+        // this.setState({ players: [ this.state.myUsername, ...this.state.players ] }) // not needed to add yourself
+        resolve("Added my player to game");
+        // }
+      });
+    })
+  }
+
   startGame() {
     return new Promise((resolve, reject) => {
       axios.get(`http://localhost:8000/startgame/${this.state.gameId}`)
@@ -91,6 +136,7 @@ class GamePage extends React.Component {
         console.log("Error starting game");
       })
       .finally(() => {
+        this.state.gameSocket.send(JSON.stringify({ event: "start_game", username: this.state.myUsername }))
         resolve("Finished starting game");
       });
     });
@@ -111,7 +157,7 @@ class GamePage extends React.Component {
     });
   }
 
-  addPlayersToGame() {
+  invitePlayersToGame() {
     return new Promise((resolve, reject) => {
       let playersAdded = 0;
       this.state.selectedPlayers.forEach( (userData) => {
@@ -136,7 +182,8 @@ class GamePage extends React.Component {
             console.log("Failed to invite player: " + userData.username);
           }).finally((response) => {
             playersAdded++;
-            if(playersAdded === this.state.selectedPlayers.length) {
+            console.log(playersAdded, this.state.selectedPlayers.length)
+            if(playersAdded === this.state.selectedPlayers.length - 1) {
               resolve("Added all invited to game");
             }
           });
@@ -267,7 +314,72 @@ class GamePage extends React.Component {
   }
 
   getGameWebsocket() {
-    
+    return new Promise((resolve, reject) => {
+      let ws = null;
+      new Promise((resolve, reject) => {
+        ws = new WebSocket(`ws://localhost:8000/ws/gamechannel/${this.state.gameId}`);
+        ws.onopen = (event) => { // do next when connected
+          resolve("Finished connecting to game websocket");
+        }
+      })
+      .then(() => {
+        this.setState({ gameSocket: ws }, () => {
+          this.state.gameSocket.addEventListener("message", this.onIncomingGameEvent.bind(this));
+          resolve("Finished getting gamechannel websocket connection");
+        });
+      });
+    });
+  }
+
+  onIncomingGameEvent(event) { // Very important - handles game events
+    let serialized_data = JSON.parse(event.data);
+    console.log("Incoming game event: ", serialized_data);
+    if (serialized_data.event === "player_join") {
+      this.setState({ players: [ serialized_data.username, ...this.state.players ] })
+    } else if (serialized_data.event === "start_game") {
+      this.setState({ currentPage: "play" })
+    } else {
+      console.log("Unknown player event");
+    }
+  }
+
+  getJoinedPlayersList() {
+    let listBuffer = [];
+    for (let i in this.state.players) {
+        let player = this.state.players[i];
+        console.log(player);
+        listBuffer.push(
+            <SmallUserCard
+                key={player}
+                username={player}
+                // wins={null}
+                // is_active={null}
+                // avatarColor={null}
+                // info={false}
+                // isButton={false}
+                isThin={true}
+                friendable={false}
+                inviteable={false}
+                messageable={true}
+            />
+        );
+    }
+    console.log(listBuffer)
+    return (
+        <div id="joinedPlayerTable">
+            <Stack direction="column"
+                alignItems="center"
+                ref={ this.bottomRef }
+                sx={{
+                    width: "auto",
+                    maxHeight: "100%",
+                    overflow: "auto",
+                }}
+            >
+                { listBuffer }
+            </Stack>
+        </div>
+    );
   }
 
   getCreateGamePage() {
@@ -292,6 +404,7 @@ class GamePage extends React.Component {
     let startGamePage = (
       <div id="startgamepage">
         <NavBar />
+        { this.getJoinedPlayersList() }
         <Button
           onClick={this.startGameExecutor}
           variant="contained"
@@ -354,4 +467,11 @@ class GamePage extends React.Component {
   }
 }
 
-export default GamePage;
+// export default GamePage;
+
+function WithLocation(props) {
+  const location = useLocation();
+  return <GamePage {...props} location={location} />
+}
+
+export default WithLocation;

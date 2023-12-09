@@ -60,12 +60,15 @@ class SmallUserCard extends React.Component {
     }
 
     componentDidMount() {
+        console.log(this.state.username)
         if (this.state.username && !this.state.isButton && (!this.state.avatarColor || !this.state.wins || !this.state.is_active)) {
             axios.get(`http://localhost:8000/user_profile/profile/getuserprofile/${this.state.username}`)
             .then((response) => {
                 this.setState({
                     userdata: response.data, isLoading: false,
                     avatarColor: response.data.avatar_color, wins: response.data.wins, is_active: response.data.is_active,
+                }, () => {
+                    console.log(this.state)
                 });
                 return response.data;
             })
