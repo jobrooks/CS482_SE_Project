@@ -22,6 +22,7 @@ import PlayPage3 from './pages/PlayPage3';
 import PlayPage4 from './pages/PlayPage4';
 import PlayPage5 from './pages/PlayPage5';
 import AdminPage from './pages/AdminPage';
+import InviteHandler from './components/InviteHandler';
 
 class App extends React.Component {
 
@@ -116,6 +117,7 @@ class App extends React.Component {
       <div className="App">
           {/* <ThemeProvider theme={theme}>
             <CssBaseline /> */}
+            <InviteHandler />
             <Routes>
               <Route path='/' element={<HomePage />} />
               <Route path="/edit-profile" element={<EditProfilePage />} />
