@@ -27,8 +27,9 @@ class GamePage extends React.Component {
     this.getStartGamePage = this.getStartGamePage.bind(this);
     this.getPlayGamePage = this.getPlayGamePage.bind(this);
     this.getGameWebsocket = this.getGameWebsocket.bind(this);
-    this.getJoinedPlayersList = this.getJoinedPlayersList.bind(this);
+    this.getCurrentPlayersList = this.getCurrentPlayersList.bind(this);
     this.joinGame = this.joinGame.bind(this);
+    this.getCurrentPlayers = this.getCurrentPlayers.bind(this);
     this.state = {
       // Data
       myUsername: null,
@@ -42,6 +43,7 @@ class GamePage extends React.Component {
       currentPage: "create", // [ "create", "start", "play" ]
       // Game State
       gameState: null,
+      myPlayerData: null,
       players: [],
       // Game websocket
       gameSocket: null,
@@ -54,10 +56,11 @@ class GamePage extends React.Component {
     .then(this.getFriends)
     .then(() => {
       let location = this.props.location; // Get location data that may have been passed if this was a join
-      if (location.state !== null) {
+      if (location.state !== null) { // Execute if player is joining an already made game
         this.setState({ gameId: location.state.gameId }, () => { // use callback to execute after state change
           this.getGameWebsocket()
           .then(this.joinGame)
+          .then(this.getCurrentPlayers)
           .then(this.setState({ currentPage: "start" }));
           window.history.replaceState({}, document.title) // Clear location data from page
         });     
@@ -70,6 +73,7 @@ class GamePage extends React.Component {
     .then(this.getGameWebsocket)
     .then(this.invitePlayersToGame)
     .then(this.joinGame)
+    .then(this.getCurrentPlayers)
     .then(this.setState({ currentPage: "start" })); // Do this last
   }
 
@@ -110,7 +114,11 @@ class GamePage extends React.Component {
 
       axios.post(`http://localhost:8000/player/`, playerData)
       .then((response) => {
-        // this.setState({ players: [ playerData, ...this.state.players ] });
+        this.setState({ myPlayerData: response.data }, () => {
+          console.log("Player Data: ", this.state.myPlayerData);
+          this.state.gameSocket.send(JSON.stringify({event: "player_join", username: this.state.myUsername}));
+          resolve("Added my player to game");
+        });
         console.log("added player: " + this.state.myUsername);
       })
       .catch((response) => {
@@ -118,9 +126,8 @@ class GamePage extends React.Component {
       }).finally((response) => {
         // playersAdded++;
         // if(playersAdded === this.state.selectedPlayers.length) {
-        this.state.gameSocket.send(JSON.stringify({event: "player_join", username: this.state.myUsername}));
         // this.setState({ players: [ this.state.myUsername, ...this.state.players ] }) // not needed to add yourself
-        resolve("Added my player to game");
+        
         // }
       });
     })
@@ -335,7 +342,8 @@ class GamePage extends React.Component {
     let serialized_data = JSON.parse(event.data);
     console.log("Incoming game event: ", serialized_data);
     if (serialized_data.event === "player_join") {
-      this.setState({ players: [ serialized_data.username, ...this.state.players ] })
+      // this.setState({ players: [ serialized_data.username, ...this.state.players ] })
+      this.getCurrentPlayers();
     } else if (serialized_data.event === "start_game") {
       this.setState({ currentPage: "play" })
     } else {
@@ -343,15 +351,32 @@ class GamePage extends React.Component {
     }
   }
 
-  getJoinedPlayersList() {
+  getCurrentPlayers() {
+    return new Promise((resolve, reject) => { 
+      axios.get(`http://localhost:8000/player/game/${this.state.gameId}`)
+      .then((response) => {
+        this.setState({ players: response.data }, () => {
+          console.log(response.data)
+          console.log(this.state.players);
+          resolve("Finished getting current players data");
+        });
+      })
+      .catch((response) => {
+        console.log("Error getting my current players data");
+      })
+
+    });
+  }
+
+  getCurrentPlayersList() {
     let listBuffer = [];
     for (let i in this.state.players) {
         let player = this.state.players[i];
         console.log(player);
         listBuffer.push(
             <SmallUserCard
-                key={player}
-                username={player}
+                key={player.name}
+                username={player.name}
                 // wins={null}
                 // is_active={null}
                 // avatarColor={null}
@@ -404,7 +429,7 @@ class GamePage extends React.Component {
     let startGamePage = (
       <div id="startgamepage">
         <NavBar />
-        { this.getJoinedPlayersList() }
+        { this.getCurrentPlayersList() }
         <Button
           onClick={this.startGameExecutor}
           variant="contained"
@@ -438,11 +463,11 @@ class GamePage extends React.Component {
           >
             <Grid item>
               <MyCardsView
-                myHandID={this.sate.myPlayerId}
+                myHandID={this.state.myPlayerData.id}
               />
               <GameActions
-                gameID={this.state.gameId}
-                playerID={this.state.myUserData.id}
+                gameId={this.state.gameId}
+                playerId={this.state.myPlayerData.id}
                 currentBet={this.state.currentBet}
               />
             </Grid>

@@ -8,8 +8,8 @@ class GameActions extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            gameID: null,
-            playerID: null,
+            gameId: this.props.gameId,
+            playerId: this.props.playerId,
             currentBet: this.props.currentBet,
             isVisible: true,
             betDialogOpen: false,
@@ -24,10 +24,10 @@ class GameActions extends React.Component {
             const foldData = {
                 "action": "fold"
             }
-            const response = await axios.put(`http://localhost:8000/taketurn/${this.state.playerID}`, foldData)
+            const response = await axios.put(`http://localhost:8000/taketurn/${this.state.playerId}/`, foldData)
         }
         catch (error) {
-            console.log("ID: " + this.state.playerID + "fold turn not taken")
+            console.log("ID: " + this.state.playerId + "fold turn not taken")
         }
     }
 
@@ -36,10 +36,10 @@ class GameActions extends React.Component {
             const callData = {
                 "action": "call"
             }
-            const response = await axios.put(`http://localhost:8000/taketurn/${this.state.playerID}`, callData)
+            const response = await axios.put(`http://localhost:8000/taketurn/${this.state.playerId}/`, callData)
         }
         catch (error) {
-            console.log("ID: " + this.state.playerID + "call turn not taken")
+            console.log("ID: " + this.state.playerId + "call turn not taken")
         }
     }
 
@@ -48,10 +48,10 @@ class GameActions extends React.Component {
             const allInData = {
                 "action": "allIn"
             }
-            const response = await axios.put(`http://localhost:8000/taketurn/${this.state.playerID}`, allInData)
+            const response = await axios.put(`http://localhost:8000/taketurn/${this.state.playerId}/`, allInData)
         }
         catch (error) {
-            console.log("ID: " + this.state.playerID + "allIn turn not taken")
+            console.log("ID: " + this.state.playerId + "allIn turn not taken")
         }
     }
 
@@ -85,10 +85,10 @@ class GameActions extends React.Component {
                 "action": "raise",
                 "betAmount": bet
             }
-            const response = await axios.put(`http://localhost:8000/taketurn/${this.state.playerID}`, raiseData)
+            const response = await axios.put(`http://localhost:8000/taketurn/${this.state.playerId}/`, raiseData)
         }
         catch (error) {
-            console.log("ID: " + this.state.playerID + "raise turn not taken")
+            console.log("ID: " + this.state.playerId + "raise turn not taken")
         }
     }
 
@@ -97,10 +97,10 @@ class GameActions extends React.Component {
             const checkData = {
                 "action": "check"
             }
-            const response = await axios.put(`http://localhost:8000/taketurn/${this.state.playerID}`, checkData)
+            const response = await axios.put(`http://localhost:8000/taketurn/${this.state.playerId}/`, checkData)
         }
         catch (error) {
-            console.log("ID: " + this.state.playerID + "check turn not taken")
+            console.log("ID: " + this.state.playerId + "check turn not taken")
         }
     }
 
