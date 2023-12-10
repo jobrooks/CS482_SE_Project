@@ -77,7 +77,14 @@ class MyCardsView extends React.Component {
 
     render() {
         return (
-            <Stack direction="row" spacing={2}>
+            <Stack
+                direction="row"
+                // spacing={2}
+                justifyContent="space-around"
+                sx={{
+                    width: "100vh",
+                }}
+            >
                 {this.state.myCards.map((card, index) => (
                     <PlayingCard key={index} cardSrc={card} w='100px' h='200px' />
                 ))}
