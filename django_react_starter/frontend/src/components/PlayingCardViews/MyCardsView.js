@@ -8,6 +8,7 @@ class MyCardsView extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            deletable: this.props.deletable,
             myHandID: this.props.myHandID,
             myCards: [] // array of strings "2H, 4D, etc"
         }
@@ -79,14 +80,14 @@ class MyCardsView extends React.Component {
         return (
             <Stack
                 direction="row"
-                // spacing={2}
+                spacing={0}
                 justifyContent="space-around"
                 sx={{
                     width: "100vh",
                 }}
             >
                 {this.state.myCards.map((card, index) => (
-                    <PlayingCard key={index} cardSrc={card} w='100px' h='200px' />
+                    <PlayingCard deletable={this.state.deletable} key={index} cardSrc={card} w='100px' h='200px' />
                 ))}
             </Stack>
         );
