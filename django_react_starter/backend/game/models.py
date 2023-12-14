@@ -215,9 +215,15 @@ class TurnOrder():
 
     def convert(self, str):
         self.order.clear()
-        for character in range(0, len(str)):
-            if str[character].isdigit():
-                self.order.append(str[character])
+        if ',' in str:
+            splitString = str.split(",")
+            for string in splitString:
+                self.order.append(string)
+        else:
+            self.order.append(str)
+        # for character in range(0, len(str)):
+        #     if str[character].isdigit():
+        #         self.order.append(str[character])
             
 
 class Game(models.Model):

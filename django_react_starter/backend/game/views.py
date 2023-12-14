@@ -48,6 +48,8 @@ class StartGame(APIView):
     def get(self, request, gameID):
         game = Game.objects.get(pk=gameID)
         players = Player.objects.filter(game=game.pk)
+        if len(players) > 6:
+            return Response("Too many players. Unable to start.")
         for player in players:
             player.drawStartingCards(game=game)
         game.createTurnOrder()
@@ -245,15 +247,20 @@ class PlayerList(APIView):
         serializer = PlayerSerializer(players, many=True)
         return Response(serializer.data)
     def post(self, request):
-        serializer = PlayerSerializer(data=request.data) 
+        serializer = PlayerSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
+            game = Game.objects.get(pk=serializer.data['game'])
+            players = Player.objects.filter(game=game.pk)
             hand = Hand()
             hand.save()
             player = Player.objects.get(pk=serializer.data['id'])
             player.hand = hand
+            if len(players)  > 6:
+                player.delete()
+                return Response("Too many players. Unable to join player to game.")
             player.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(PlayerSerializer(player).data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class PlayerDetail(APIView):
