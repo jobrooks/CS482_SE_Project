@@ -210,6 +210,7 @@ class GamePage extends React.Component {
           // });
         }
       });
+      resolve("Noone invited... LAME!");
     });
   }
 
@@ -463,6 +464,7 @@ class GamePage extends React.Component {
           >
             <Grid item>
               <MyCardsView
+                deletable={false}
                 myHandID={this.state.myPlayerData.id}
               />
               <GameActions
