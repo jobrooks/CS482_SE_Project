@@ -31,7 +31,7 @@ RANK_CHOICES = (
 )
 
 class Deck(models.Model):
-    name = models.CharField(max_length=10, null=True)
+    name = models.CharField(max_length=50, null=True)
 
     def create_deck(self):
         for x in SUIT_CHOICES:
@@ -47,7 +47,7 @@ class Deck(models.Model):
                 card.save()
 
 class Hand(models.Model):
-    name = models.CharField(max_length=10, null=True)
+    name = models.CharField(max_length=50, null=True)
     score = models.IntegerField(default=0)
     ratingOut = models.CharField(max_length=30, default=0)
 
@@ -239,13 +239,20 @@ class TurnOrder():
 
     def convert(self, str):
         self.order.clear()
-        for character in range(0, len(str)):
-            if str[character].isdigit():
-                self.order.append(str[character])          
+        if ',' in str:
+            splitString = str.split(",")
+            for string in splitString:
+                self.order.append(string)
+        else:
+            self.order.append(str)
+        # for character in range(0, len(str)):
+        #     if str[character].isdigit():
+        #         self.order.append(str[character])
+            
 
 class Game(models.Model):
     turns = TurnOrder()
-    name = models.CharField(max_length=10, null=True)
+    name = models.CharField(max_length=50, null=True)
     deck = models.OneToOneField(Deck(), null=True, on_delete=models.CASCADE)
     pot = models.OneToOneField(Pot(), null=True, on_delete=models.CASCADE)
     winner = models.CharField(max_length=500, null=True)

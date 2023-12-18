@@ -48,6 +48,8 @@ class StartGame(APIView):
     def get(self, request, gameID):
         game = Game.objects.get(pk=gameID)
         players = Player.objects.filter(game=game.pk)
+        if len(players) > 6:
+            return Response("Too many players. Unable to start.")
         for player in players:
             player.drawStartingCards(game=game)
         game.createTurnOrder()
@@ -227,7 +229,7 @@ class DeckDetail(APIView):
             raise Http404
         
     def get(self, request, pk):
-        deck = self.get_hand(pk)
+        deck = self.get_deck(pk)
         serializer = CardSerializer(deck, many=True)
         return Response(serializer.data)
     
@@ -245,15 +247,20 @@ class PlayerList(APIView):
         serializer = PlayerSerializer(players, many=True)
         return Response(serializer.data)
     def post(self, request):
-        serializer = PlayerSerializer(data=request.data) 
+        serializer = PlayerSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
+            game = Game.objects.get(pk=serializer.data['game'])
+            players = Player.objects.filter(game=game.pk)
             hand = Hand()
             hand.save()
             player = Player.objects.get(pk=serializer.data['id'])
             player.hand = hand
+            if len(players)  > 6:
+                player.delete()
+                return Response("Too many players. Unable to join player to game.")
             player.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(PlayerSerializer(player).data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class PlayerDetail(APIView):
@@ -432,3 +439,38 @@ class TakeTurn(APIView):
                     return Response(status.HTTP_429_TOO_MANY_REQUESTS)
             else:
                 return Response(status.HTTP429_TOO_MANY_REQUESTS)
+            
+
+# give the players in a given game
+class PlayerListforGame(APIView):  
+    def get(self, request, pk, format=None):
+        players = Player.objects.filter(game=pk)
+        serializer = PlayerSerializer(players, many=True)
+        return Response(serializer.data)
+    
+# give the enemies of a game given a player
+class EnemiesforGame(APIView):  
+    def get(self, request, gameID, playerID, format=None):
+        players = Player.objects.filter(game=gameID).exclude(id=playerID)
+        serializer = PlayerSerializer(players, many=True)
+        return Response(serializer.data)
+    
+# give the player of a username
+# Note: need to modify based on if player is created twice
+class PlayerfromUsername(APIView):
+    def get(self, request, username, format=None):
+        player = Player.objects.get(name=username)
+        serializer = PlayerSerializer(player)
+        return Response(serializer.data)
+    
+class DeletePlayersFromGame(APIView):
+    def get(self, request, gameID, format=None):
+        try:
+            players = Player.objects.filter(game=gameID)
+            for player in players:
+                player.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Player.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        

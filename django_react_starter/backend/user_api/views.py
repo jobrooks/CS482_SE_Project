@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.authtoken.models import Token
-from user_api.serializers import UserSerializer
+from user_api.serializers import UserSerializer, GuestSerializer
 from django.contrib.auth.models import User
 from user_api.models import User as api_User
 from django.http import Http404
@@ -23,6 +23,24 @@ class UserCreate(APIView):
                 return Response(json, status=status.HTTP_201_CREATED)
             
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class GuestCreate(APIView):
+    #Create the guest user
+    def post(self, request, format='json'):
+        serializer = GuestSerializer(data=request.data)
+        if serializer.is_valid():
+            guest = serializer.save()
+            if guest:
+                json = serializer.data
+                return Response(json, status=status.HTTP_201_CREATED)
+            
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            
+
+class TotalUsers(APIView):
+    def get(self, request, *args, **kwargs):
+        total_users = api_User.objects.count()
+        return Response(total_users, status=200)
 
 """
 A lot like some of the endpoints in user_profile, but requires admin perms.

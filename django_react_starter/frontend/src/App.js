@@ -2,7 +2,7 @@ import React from 'react';
 import './App.css';
 import NavBar from './components/NavBar';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import AccountSettings from './pages/AccountSettingsPage';
+import EditProfilePage from './pages/EditProfilePage';
 import HomePage from './pages/HomePage';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { CssBaseline } from '@mui/material';
@@ -13,13 +13,15 @@ import CreateAccountPage from './pages/CreateAccountPage';
 import ProfilePage from './pages/ProfilePage';
 import SearchPage from './pages/SearchPage';
 import FriendPage from './pages/FriendPage';
-import CreateGamePage from './pages/CreateGamePage';
+import GamePage from './pages/GamePage';
+import GuestPage from './pages/GuestPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 import PlayPage from './pages/PlayPage';
 import PlayPage2 from './pages/PlayPage2';
 import PlayPage3 from './pages/PlayPage3';
 import PlayPage4 from './pages/PlayPage4';
 import PlayPage5 from './pages/PlayPage5';
-import AdminPage from './components/AdminPage';
+import AdminPage from './pages/AdminPage';
 
 class App extends React.Component {
 
@@ -116,15 +118,17 @@ class App extends React.Component {
             <CssBaseline /> */}
             <Routes>
               <Route path='/' element={<HomePage />} />
-              <Route path="/account" element={<AccountSettings />} />
+              <Route path="/edit-profile" element={<EditProfilePage />} />
               <Route path='/login' element={<LoginPage />} />
+              <Route path='/reset-password' element={<ResetPasswordPage />} />
               <Route path='/register' element={<CreateAccountPage />} />
+              <Route path='/guest' element={<GuestPage />} />
               <Route path='/profile' element={<ProfilePage />} />
               <Route path='/search' element={<SearchPage />} />
               <Route path='/friends' element={<FriendPage />} />
               <Route path='/playpage' element={<PlayPage />} />
               <Route path='/playpage2' element={<PlayPage2 />} />
-              <Route path='/creategame' element={<CreateGamePage />} />
+              <Route path='/game' element={<GamePage />} />
               <Route path='/playpage3' element={<PlayPage3 />} />
               <Route path='/playpage4' element={<PlayPage4 />} />
               <Route path='/playpage5' element={<PlayPage5 />} />
