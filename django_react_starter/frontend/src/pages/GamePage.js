@@ -451,7 +451,7 @@ class GamePage extends React.Component {
       backgroundImage: `url(${"/images/Table_Themes/table_" + this.state.myUserData.table_theme + ".png"})`,
     
       backgroundRepeat: "no-repeat",
-      backgroundSize: "cover"
+      backgroundSize: "100%"
     };
     let playGamePage = (
       <div id="playgamepage">
@@ -460,9 +460,11 @@ class GamePage extends React.Component {
             container
             direction="column"
             justify="space-evenly"
-            alignItems="center"
           >
-            <Grid item>
+            <Grid item
+              height="100vh"
+              width="100vw"
+            >
               <MyCardsView
                 deletable={false}
                 myHandID={this.state.myPlayerData.id}

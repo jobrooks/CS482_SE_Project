@@ -80,11 +80,9 @@ class MyCardsView extends React.Component {
         return (
             <Stack
                 direction="row"
-                spacing={0}
                 justifyContent="space-around"
-                sx={{
-                    width: "100vh",
-                }}
+                width="55%"
+                margin="0 auto"
             >
                 {this.state.myCards.map((card, index) => (
                     <PlayingCard deletable={this.state.deletable} key={index} cardSrc={card} w='100px' h='200px' />
