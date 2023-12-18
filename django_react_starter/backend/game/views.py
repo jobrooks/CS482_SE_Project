@@ -317,12 +317,13 @@ class GameState(APIView):
         player = self.get_player(pk=playerID)
         game = self.get_game(player=player)
         players = Player.objects.filter(game=game.pk)
-        otherPlayers = [x['name'] for x in players]
+        print(players)
+        otherPlayers = [{"id": x.pk, "username": x.name, "money": x.money, "betAmount": x.betAmount} for x in players]
         pot = self.get_pot(game=game)
         hand = self.get_hand(player=player)
         hand.evaluateHand()
         cards = self.get_cards(hand=hand)
-        return Response({"Player": PlayerSerializer(player).data, "Other Player Names": otherPlayers, "Game": GameSerializer(game).data, "Pot": PotSerializer(pot).data, "Hand": HandSerializer(hand).data, "Cards": CardSerializer(cards, many=True).data})
+        return Response({"player": PlayerSerializer(player).data, "otherPlayers": otherPlayers, "game": GameSerializer(game).data, "pot": PotSerializer(pot).data, "hand": HandSerializer(hand).data, "cards": CardSerializer(cards, many=True).data})
         
 class TakeTurn(APIView):
     def get_player(self, pk):
