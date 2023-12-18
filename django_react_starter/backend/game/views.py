@@ -48,6 +48,8 @@ class StartGame(APIView):
     def get(self, request, gameID):
         game = Game.objects.get(pk=gameID)
         players = Player.objects.filter(game=game.pk)
+        if len(players) > 6:
+            return Response("Too many players. Unable to start.")
         for player in players:
             player.drawStartingCards(game=game)
         game.createTurnOrder()
@@ -245,15 +247,20 @@ class PlayerList(APIView):
         serializer = PlayerSerializer(players, many=True)
         return Response(serializer.data)
     def post(self, request):
-        serializer = PlayerSerializer(data=request.data) 
+        serializer = PlayerSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
+            game = Game.objects.get(pk=serializer.data['game'])
+            players = Player.objects.filter(game=game.pk)
             hand = Hand()
             hand.save()
             player = Player.objects.get(pk=serializer.data['id'])
             player.hand = hand
+            if len(players)  > 6:
+                player.delete()
+                return Response("Too many players. Unable to join player to game.")
             player.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(PlayerSerializer(player).data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class PlayerDetail(APIView):
@@ -309,10 +316,13 @@ class GameState(APIView):
     def get(self, request, playerID):
         player = self.get_player(pk=playerID)
         game = self.get_game(player=player)
+        players = Player.objects.filter(game=game.pk)
+        otherPlayers = [x['name'] for x in players]
         pot = self.get_pot(game=game)
         hand = self.get_hand(player=player)
+        hand.evaluateHand()
         cards = self.get_cards(hand=hand)
-        return Response({"Player": PlayerSerializer(player).data, "Game": GameSerializer(game).data, "Pot": PotSerializer(pot).data, "Hand": HandSerializer(hand).data, "Cards": CardSerializer(cards, many=True).data})
+        return Response({"Player": PlayerSerializer(player).data, "Other Player Names": otherPlayers, "Game": GameSerializer(game).data, "Pot": PotSerializer(pot).data, "Hand": HandSerializer(hand).data, "Cards": CardSerializer(cards, many=True).data})
         
 class TakeTurn(APIView):
     def get_player(self, pk):
