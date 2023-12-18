@@ -25,6 +25,16 @@ class TestPlayer(TestCase):
         self.assertEqual(player.canRaise, True)
         self.assertEqual(player.canCall, True)
         self.assertEqual(player.canCheck, False)
+    def testCardEval(self):
+        hand = Hand.objects.get(name="test")
+        card = Card.objects.create(suit=('H', 'Hearts'), rank=('10', 'Ten'), hand=hand)
+        card = Card.objects.create(suit=('H', 'Hearts'), rank=('05', 'Five'), hand=hand)
+        card = Card.objects.create(suit=('H', 'Hearts'), rank=('12', 'Queen'), hand=hand)
+        card = Card.objects.create(suit=('H', 'Hearts'), rank=('13', 'King'), hand=hand)
+        card = Card.objects.create(suit=('H', 'Hearts'), rank=('07', 'Seven'), hand=hand)
+
+        hand.evaluateHand()
+        print(hand.ratingOut)
         
 
 # class PokerModelTestCase(TestCase):

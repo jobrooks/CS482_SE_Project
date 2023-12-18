@@ -50,13 +50,36 @@ class Hand(models.Model):
     name = models.CharField(max_length=50, null=True)
     score = models.IntegerField(default=0)
     ratingOut = models.CharField(max_length=30, default=0)
-    rating = ()
-
-    def updateEval(self):
-        self.ratingOut = str(self.rating)
 
     def evaluateHand(self):
-        self.rating = (0,0)
+        handType = ""
+        if self.isRoyalFlush():
+            handType = "10"
+        elif self.isStraightFlush():
+            handType = "09"
+        elif self.isFourOfAKind():
+            handType = "08"
+        elif self.isFullHouse():
+            handType = "07"
+        elif self.isFlush():
+            handType = "06"
+        elif self.isStraight():
+            handType = "05"
+        elif self.isThreeOfAKind():
+            handType = "04"
+        elif self.isTwoPair():
+            handType = "03"
+        elif self.isPair():
+            handType = "02"
+        else:
+            handType = "01"
+
+        cardScore = ""
+        cards = Card.objects.filter(hand=self.pk).order_by('-rank').values()
+        for card in cards:
+            cardScore += card['rank'][2:4]
+        self.ratingOut = handType + cardScore
+        self.save()
     
     def isRoyalFlush(self):
         ace = False
@@ -70,15 +93,15 @@ class Hand(models.Model):
                 suit = card.suit
             if suit != card.suit:
                 return False
-            if card.rank == '14':
+            if card.rank[2:4] == '14':
                 ace = True
-            elif card.rank == '13':
+            elif card.rank[2:4] == '13':
                 king = True
-            elif card.rank == '12':
+            elif card.rank[2:4] == '12':
                 queen = True
-            elif card.rank == '11':
+            elif card.rank[2:4] == '11':
                 jack = True
-            elif card.rank == '10':
+            elif card.rank[2:4] == '10':
                 ten = True
         return True if ace and jack and queen and king and ten else False
     
@@ -91,7 +114,8 @@ class Hand(models.Model):
                 return False
         intArray = []
         for card in Card.objects.filter(hand=self.pk):
-            intArray.append(int(card.rank[1:4]))
+            print(card.rank[2:4])
+            intArray.append(int(card.rank[2:4]))
         distanceArray = np.diff(intArray)
         element = None
         for num in distanceArray:
@@ -145,7 +169,7 @@ class Hand(models.Model):
     def isStraight(self):
         intArray = []
         for card in Card.objects.filter(hand=self.pk):
-            intArray.append(int(card.rank[1:4]))
+            intArray.append(int(card.rank[2:4]))
         distanceArray = np.diff(intArray)
         element = None
         for num in distanceArray:
@@ -215,9 +239,15 @@ class TurnOrder():
 
     def convert(self, str):
         self.order.clear()
-        for character in range(0, len(str)):
-            if str[character].isdigit():
-                self.order.append(str[character])
+        if ',' in str:
+            splitString = str.split(",")
+            for string in splitString:
+                self.order.append(string)
+        else:
+            self.order.append(str)
+        # for character in range(0, len(str)):
+        #     if str[character].isdigit():
+        #         self.order.append(str[character])
             
 
 class Game(models.Model):
@@ -315,7 +345,6 @@ class Game(models.Model):
 
     def nextTurn(self):
         self.turns.order.rotate(1)
-
 
 class Player(models.Model):
     money = models.PositiveBigIntegerField(default=0)
