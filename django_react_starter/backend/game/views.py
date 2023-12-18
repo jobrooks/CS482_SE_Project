@@ -7,6 +7,8 @@ from rest_framework.parsers import JSONParser
 from rest_framework import status
 from game.models import Card, Deck, Hand, Game, Player, TurnOrder, Pot, SUIT_CHOICES, RANK_CHOICES
 from game.serializers import CardSerializer, DeckSerializer, HandSerializer, PotSerializer, GameSerializer, PlayerSerializer
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 
 # Create your views here.
 
@@ -52,6 +54,7 @@ class StartGame(APIView):
             return Response("Too many players. Unable to start.")
         for player in players:
             player.drawStartingCards(game=game)
+            player.checkActions(game)
         game.createTurnOrder()
         game.updateTurnOrder()
         serializer = GameSerializer(game)
@@ -326,6 +329,17 @@ class GameState(APIView):
         return Response({"player": PlayerSerializer(player).data, "otherPlayers": otherPlayers, "game": GameSerializer(game).data, "pot": PotSerializer(pot).data, "hand": HandSerializer(hand).data, "cards": CardSerializer(cards, many=True).data})
         
 class TakeTurn(APIView):
+    def send_action(self, player, game, pot):
+        player_data = PlayerSerializer(player).data
+        print(player_data)
+        serialized_text_data = {"event": "player_action", "action_type": player.action, "player": player_data} # Should be form of request
+        print(serialized_text_data)
+        layer = get_channel_layer()
+        async_to_sync(layer.group_send)(
+            str(game.pk), {"type": serialized_text_data["event"], "serialized_text_data": serialized_text_data}
+        )
+        print("sent to group: " + str(game.pk))
+    
     def get_player(self, pk):
         try:
             return Player.objects.get(pk=pk)
@@ -367,17 +381,27 @@ class TakeTurn(APIView):
             #
             # First Betting Round:
             game.pullTurnOrder()
+            currentTurnPlayerId = None
+            if len(game.turns.order) != 0:
+                print(game.turns.order)
+                currentTurnPlayerId = game.getCurrentPlayerTurn()
+                print(player.pk)
+                print(currentTurnPlayerId)
             if not game.checkFirstRoundOver():
-                if int(game.turns.order[0]) == player.pk:
+                if currentTurnPlayerId == player.pk:
                     player.checkActions(game=game)
                     turnResponse = Response({"Turn Successful": player.takeAction(game=game, pot=pot), "Player": PlayerSerializer(player).data, "Game": GameSerializer(game).data, "Pot": PotSerializer(pot).data})
+                    self.send_action(player, game, pot)
                     game.incrementPlayer()
                     if game.checkFirstRoundOver():
-                        game.resetToDefault()
+                        # game.resetToDefault()
                         game.isFirstBetRound = False
                         game.isDrawingRound = True
                         game.save()
                         return Response("First Round Finished. Proceeding to Drawing.")
+                    # game.nextTurn()
+                    print(game.turns.getStringOrder())
+                    print(game.turns.order)
                     game.updateTurnOrder()
                     return turnResponse
                 else:
@@ -421,18 +445,19 @@ class TakeTurn(APIView):
             game.updateTurnOrder()
             game.pullTurnOrder()
             if not game.checkSecondRoundOver() and game.checkDrawingRoundOver():
-                if int(game.turns.order[0]) == player.pk:
+                if currentTurnPlayerId == player.pk:
                     player.checkActions(game=game)
                     turnResponse = Response({"Turn Successful": player.takeAction(game=game, pot=pot), "Player": PlayerSerializer(player).data, "Game": GameSerializer(game).data, "Pot": PotSerializer(pot).data})
                     game.incrementPlayer()
                     if game.checkSecondRoundOver():
                         winner = game.determineWinner()
-                        game.resetToDefault()
+                        # game.resetToDefault()
                         game.isSecondBetRound = False
                         game.isFinished = True
                         game.winner = winner.name
                         game.save()
                         return Response({"Winner": PlayerSerializer(winner).data, "Player": PlayerSerializer(player).data, "Game": GameSerializer(game).data, "Pot": PotSerializer(pot).data})
+                    # game.nextTurn()
                     game.updateTurnOrder()
                     return turnResponse
                 else:

@@ -236,15 +236,32 @@ class Pot(models.Model):
 
 class TurnOrder():
     order = deque()
+    stringOrder = None
+    
+    def getCurrentPlayerTurn(self):
+        return int(self.order[0])
+    
+    def getStringOrder(self):
+        return self.stringOrder
+    
+    def nextTurn(self):
+        print("order1", self.order)
+        self.order.rotate(-1)
+        print("order2", self.order)
+        self.stringOrder = self.orderToString()
+        
+    def orderToString(self):
+        return ",".join(self.order)
 
-    def convert(self, str):
+    def convert(self, string):
         self.order.clear()
-        if ',' in str:
-            splitString = str.split(",")
-            for string in splitString:
-                self.order.append(string)
+        if ',' in string:
+            splitString = string.split(",")
+            for elem in splitString:
+                self.order.append(elem.strip())
         else:
-            self.order.append(str)
+            self.order.append(string)
+        self.stringOrder = self.orderToString()
         # for character in range(0, len(str)):
         #     if str[character].isdigit():
         #         self.order.append(str[character])
@@ -274,6 +291,8 @@ class Game(models.Model):
                 winningPlayer = player
         return winningPlayer
 
+    def getCurrentPlayerTurn(self):
+        return self.turns.getCurrentPlayerTurn()
 
     def resetToDefault(self):
         self.turnOrder = ""
@@ -299,13 +318,13 @@ class Game(models.Model):
             self.turns.convert("")
         else:
             self.turns.convert(self.turnOrder)
-            self.turnOrder = None
+            self.turnOrder = self.turns.getStringOrder()
             self.save()
     
     def updateTurnOrder(self):
-        self.turnOrder = str(self.turns.order)[7:-2]
+        self.turnOrder = self.turns.getStringOrder()
         self.save()
-        self.turns.order.clear
+        # self.turns.order.clear
 
     def checkBetAmount(self):
         amount = None
@@ -337,14 +356,19 @@ class Game(models.Model):
             return True 
 
     def createTurnOrder(self):
-        self.turns.order.clear
-        players = Player.objects.filter(game=self.pk)
+        self.turns = TurnOrder()
+        players = [str(player.pk) for player in Player.objects.filter(game=self.pk)]
         if len(self.turns.order) != len(players):
-            for x in players:
-                self.turns.order.append(x.pk)
+            string_players_list = ",".join(players)
+            self.turns.convert(string_players_list)
+            self.turnOrder = self.turns.getStringOrder()
+            # for x in players:
+                # self.turns.order.append(x.pk)
 
     def nextTurn(self):
-        self.turns.order.rotate(1)
+        self.turns.nextTurn()
+        self.turnOrder = self.turns.getStringOrder()
+        self.save()
 
 class Player(models.Model):
     money = models.PositiveBigIntegerField(default=0)
@@ -426,24 +450,29 @@ class Player(models.Model):
                 self.totalAmountBet += self.betAmount + game.currentBetAmount
                 game.currentBetAmount += self.betAmount
                 pot.moneyAmount += self.betAmount
-                game.turns.order.rotate(-1)
+                game.nextTurn()
+                # game.turns.order.rotate(-1)
             elif self.action == "call" and self.canCall:
                 self.money -= game.currentBetAmount
                 self.totalAmountBet += game.currentBetAmount
                 pot.moneyAmount += game.currentBetAmount
-                game.turns.order.rotate(-1)
+                game.nextTurn()
+                # game.turns.order.rotate(-1)
             elif self.action == "allIn" and self.canAllIn:
                 pot.moneyAmount += self.money
                 game.currentBetAmount += self.money
                 self.totalAmountBet += self.money
                 self.money = 0
                 game.turns.order.remove(str(self.pk))
-                game.turns.order.rotate(-1)
+                game.nextTurn()
+                # game.turns.order.rotate(-1)
             elif self.action == "check" and self.canCheck:
-                game.turns.order.rotate(-1)
+                game.nextTurn()
+                # game.turns.order.rotate(-1)
             elif self.action == "fold" and self.canFold:
                 game.turns.order.remove(str(self.pk))
-                game.turns.order.rotate(-1)
+                game.nextTurn()
+                # game.turns.order.rotate(-1)
             else:
                 return False
             self.save()

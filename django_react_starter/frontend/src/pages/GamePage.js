@@ -8,6 +8,7 @@ import GameActions from '../components/GamePlay/GameActions';
 import {Box, Stack, Avatar, Typography, Checkbox, Card, Button, CardMedia, Grid} from "@mui/material";
 import MyCardsView from "../components/PlayingCardViews/MyCardsView";
 import { useLocation } from "react-router-dom";
+import Enemy from "../components/GamePlay/Enemy";
 
 class GamePage extends React.Component {
 
@@ -346,7 +347,9 @@ class GamePage extends React.Component {
       // this.setState({ players: [ serialized_data.username, ...this.state.players ] })
       this.getCurrentPlayers();
     } else if (serialized_data.event === "start_game") {
-      this.setState({ currentPage: "play" })
+      this.setState({ currentPage: "play" });
+    } else if (serialized_data.event === "player_action") {
+      console.log(serialized_data);
     } else {
       console.log("Unknown player event");
     }
@@ -461,18 +464,28 @@ class GamePage extends React.Component {
             direction="column"
             justify="space-evenly"
           >
-            <Grid item
+            <Grid item // Game space
               height="100vh"
               width="100vw"
             >
-              <MyCardsView
-                deletable={false}
-                myHandID={this.state.myPlayerData.id}
-              />
+              <Stack direction="row"
+              
+              >
+                {
+                  this.state.players.map((playerData, index) => {
+                    console.log(playerData);
+                    <Enemy key={index} player={playerData}/>
+                  })
+                }
+              </Stack>
               <GameActions
                 gameId={this.state.gameId}
                 playerId={this.state.myPlayerData.id}
                 currentBet={this.state.currentBet}
+              />
+              <MyCardsView
+                deletable={false}
+                myHandID={this.state.myPlayerData.id}
               />
             </Grid>
           </Grid>

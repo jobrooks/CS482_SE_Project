@@ -26,9 +26,10 @@ class GameConsumer(WebsocketConsumer):
         )
 
     """
-    Protocols for game events:
+    Protocols for game events -> serialized text data:
     player_join: {event: "player_join", username: <username>}
     start_game: {event: "start_game", username: <username of player who started>}
+    player_action: {event: "player_action", action_type: <type of action (raise, call, fold, check, all-in, discard)>, player: <player's data>}
     """
     def receive(self, text_data):
         try:
@@ -49,5 +50,9 @@ class GameConsumer(WebsocketConsumer):
         self.send(text_data=json.dumps(serialized_text_data))
         
     def start_game(self, event):
+        serialized_text_data = event["serialized_text_data"]
+        self.send(text_data=json.dumps(serialized_text_data))
+        
+    def player_action(self, event):
         serialized_text_data = event["serialized_text_data"]
         self.send(text_data=json.dumps(serialized_text_data))

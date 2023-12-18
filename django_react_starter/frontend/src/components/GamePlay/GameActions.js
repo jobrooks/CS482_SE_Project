@@ -25,6 +25,7 @@ class GameActions extends React.Component {
                 "action": "fold"
             }
             const response = await axios.put(`http://localhost:8000/taketurn/${this.state.playerId}/`, foldData)
+            console.log(response);
         }
         catch (error) {
             console.log("ID: " + this.state.playerId + "fold turn not taken")
@@ -37,6 +38,7 @@ class GameActions extends React.Component {
                 "action": "call"
             }
             const response = await axios.put(`http://localhost:8000/taketurn/${this.state.playerId}/`, callData)
+            console.log(response);
         }
         catch (error) {
             console.log("ID: " + this.state.playerId + "call turn not taken")
@@ -49,6 +51,7 @@ class GameActions extends React.Component {
                 "action": "allIn"
             }
             const response = await axios.put(`http://localhost:8000/taketurn/${this.state.playerId}/`, allInData)
+            console.log(response);
         }
         catch (error) {
             console.log("ID: " + this.state.playerId + "allIn turn not taken")
@@ -86,6 +89,7 @@ class GameActions extends React.Component {
                 "betAmount": bet
             }
             const response = await axios.put(`http://localhost:8000/taketurn/${this.state.playerId}/`, raiseData)
+            console.log(response);
         }
         catch (error) {
             console.log("ID: " + this.state.playerId + "raise turn not taken")
@@ -98,6 +102,7 @@ class GameActions extends React.Component {
                 "action": "check"
             }
             const response = await axios.put(`http://localhost:8000/taketurn/${this.state.playerId}/`, checkData)
+            console.log(response);
         }
         catch (error) {
             console.log("ID: " + this.state.playerId + "check turn not taken")
@@ -106,7 +111,10 @@ class GameActions extends React.Component {
 
     render() {
         return (
-            <Grid container justifyContent="center" alignItems="flex-start" spacing={2}>
+            <Grid container justifyContent="center" alignItems="flex-start" spacing={2}
+                position="relative"
+                top="58%"
+            >
                 <Grid item>
                     <Fab onClick={this.handleFold} variant="extended" color="primary"> Fold </Fab>
                 </Grid>
