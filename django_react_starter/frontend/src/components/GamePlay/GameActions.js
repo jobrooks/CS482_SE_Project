@@ -113,7 +113,7 @@ class GameActions extends React.Component {
         return (
             <Grid container justifyContent="center" alignItems="flex-start" spacing={2}
                 position="relative"
-                top="58%"
+                top="38%"
             >
                 <Grid item>
                     <Fab onClick={this.handleFold} variant="extended" color="primary"> Fold </Fab>

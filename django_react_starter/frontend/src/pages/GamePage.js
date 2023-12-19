@@ -31,6 +31,7 @@ class GamePage extends React.Component {
     this.getCurrentPlayersList = this.getCurrentPlayersList.bind(this);
     this.joinGame = this.joinGame.bind(this);
     this.getCurrentPlayers = this.getCurrentPlayers.bind(this);
+    this.getEnemyView = this.getEnemyView.bind(this);
     this.state = {
       // Data
       myUsername: null,
@@ -411,6 +412,34 @@ class GamePage extends React.Component {
     );
   }
 
+  getEnemyView() {
+    let listBuffer = [];
+    for (let i in this.state.players) {
+        let player = this.state.players[i];
+        if (player.name !== this.state.myUsername) {
+          listBuffer.push(
+              <Enemy key={i} linkedEnemy={player} />
+          );
+        }
+    }
+    console.log(listBuffer)
+    return (
+        <div id="enemyView">
+            <Stack direction="row"
+                justifyContent="space-evenly"
+                alignItems="center"
+                sx={{
+                    width: "auto",
+                    maxHeight: "100%",
+                    overflow: "auto",
+                }}
+            >
+                { listBuffer }
+            </Stack>
+        </div>
+    );
+  }
+
   getCreateGamePage() {
     let createGamePage = (
       <div id="creategamepage">
@@ -465,19 +494,10 @@ class GamePage extends React.Component {
             justify="space-evenly"
           >
             <Grid item // Game space
-              height="100vh"
-              width="100vw"
+              height="98vh"
+              width="98vw"
             >
-              <Stack direction="row"
-              
-              >
-                {
-                  this.state.players.map((playerData, index) => {
-                    console.log(playerData);
-                    <Enemy key={index} player={playerData}/>
-                  })
-                }
-              </Stack>
+              { this.getEnemyView() }
               <GameActions
                 gameId={this.state.gameId}
                 playerId={this.state.myPlayerData.id}
