@@ -49,6 +49,8 @@ class GamePage extends React.Component {
       players: [],
       // Game websocket
       gameSocket: null,
+      //drawing round check
+      isDrawingRound: false,
     }
   }
 
